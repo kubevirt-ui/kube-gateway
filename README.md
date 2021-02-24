@@ -9,6 +9,11 @@ OC Proxy provides an interactive autenticating proxy to Kubernetes clusters.
 ## Example
 
 ``` bash
+# git clone the source and cd into the base directory.
+
+# Build oc-proxy
+go build -o ./ ./cmd/oc-proxy/
+
 # Create an oauthclient CR for the demo
 oc create -f deploy/oauth-client-example.yaml
 
