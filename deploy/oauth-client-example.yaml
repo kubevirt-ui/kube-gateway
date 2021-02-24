@@ -1,0 +1,9 @@
+apiVersion: oauth.openshift.io/v1
+kind: OAuthClient
+metadata:
+  name: ocproxy-client
+grantMethod: auto
+secret: my-secret
+redirectURIs:
+- http://localhost:8080/auth/callback
+- https://localhost:8080/auth/callback
