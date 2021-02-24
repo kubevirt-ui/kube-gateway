@@ -17,7 +17,7 @@ go build -o ./ ./cmd/oc-proxy/
 # Create an oauthclient CR for the demo
 oc create -f deploy/oauth-client-example.yaml
 
-# Clont noVNC
+# Clont noVNC , we will use noVNC static html files to demo oc-proxy ability to mix static html with k8s api calls.
 git clone https://github.com/novnc/noVNC
 
 # Proxy the noVNC html files mixed with k8s API (replace the cluster with one you own)
