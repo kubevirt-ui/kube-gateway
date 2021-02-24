@@ -21,9 +21,19 @@ oc create -f deploy/oauth-client-example.yaml
 git clone https://github.com/novnc/noVNC
 
 # Proxy the noVNC html files mixed with k8s API (replace the cluster with one you own)
-./oc-proxy --api-path=/k8s/ --public-dir ./noVNC/ --listen http://0.0.0.0:8080 --api-server https://api.ostest.test.metalkube.org:6443 --base-address http://localhost:8080 -skip-verify-tls
+./oc-proxy \
+   --api-path=/k8s \
+   --public-dir ./noVNC/ \
+   --listen http://0.0.0.0:8080 \
+   --api-server https://api.ostest.test.metalkube.org:6443 \
+   --base-address http://localhost:8080 \
+   --skip-verify-tls
+2021/02/25 01:47:30 Listening on http:0.0.0.0:8080
 
 # Browse to a VM VNC (replace the vm name and namespace to one you can access with your credentials)
+# export NAMESPACE=yzamir
+# export NAME=rhel7-steep-cod
+# http://localhost:8001/vnc_lite.html?path=k8s/apis/subresources.kubevirt.io/v1alpha3/namespaces/${NAMESPACE}/virtualmachineinstances/${NAME}/vnc
 http://localhost:8080/vnc_lite.html?path=k8s/apis/subresources.kubevirt.io/v1alpha3/namespaces/yzamir/virtualmachineinstances/rhel7-steep-cod/vnc
 ```
 
