@@ -21,6 +21,8 @@ oc create -f deploy/oauth-client-example.yaml
 git clone https://github.com/novnc/noVNC
 
 # Proxy the noVNC html files mixed with k8s API (replace the cluster with one you own)
+# note that the proxy address must match the redirect address in the oauthclient CR we created
+# earlier.
 ./oc-proxy \
    --api-path=/k8s \
    --public-dir ./noVNC/ \
