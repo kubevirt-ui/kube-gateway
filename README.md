@@ -13,11 +13,13 @@ OC Proxy provides an interactive autenticating proxy to Kubernetes clusters.
 git clone https://github.com/novnc/noVNC
 
 # Proxy the noVNC html files mixed with k8s API
-oc-proxy --api-path=/k8s/ --public-dir ./noVNC/ --listen http://0.0.0.0:8080 --api-server https://api.ostest.test.metalkube.org:6443 --base-address http://localhost:8080 -skip-verify-tls
+./oc-proxy --api-path=/k8s/ --public-dir ./noVNC/ --listen http://0.0.0.0:8080 --api-server https://api.ostest.test.metalkube.org:6443 --base-address http://localhost:8080 -skip-verify-tls
 
 # Browse to a VM VNC
 http://localhost:8080/vnc_lite.html?path=k8s/apis/subresources.kubevirt.io/v1alpha3/namespaces/yzamir/virtualmachineinstances/rhel7-steep-cod/vnc
 ```
+
+![alt demo gif](https://github.com/yaacov/oc-proxy/blob/master/img/demo.gif?raw=true)
 
 ## Notes
 
