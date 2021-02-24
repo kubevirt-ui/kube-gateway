@@ -9,6 +9,9 @@ OC Proxy provides an interactive autenticating proxy to Kubernetes clusters.
 ## Example
 
 ``` bash
+# Create an oauthclient CR for the demo
+oc create -f deploy/oauth-client-example.yaml
+
 # Clont noVNC
 git clone https://github.com/novnc/noVNC
 
