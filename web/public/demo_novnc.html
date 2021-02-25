@@ -1,0 +1,41 @@
+<html>
+<meta charset="utf-8">
+<script type="module" crossorigin="anonymous">
+    function load() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const namespace = urlParams.get('namespace') || 'default';
+
+        document.getElementById("namespace").innerHTML = "namespace: " + namespace;
+
+        fetch('/k8s/apis/kubevirt.io/v1alpha3/namespaces/' + namespace + '/virtualmachineinstances')
+            .then(resp => resp.json())
+            .then((resp) => {
+                let pods = [];
+                resp.items.forEach(item => {
+                    let a = document.createElement('a');
+                    a.title = item.metadata.name;
+                    a.href = '/noVNC/vnc_lite.html?path=k8s/apis/subresources.kubevirt.io/v1alpha3/namespaces/' + namespace + '/virtualmachineinstances/' + item.metadata.name + '/vnc';
+
+                    let text = document.createTextNode(item.metadata.name);
+                    a.appendChild(text);
+                    
+                    let li = document.createElement('li');
+                    li.appendChild(a);
+
+                    document.getElementById("items").appendChild(li);
+                });
+            })
+    }
+
+    window.addEventListener("load", load, false);
+</script>
+</meta>
+
+<body>
+    <h1>VMIs</h1>
+    <p id="namespace"></p>
+    <ul id="items">
+    </ul>
+</body>
+
+</html>

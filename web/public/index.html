@@ -1,26 +1,12 @@
 <html>
 <meta charset="utf-8">
-<script type="module" crossorigin="anonymous">
-    function loadPods() {
-        fetch('/k8s/api/v1/namespaces/openshift-etcd/pods')
-            .then(resp => resp.json())
-            .then((resp) => {
-                let pods = [];
-                resp.items.forEach(item => {
-                    let li = document.createElement('li');
-                    li.innerHTML = "" + item.metadata.name + " " + String(item.status.phase);
-                    document.getElementById("pods").appendChild(li);
-                });
-            })
-    }
-
-    window.addEventListener("load", loadPods, false);
-</script>
 </meta>
 
 <body>
-    <h1>Pods (openshift-etcd)</h1>
-    <ul id="pods">
+    <h1>Demo</h1>
+    <ul>
+        <li><a href="/demo_pods.html?namespace=openshift-etcd">Pods demo: list pods</li>
+        <li><a href="/demo_novnc.html?namespace=yzamir">noVNC demo: requires to clone the noVNC git repo into the public directory</li>
     </ul>
 </body>
 

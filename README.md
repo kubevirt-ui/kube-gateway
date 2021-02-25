@@ -18,14 +18,14 @@ go build -o ./ ./cmd/oc-proxy/
 oc create -f deploy/oauth-client-example.yaml
 
 # Clont noVNC , we will use noVNC static html files to demo oc-proxy ability to mix static html with k8s api calls.
-git clone https://github.com/novnc/noVNC
+git clone https://github.com/novnc/noVNC web/public/noVNC
 
 # Proxy the noVNC html files mixed with k8s API (replace the cluster with one you own)
 # note that the proxy address must match the redirect address in the oauthclient CR we created
 # earlier.
 ./oc-proxy \
    --api-path=/k8s/ \
-   --public-dir ./noVNC/ \
+   --public-dir ./web/public \
    --listen http://0.0.0.0:8080 \
    --api-server https://api.ostest.test.metalkube.org:6443 \
    --base-address http://localhost:8080 \
@@ -35,8 +35,8 @@ git clone https://github.com/novnc/noVNC
 # Browse to a VM VNC (replace the vm name and namespace to one you can access with your credentials)
 # export NAMESPACE=yzamir
 # export NAME=rhel7-steep-cod
-# http://localhost:8001/vnc_lite.html?path=k8s/apis/subresources.kubevirt.io/v1alpha3/namespaces/${NAMESPACE}/virtualmachineinstances/${NAME}/vnc
-http://localhost:8080/vnc_lite.html?path=k8s/apis/subresources.kubevirt.io/v1alpha3/namespaces/yzamir/virtualmachineinstances/rhel7-steep-cod/vnc
+# http://localhost:8001/noVNC/vnc_lite.html?path=k8s/apis/subresources.kubevirt.io/v1alpha3/namespaces/${NAMESPACE}/virtualmachineinstances/${NAME}/vnc
+http://localhost:8080/noVNC/vnc_lite.html?path=k8s/apis/subresources.kubevirt.io/v1alpha3/namespaces/yzamir/virtualmachineinstances/rhel7-steep-cod/vnc
 ```
 
 ![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-proxy/main/web/public/demo.gif)
