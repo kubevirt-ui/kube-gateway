@@ -24,7 +24,7 @@ git clone https://github.com/novnc/noVNC
 # note that the proxy address must match the redirect address in the oauthclient CR we created
 # earlier.
 ./oc-proxy \
-   --api-path=/k8s \
+   --api-path=/k8s/ \
    --public-dir ./noVNC/ \
    --listen http://0.0.0.0:8080 \
    --api-server https://api.ostest.test.metalkube.org:6443 \

@@ -203,6 +203,9 @@ func proxyServer() http.Handler {
 			r.URL.Scheme = url.Scheme
 			r.URL.Path = r.URL.Path[len(s.APIPath)-1:]
 
+			// Log request
+			log.Printf("[PROXY] %s %v: %+v", r.RemoteAddr, r.Method, r.URL)
+
 			// Call server
 			proxy.ServeHTTP(w, r)
 		})
