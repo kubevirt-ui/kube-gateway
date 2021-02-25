@@ -39,7 +39,7 @@ git clone https://github.com/novnc/noVNC
 http://localhost:8080/vnc_lite.html?path=k8s/apis/subresources.kubevirt.io/v1alpha3/namespaces/yzamir/virtualmachineinstances/rhel7-steep-cod/vnc
 ```
 
-![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-proxy/main/img/demo.gif)
+![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-proxy/main/web/public/demo.gif)
 
 ## Notes
 
