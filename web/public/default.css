@@ -6,7 +6,7 @@ body {
 }
 
 h1 {
-  color: rgb(114, 114, 114);
+  color: rgb(87, 87, 87);
 }
 
 ul {
@@ -21,7 +21,7 @@ li {
 
 a {
   text-decoration: none;
-  border-bottom: 1px dashed rgb(126, 126, 126);
+  border-bottom: 1px dashed rgb(216, 216, 216);
 }
 
 a:link {

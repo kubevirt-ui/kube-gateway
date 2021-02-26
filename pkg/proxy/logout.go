@@ -27,7 +27,7 @@ const logoutHTMLTemplate = `
 
 <body id="body">
 	<p>looging out...</p>
-	<div id="divCheckbox" style="visibility: hidden">
+	<div style="visibility: hidden">
 		<form name="logout" action="{{.IssuerEndpoint}}/logout" target="iframe" method="POST">
 			<label for="then">then</label><input id="then" name="then" />
 		</form>
