@@ -13,3 +13,9 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+web/public/noVNC
+ca.crt
+key.pem
+cert.pem
+go.sum
+oc-proxy
