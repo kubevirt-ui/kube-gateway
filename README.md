@@ -1,10 +1,25 @@
 # oc-proxy
 
-OC Proxy provides an interactive autenticating proxy to Kubernetes clusters.
+OC Proxy provides an interactive autenticating proxy to Kubernetes (OKD) clusters.
 
 - Proxying the Kubernetes API
 - Serving frontend static assets
 - Interactive user Authentication
+
+## Compile and run
+
+``` bash
+go build -o ./ ./cmd/oc-proxy/
+
+./oc-proxy --help
+
+oc create -f deploy/oauth-client-example.yaml
+./oc-proxy \
+    --api-server=<your k8s API server URL>  \
+    --listen http://0.0.0.0:8080 \
+    --base-address http://localhost:8080 \
+    --skip-verify-tls
+```
 
 ## Example
 
@@ -41,39 +56,3 @@ https://localhost:8080/noVNC/vnc_lite.html?path=k8s/apis/subresources.kubevirt.i
 ```
 
 ![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-proxy/main/web/public/demo2.gif)
-
-## Notes
-
-### Compile and Test
-
-``` bash
-go test ./cmd/oc-proxy/
-go build -o ./ ./cmd/oc-proxy/
-
-./oc-proxy --help
-./oc-proxy
-
-./oc-proxy --public-dir ./ --listen https://0.0.0.0:8080
-```
-
-### Create self signed server certificate
-
-``` bash
-openssl ecparam -genkey -name secp384r1 -out key.pem
-openssl req -new -x509 -sha256 -key key.pem -out cert.pem -days 3650
-```
-
-### Get clusters CA certificate
-
-``` bash
-oc get secrets -n default --field-selector type=kubernetes.io/service-account-token -o json | jq '.items[0].data."ca.crt"' -r | python -m base64 -d > ca.crt
-```
-
-### Create an example OAuthClient
-
-The exampe oauth-client will allow redirect to http[s]://localhost:8080/auth/callback endpoints.
-
-
-``` bash
-oc create -f deploy/oauth-client-example.yaml
-```
