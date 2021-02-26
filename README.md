@@ -4,7 +4,7 @@ OC Proxy provides an interactive autenticating proxy to Kubernetes (OKD) cluster
 
 - Proxying the Kubernetes API
 - Serving frontend static assets
-- Interactive user Authentication
+- Interactive user Authentication, using the cluster OAuth2 server
 
 oc-proxy uses Openshifts OAuth2 server, the server is installed by default on [OKD](https://www.okd.io/) k8s clusters.
 The demo shows [noVNC](https://novnc.com/) access to [kubevirt](https://kubevirt.io/) viertual machines running on k8s.
