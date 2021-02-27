@@ -49,7 +49,6 @@ func (s Server) Logout(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		SameSite: http.SameSiteLaxMode,
 		HttpOnly: true})
-	http.Redirect(w, r, "/", http.StatusFound)
 
 	t, err := template.New("page").Parse(logoutHTMLTemplate)
 	if err != nil {
