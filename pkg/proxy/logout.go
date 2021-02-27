@@ -42,6 +42,15 @@ func (s Server) Logout(w http.ResponseWriter, r *http.Request) {
 	// Log request
 	log.Printf("%s %v: %+v", r.RemoteAddr, r.Method, r.URL)
 
+	// Set session cookie.
+	http.SetCookie(w, &http.Cookie{
+		Name:     ocproxySessionCookieName,
+		Value:    "",
+		Path:     "/",
+		SameSite: http.SameSiteLaxMode,
+		HttpOnly: true})
+	http.Redirect(w, r, "/", http.StatusFound)
+
 	t, err := template.New("page").Parse(logoutHTMLTemplate)
 	if err != nil {
 		log.Printf("error parsing logout html template: %v", err)
