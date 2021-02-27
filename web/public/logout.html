@@ -1,0 +1,33 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="default.css">
+    <script type="module" crossorigin="anonymous">
+        const returnURL = window.location.origin + "/auth/login";
+        
+        function load() {
+            fetch("/k8s/.well-known/oauth-authorization-server")
+                .then(resp => resp.json())
+                .then((resp) => {
+                    document.getElementById("then").value = returnURL;
+                    document.forms["logout"].action = resp.issuer + "/logout";
+                    document.forms["logout"].submit();
+
+                    setTimeout(function () { window.location.href = returnURL; }, 5000);
+                });
+        }
+        window.addEventListener("load", load, false);
+    </script>
+</head>
+
+<body id="body">
+    <p>looging out...</p>
+    <div style="visibility: hidden">
+        <form name="logout" target="iframe" method="POST">
+            <label for="then">then</label><input id="then" name="then" />
+        </form>
+        <iframe name="iframe" src=""></iframe>
+    </div>
+</body>
+
+</html>`

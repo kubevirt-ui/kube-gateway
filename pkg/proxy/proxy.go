@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"regexp"
 	"time"
 
 	"golang.org/x/oauth2"
@@ -26,12 +27,29 @@ type Server struct {
 	BaseAddress    string
 	IssuerEndpoint string
 	LoginEndpoint  string
+
+	AllowedAPIMethods string
+	AllowedAPIRegexp  *regexp.Regexp
+
+	BearerToken            string
+	BearerTokenPassthrough bool
+	JWTTokenSecret         string
+
+	OAuthServerDisable bool
 }
 
 // Login redirects to OAuth2 authtorization login endpoint.
 func (s Server) Login(w http.ResponseWriter, r *http.Request) {
 	// Log request
 	log.Printf("%s %v: %+v", r.RemoteAddr, r.Method, r.URL)
+
+	// Set session cookie.
+	http.SetCookie(w, &http.Cookie{
+		Name:     ocproxySessionCookieName,
+		Value:    "",
+		Path:     "/",
+		SameSite: http.SameSiteLaxMode,
+		HttpOnly: true})
 
 	conf := s.Auth2Config
 	url := conf.AuthCodeURL("sessionID", oauth2.AccessTypeOnline, oauth2.ApprovalForce)
@@ -73,18 +91,41 @@ func (s Server) Callback(w http.ResponseWriter, r *http.Request) {
 // AuthMiddleware will look for a seesion cookie and use it as a Bearer token.
 func (s Server) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var token string
+
 		// Log request
 		log.Printf("%s %v: %+v", r.RemoteAddr, r.Method, r.URL)
 
-		// Check for session cookie
-		cookie, err := r.Cookie(ocproxySessionCookieName)
-		if err != nil || cookie.Value == "" {
-			http.Redirect(w, r, s.LoginEndpoint, http.StatusTemporaryRedirect)
-			return
+		// Check for Authorization HTTP header
+		if authorization := r.Header.Get("Authorization"); len(authorization) > 7 && authorization[:7] == "Bearer " {
+			token = authorization[7:]
+		}
+
+		// If bearer authorization is missing and interactive authentication is active
+		// check for session cookie
+		if token == "" && !s.OAuthServerDisable {
+			cookie, err := r.Cookie(ocproxySessionCookieName)
+			if err != nil || cookie.Value == "" {
+				http.Redirect(w, r, s.LoginEndpoint, http.StatusTemporaryRedirect)
+				return
+			}
+			token = cookie.Value
+		}
+
+		// If not using token passthrogh validate JWT token
+		// and replace the token with the k8s access token
+		if !s.BearerTokenPassthrough && s.BearerToken != "" && token != "" {
+			_, err := validateToken(token, s.JWTTokenSecret, r.Method, r.URL.Path)
+			if err != nil {
+				handleError(w, err)
+				return
+			}
+
+			token = s.BearerToken
 		}
 
 		// Set Authorization header
-		r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", cookie.Value))
+		r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 		next.ServeHTTP(w, r)
 	})
 }
@@ -107,6 +148,13 @@ func (s Server) Proxy() http.Handler {
 
 			// Log proxy request
 			log.Printf("%s %v: [PROXY] %+v", r.RemoteAddr, r.Method, r.URL)
+
+			// Verify allowed method and path
+			err := validateRequest(r.Method, r.URL.Path, s.AllowedAPIMethods, s.AllowedAPIRegexp)
+			if err != nil {
+				handleError(w, err)
+				return
+			}
 
 			// Call server
 			proxy.ServeHTTP(w, r)

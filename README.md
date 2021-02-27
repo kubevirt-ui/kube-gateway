@@ -1,13 +1,17 @@
 # oc-proxy
 
-OC Proxy provides an interactive autenticating proxy to Kubernetes (OKD) clusters.
+OC Proxy provides an interactive authentication proxy to Kubernetes clusters, using OAuth2 authentication issuer, or
+non-interactive autentication, using a bearer [JWT](https://jwt.io/) (HS256).
 
 - Proxying the Kubernetes API
 - Serving frontend static assets
-- Interactive user Authentication, using the cluster OAuth2 server
+- Interactive user Authentication, using OAuth2 server (require JWT token using HS256 hash)
+- Bearer token Authentication (require JWT using HS256 hash)
+- oc-proxy can proxy WebSockets, the [noVNC](https://novnc.com/) demo shows WebSocket access to [kubevirt](https://kubevirt.io/) viertual machines noVNC server.
+- oc-proxy can get an access token via [Openshifts OAuth2 server](https://docs.openshift.com/container-platform/4.7/authentication/configuring-internal-oauth.html), if this OAuth2 server is used, the proxy will not require a pre existing token to run, the server is installed by default on [OKD](https://www.okd.io/) k8s clusters.
 
-oc-proxy uses [Openshifts OAuth2 server](https://docs.openshift.com/container-platform/4.7/authentication/configuring-internal-oauth.html), the server is installed by default on [OKD](https://www.okd.io/) k8s clusters.
-The demo shows [noVNC](https://novnc.com/) access to [kubevirt](https://kubevirt.io/) viertual machines running on k8s.
+The proxy will validate JWT bearer tokens (HS256) check for "allowedAPIMethods" and "allowedAPIRegexp" claims, and if token and request are valid,
+send an API request using the proxy-known k8s token.
 
 ## Compile and run
 
@@ -16,6 +20,11 @@ go build -o ./ ./cmd/oc-proxy/
 
 ./oc-proxy --help
 
+# Run without an OAuth2 server
+# This method will only support non-interactive authentication
+
+# Run using OKD internal OAuth2 server
+# This method requires OKD or Openshift cluster
 oc create -f deploy/oauth-client-example.yaml
 ./oc-proxy \
     --api-server=<your k8s API server URL>  \

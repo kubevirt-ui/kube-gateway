@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -63,6 +65,34 @@ func ServerEndpoint(serverURL string, transport *http.Transport) (Endpoint, erro
 
 	if err := json.NewDecoder(resp.Body).Decode(&endpoint); err != nil {
 		return endpoint, fmt.Errorf("fail to get well known authorization endpoints: %+v", err)
+	}
+
+	return endpoint, nil
+}
+
+// GetEndpoints gets authentication server endpoints
+func GetEndpoints(oauthServerAuthURL *string, oauthServerTokenURL *string, apiServer *string, transport *http.Transport) (Endpoint, error) {
+	var endpoint Endpoint
+	var err error
+
+	if *oauthServerAuthURL != "" && *oauthServerTokenURL != "" {
+		endpoint.Token = *oauthServerTokenURL
+		endpoint.Auth = *oauthServerAuthURL
+
+		// Parse Issuer hostname from the token endpoint
+		endpointURL, err := url.Parse(*oauthServerTokenURL)
+		if err != nil {
+			return endpoint, err
+		}
+		endpoint.Issuer = endpointURL.Host
+
+		log.Print("using user defined oauth server endpoints")
+	} else {
+		endpoint, err = ServerEndpoint(*apiServer, transport)
+		if err != nil {
+			return endpoint, err
+		}
+		log.Printf("resived well known oauth server endpoints from [%s]", *apiServer)
 	}
 
 	return endpoint, nil
