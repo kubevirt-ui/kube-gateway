@@ -1,12 +1,20 @@
 # oc-proxy
 
-OC Proxy provides an interactive authentication proxy to Kubernetes clusters, using OAuth2 authentication issuer, or
-non-interactive autentication, using a bearer [JWT](https://jwt.io/) (HS256).
+OC Proxy provides an interactive and non-interactive authentication proxy to Kubernetes clusters, using OAuth2 authentication issuer, 
+and bearer [JWT](https://jwt.io/) (HS256) Authorization header.
+
+## Modes
+
+- Interactive authentication using a OAuth2 authentication issuer.
+- Interactive authentication using the inernal OKD (Openshift) authentication issuer.
+- Non interative authentication using bearer JWT Authorization header.
+
+## Features
 
 - Proxying the Kubernetes API
 - Serving frontend static assets
 - Interactive user Authentication, using OAuth2 server (require JWT token using HS256 hash)
-- Bearer token Authentication (require JWT using HS256 hash)
+- Non interactive Bearer token Authentication (require JWT using HS256 hash)
 - oc-proxy can proxy WebSockets, the [noVNC](https://novnc.com/) demo shows WebSocket access to [kubevirt](https://kubevirt.io/) viertual machines noVNC server.
 - oc-proxy can get an access token via [Openshifts OAuth2 server](https://docs.openshift.com/container-platform/4.7/authentication/configuring-internal-oauth.html), if this OAuth2 server is used, the proxy will not require a pre existing token to run, the server is installed by default on [OKD](https://www.okd.io/) k8s clusters.
 
@@ -22,12 +30,28 @@ go build -o ./ ./cmd/oc-proxy/
 
 # Run without an OAuth2 server
 # This method will only support non-interactive authentication
+./oc-proxy \
+    --api-server <your k8s API server URL> \
+    --skip-verify-tls \
+    --oauth-server-disable \
+    --jwt-token-key-file deploy/secret \
+    --k8s-bearer-token $(oc whoami -t)
+
+# Create a token with path restriction, oc-proxy will check "allowedAPIMethods" and "allowedAPIRegexp" claims 
+echo {\"allowedAPIRegexp\":\"^/k8s/api/v1/pods/cert-manager-5597cff495-mb2vx\"} | jwt -key ./deploy/secret -alg HS256 -sign -
+# Create a token with experation date
+echo {\"exp\": $(expr $(date +%s) + 100)} | jwt -key ./deploy/secret -alg HS256 -sign -
+
+# Use bearer authentication
+# The token will be validated and the "allowedAPIRegexp" claim will be checked agains the API call path
+export TOKEN=<the signed token>
+curl -k -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" https://localhost:8080/k8s/api/v1/pods/cert-manager-5597cff495-mb2vx | jq
 
 # Run using OKD internal OAuth2 server
 # This method requires OKD or Openshift cluster
 oc create -f deploy/oauth-client-example.yaml
 ./oc-proxy \
-    --api-server=<your k8s API server URL>  \
+    --api-server <your k8s API server URL>  \
     --listen http://0.0.0.0:8080 \
     --base-address http://localhost:8080 \
     --skip-verify-tls

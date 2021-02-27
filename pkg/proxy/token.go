@@ -31,24 +31,24 @@ func validateRequest(httpMethod string, httpPath string, allowedAPIMethods strin
 	return nil
 }
 
-func validateToken(token string, secret string, httpMethod string, httpPath string) (*jwt.Token, error) {
+func validateToken(token string, key []byte, httpMethod string, httpPath string) (*jwt.Token, error) {
 	tok, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
-		// Don't forget to validate the alg is what you expect:
-		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
-		}
-
-		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
-		return []byte(secret), nil
+		return key, nil
 	})
-
 	if err != nil {
-		return nil, fmt.Errorf("JWT parser error: [%s]", err)
+		return nil, err
 	}
 
 	if claims, ok := tok.Claims.(jwt.MapClaims); ok && tok.Valid {
-		allowedAPIMethods := claims["allowedAPIMethods"].(string)
-		allowedAPIRegexp := claims["allowedAPIRegexp"].(string)
+		var allowedAPIMethods string
+		var allowedAPIRegexp string
+
+		if allowedAPIMethods, ok = claims["allowedAPIMethods"].(string); !ok {
+			allowedAPIMethods = ""
+		}
+		if allowedAPIRegexp, ok = claims["allowedAPIRegexp"].(string); !ok {
+			allowedAPIRegexp = ""
+		}
 		k8sAllowedAPIRegexp := regexp.MustCompile(allowedAPIRegexp)
 
 		err := validateRequest(httpMethod, httpPath, allowedAPIMethods, k8sAllowedAPIRegexp)
@@ -56,7 +56,7 @@ func validateToken(token string, secret string, httpMethod string, httpPath stri
 			return nil, err
 		}
 	} else {
-		return nil, fmt.Errorf("bearer token validation")
+		return nil, fmt.Errorf("invalid bearer token")
 	}
 
 	return tok, nil

@@ -33,7 +33,7 @@ type Server struct {
 
 	BearerToken            string
 	BearerTokenPassthrough bool
-	JWTTokenSecret         string
+	JWTTokenKey         []byte
 
 	OAuthServerDisable bool
 }
@@ -115,7 +115,7 @@ func (s Server) AuthMiddleware(next http.Handler) http.Handler {
 		// If not using token passthrogh validate JWT token
 		// and replace the token with the k8s access token
 		if !s.BearerTokenPassthrough && s.BearerToken != "" && token != "" {
-			_, err := validateToken(token, s.JWTTokenSecret, r.Method, r.URL.Path)
+			_, err := validateToken(token, s.JWTTokenKey, r.Method, r.URL.Path)
 			if err != nil {
 				handleError(w, err)
 				return
@@ -141,6 +141,13 @@ func (s Server) Proxy() http.Handler {
 
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
+			// Verify allowed method and path
+			err := validateRequest(r.Method, r.URL.Path, s.AllowedAPIMethods, s.AllowedAPIRegexp)
+			if err != nil {
+				handleError(w, err)
+				return
+			}
+
 			// Update the headers to allow for SSL redirection
 			r.URL.Host = url.Host
 			r.URL.Scheme = url.Scheme
@@ -148,13 +155,6 @@ func (s Server) Proxy() http.Handler {
 
 			// Log proxy request
 			log.Printf("%s %v: [PROXY] %+v", r.RemoteAddr, r.Method, r.URL)
-
-			// Verify allowed method and path
-			err := validateRequest(r.Method, r.URL.Path, s.AllowedAPIMethods, s.AllowedAPIRegexp)
-			if err != nil {
-				handleError(w, err)
-				return
-			}
 
 			// Call server
 			proxy.ServeHTTP(w, r)

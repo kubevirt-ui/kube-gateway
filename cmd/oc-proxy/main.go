@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -42,7 +43,7 @@ func main() {
 	oauthClientID := flag.String("oauth-client-id", "ocproxy-client", "OAuth2 client ID defined in a OAuthClient k8s object.")
 	oauthClientSecret := flag.String("oauth-client-secret", "my-secret", "OAuth2 client secret defined in a OAuthClient k8s object.")
 
-	jwtTokenSecret := flag.String("jwt-token-secret", "", "validate JWT token recived from OAuth2 using this secret.")
+	jwtTokenKeyFile := flag.String("jwt-token-key-file", "", "validate JWT token recived from OAuth2 using the key in this file.")
 	k8sBearerToken := flag.String("k8s-bearer-token", "", "Replace valid JWT tokens with this token for k8s API calls.")
 	k8sBearerTokenPassthrough := flag.Bool("k8s-bearer-token-passthrough", false, "If true use token recived from OAuth2 server as the token for k8s API calls.")
 	k8sAllowedAPIMethodsCommaSepList := flag.String("k8s-allowed-methods", "get,options", "Comma seperated list of allowed HTTP methods for k8s API calls.")
@@ -83,6 +84,16 @@ func main() {
 	if !*skipVerifyTLS {
 		log.Printf("read CAFile [%s]", *caFile)
 	}
+
+	// Read JWT secret file
+	var jwtTokenKey []byte
+	if *jwtTokenKeyFile != "" {
+		jwtTokenKey, err = ioutil.ReadFile(*jwtTokenKeyFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	log.Printf("read JWTfile [%s]", *jwtTokenKeyFile)
 
 	var endpoint Endpoint
 	var oauthConf = &oauth2.Config{}
@@ -126,7 +137,7 @@ func main() {
 
 		BearerToken:            *k8sBearerToken,
 		BearerTokenPassthrough: *k8sBearerTokenPassthrough,
-		JWTTokenSecret:         *jwtTokenSecret,
+		JWTTokenKey:            jwtTokenKey,
 
 		OAuthServerDisable: *oauthServerDisable,
 	}
