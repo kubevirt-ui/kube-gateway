@@ -59,7 +59,10 @@ func main() {
 
 	// Check for API server address
 	if *apiServer == "" {
-		log.Fatal("missing API server address")
+		log.Print("missing API server address")
+
+		flag.PrintDefaults()
+		os.Exit(0)
 	}
 
 	// Parse allowed http methods
