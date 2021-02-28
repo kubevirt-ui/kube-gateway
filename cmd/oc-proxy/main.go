@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"regexp"
 
 	"golang.org/x/oauth2"
 
@@ -46,8 +45,6 @@ func main() {
 	jwtTokenKeyAlg := flag.String("jwt-token-key-alg", "RS265", "JWT token key signing algorithm (supported algorithms HS265, RS265).")
 	k8sBearerToken := flag.String("k8s-bearer-token", "", "Replace valid JWT tokens with this token for k8s API calls.")
 	k8sBearerTokenPassthrough := flag.Bool("k8s-bearer-token-passthrough", false, "If true use token received from OAuth2 server as the token for k8s API calls.")
-	k8sAllowedAPIMethodsCommaSepList := flag.String("k8s-allowed-methods", "get,options", "Comma separated list of allowed HTTP methods for k8s API calls.")
-	k8sAllowedAPIRegexpStr := flag.String("k8s-allowed-regexp", "", "If exist only API calls matching this regexp will be allowed.")
 
 	flag.Parse()
 
@@ -64,17 +61,6 @@ func main() {
 		fmt.Println("Usage of oc-proxy:")
 		flag.PrintDefaults()
 		os.Exit(0)
-	}
-
-	// Parse allowed http methods
-	log.Printf("allowed HTTP methods for k8s API calls: %s", *k8sAllowedAPIMethodsCommaSepList)
-
-	// Compile allowed API regexp
-	k8sAllowedAPIRegexp := regexp.MustCompile(*k8sAllowedAPIRegexpStr)
-	if *k8sAllowedAPIRegexpStr == "" {
-		log.Print("allow any path for k8s API calls")
-	} else {
-		log.Printf("allowed rexexp for k8s API calls: %s", *k8sAllowedAPIRegexpStr)
 	}
 
 	if *k8sBearerTokenPassthrough || *k8sBearerToken == "" {
@@ -131,9 +117,6 @@ func main() {
 		BaseAddress:    *baseAddress,
 		IssuerEndpoint: endpoint.Issuer,
 		LoginEndpoint:  authLoginEndpoint,
-
-		AllowedAPIMethods: *k8sAllowedAPIMethodsCommaSepList,
-		AllowedAPIRegexp:  k8sAllowedAPIRegexp,
 
 		BearerToken:            *k8sBearerToken,
 		BearerTokenPassthrough: *k8sBearerTokenPassthrough,

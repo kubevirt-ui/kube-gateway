@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"regexp"
 	"time"
 
 	"golang.org/x/oauth2"
@@ -28,9 +27,6 @@ type Server struct {
 	BaseAddress    string
 	IssuerEndpoint string
 	LoginEndpoint  string
-
-	AllowedAPIMethods string
-	AllowedAPIRegexp  *regexp.Regexp
 
 	BearerToken            string
 	BearerTokenPassthrough bool
@@ -143,13 +139,6 @@ func (s Server) APIProxy() http.Handler {
 
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			// Verify allowed method and path
-			err := validateRequest(r.Method, r.URL.Path, s.APIPath, s.AllowedAPIMethods, s.AllowedAPIRegexp)
-			if err != nil {
-				handleError(w, err)
-				return
-			}
-
 			// Update the headers to allow for SSL redirection
 			r.URL.Host = url.Host
 			r.URL.Scheme = url.Scheme
