@@ -10,6 +10,12 @@ and bearer [JWT](https://jwt.io/) (HS256, RS256) Authorization header.
 
 (gopher network image - [egonelbre/gophers](https://github.com/egonelbre/gophers))
 
+## Install
+
+``` bash
+go install github.com/yaacov/oc-proxy/cmd/oc-proxy
+```
+
 ## What can I do with it ?
 
 - Create secure web applications leveraging the power of k8s API using interactive OAuth authentication.
