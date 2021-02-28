@@ -1,4 +1,4 @@
-module cmd/oc-proxy
+module github.com/yaacov/oc-proxy
 
 go 1.15
 
