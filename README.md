@@ -9,6 +9,23 @@ and bearer [JWT](https://jwt.io/) (HS256, RS256) Authorization header.
 - Interactive authentication using the inernal OKD (Openshift) authentication issuer.
 - Non interative authentication using bearer JWT Authorization header.
 
+### Running using ODK internal OAuth2 server
+
+When running using OKD (Openshift) OAuth issuer, operator does not need to provide a user token,
+the internal OAuth2 server will issue tokens that can be verified by the cluster.
+
+![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-proxy/main/web/public/using_okd_oauth.gif)
+
+
+### Verifying RSA signed JWT authentication tokens
+
+When using custom tokens, operator will provide a k8s token to access the k8s API.
+In this configuration an operator will create JWT expiring payloads that will restrict access to cluster resources,
+then sign the token using a private key.
+The proxy will verify the JWT using a public key, and restrict access acording the the recived JWT specification.
+
+![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-proxy/main/web/public/custom_tokens.gif)
+
 ## Features
 
 - Proxying the Kubernetes API.
@@ -91,4 +108,3 @@ git clone https://github.com/novnc/noVNC web/public/noVNC
 https://localhost:8080/noVNC/vnc_lite.html?path=k8s/apis/subresources.kubevirt.io/v1alpha3/namespaces/yzamir/virtualmachineinstances/rhel7-steep-cod/vnc
 ```
 
-![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-proxy/main/web/public/demo2.gif)
