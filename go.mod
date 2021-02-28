@@ -1,4 +1,4 @@
-module cmd/ocproxy
+module cmd/oc-proxy
 
 go 1.15
 
