@@ -1,6 +1,6 @@
 # oc-proxy
 
-OC Proxy provides an interactive and non-interactive authentication proxy to Kubernetes clusters, using OAuth2 authentication issuer, 
+OC Proxy provides an interactive and non-interactive authentication proxy to [Kubernetes](https://kubernetes.io/) clusters, using [OAuth2](https://oauth.net/2/) authentication issuer, 
 and bearer [JWT](https://jwt.io/) (HS256, RS256) Authorization header.
 
 ## Modes
