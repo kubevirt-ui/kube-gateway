@@ -3,10 +3,10 @@
 OC Proxy provides an interactive and non-interactive authentication proxy to [Kubernetes](https://kubernetes.io/) clusters, using [OAuth2](https://oauth.net/2/) authentication issuer, 
 and bearer [JWT](https://jwt.io/) (HS256, RS256) Authorization header.
 
-# What can I do with it ?
+## What can I do with it ?
 
 - Create secure web applications leveraging the power of k8s API using interactive OAuth authentication.
-- "Sublet" access to your k8s resources for limited time based on API path and HTTP methods, to users who o/w do not have access to them.
+- "Sublet" access to your k8s resources for limited time based on API path, to users who o/w do not have access to them.
 
 ## Modes
 
