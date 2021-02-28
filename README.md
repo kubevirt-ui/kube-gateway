@@ -18,8 +18,8 @@ go install github.com/yaacov/oc-proxy/cmd/oc-proxy
 
 ## What can I do with it ?
 
-- Create secure web applications leveraging the power of k8s API using interactive OAuth authentication.
-- "Sublet" access to your k8s resources for limited time based on API path, to users who o/w do not have access to them.
+- Create secure web applications leveraging the power of k8s API.
+- Sublet access to your k8s resources for limited time, based on API path matching.
 
 ## Modes
 
@@ -44,9 +44,10 @@ The proxy will allow only requests that match the JWT restrictions and use the o
 data from the cluster.
 Allowed JWT claims are:
 
-- exp - unix time of token expiration
-- allowedAPIMethods - comma seperated list of allowed API methods (default is "get,options")
-- allowedAPIRegexp - a reular expresion of allowed api call paths.
+- exp - int, expiration (unix time)
+- nbf - int, not before (unix time)
+- allowedAPIMethods - string, comma seperated list of allowed API methods (default is "get,options")
+- allowedAPIRegexp - string, a reular expresion of allowed api call paths.
 
 ![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-proxy/main/web/public/custom_tokens.gif)
 
