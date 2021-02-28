@@ -9,9 +9,9 @@ import (
 	"os"
 	"regexp"
 
-	"cmd/ocproxy/pkg/proxy"
-
 	"golang.org/x/oauth2"
+
+	"github.com/yaacov/oc-proxy/pkg/proxy"
 )
 
 const (

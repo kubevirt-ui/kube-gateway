@@ -1,8 +1,8 @@
-![alt gopher network](https://raw.githubusercontent.com/yaacov/oc-proxy/main/web/public/network-side.png)
-
 # oc-proxy
 
-OC Proxy provides an interactive and non-interactive authentication proxy to [Kubernetes](https://kubernetes.io/) clusters, using [OAuth2](https://oauth.net/2/) authentication issuer, 
+![alt gopher network](https://raw.githubusercontent.com/yaacov/oc-proxy/main/web/public/network-side.png)
+
+OC Proxy provides an interactive and non-interactive authentication proxy to [Kubernetes](https://kubernetes.io/) clusters, using [OAuth2](https://oauth.net/2/) authentication issuer,
 and bearer [JWT](https://jwt.io/) (HS256, RS256) Authorization header.
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/yaacov/oc-proxy)](https://goreportcard.com/report/github.com/yaacov/oc-proxy)
@@ -27,7 +27,6 @@ When running using OKD (Openshift) OAuth issuer, operator does not need to provi
 the internal OAuth2 server will issue tokens that can be verified by the cluster.
 
 ![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-proxy/main/web/public/using_okd_oauth.gif)
-
 
 ### Verifying RSA signed JWT authentication tokens
 
