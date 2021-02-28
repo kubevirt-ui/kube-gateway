@@ -69,7 +69,7 @@ go build -o ./ ./cmd/oc-proxy/
 oc create -f deploy/oauth-client-example.yaml
 
 # Creat self sighned certificate (needed if server use TLS)
-openssl ecparam -genkey -name secp384r1 -out key.pem
+openssl genrsa -out key.pem
 openssl req -new -x509 -sha256 -key key.pem -out cert.pem -days 3650
 
 # get the API server CA certificate (can be skipped by using --skip-verify-tls flag)
