@@ -103,7 +103,7 @@ func (s Server) AuthMiddleware(next http.Handler) http.Handler {
 
 		// If using non interactive login and noe token, send an error.
 		if token == "" {
-			handleError(w, fmt.Errorf("no token recived"))
+			handleError(w, fmt.Errorf("no token received"))
 			return
 		}
 
