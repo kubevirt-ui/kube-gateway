@@ -59,8 +59,9 @@ func main() {
 
 	// Check for API server address
 	if *apiServer == "" {
-		log.Print("missing API server address")
+		log.Println("missing API server address")
 
+		fmt.Println("Usage of oc-proxy:")
 		flag.PrintDefaults()
 		os.Exit(0)
 	}
