@@ -15,7 +15,5 @@
 # vendor/
 web/public/noVNC
 ca.crt
-key.pem
-cert.pem
 go.sum
 oc-proxy
