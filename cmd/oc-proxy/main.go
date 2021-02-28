@@ -57,6 +57,11 @@ func main() {
 		os.Exit(0)
 	}
 
+	// Check for API server address
+	if *apiServer == "" {
+		log.Fatal("missing API server address")
+	}
+
 	// Parse allowed http methods
 	log.Printf("allowed HTTP methods for k8s API calls: %s", *k8sAllowedAPIMethodsCommaSepList)
 
@@ -151,11 +156,6 @@ func main() {
 	u, err := url.Parse(*listen)
 	if err != nil {
 		log.Fatal(err)
-	}
-
-	// Check for API server address
-	if *apiServer == "" {
-		log.Fatal("missing API server address")
 	}
 
 	// Log back end endpoints
