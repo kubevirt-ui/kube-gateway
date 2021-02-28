@@ -33,7 +33,7 @@ type Server struct {
 
 	BearerToken            string
 	BearerTokenPassthrough bool
-	JWTTokenKey         []byte
+	JWTTokenKey            []byte
 
 	OAuthServerDisable bool
 }
@@ -115,7 +115,7 @@ func (s Server) AuthMiddleware(next http.Handler) http.Handler {
 		// If not using token passthrogh validate JWT token
 		// and replace the token with the k8s access token
 		if !s.BearerTokenPassthrough && s.BearerToken != "" && token != "" {
-			_, err := validateToken(token, s.JWTTokenKey, r.Method, r.URL.Path)
+			_, err := validateToken(token, s.JWTTokenKey, s.APIPath, r.Method, r.URL.Path)
 			if err != nil {
 				handleError(w, err)
 				return
@@ -142,7 +142,7 @@ func (s Server) Proxy() http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			// Verify allowed method and path
-			err := validateRequest(r.Method, r.URL.Path, s.AllowedAPIMethods, s.AllowedAPIRegexp)
+			err := validateRequest(r.Method, r.URL.Path, s.APIPath, s.AllowedAPIMethods, s.AllowedAPIRegexp)
 			if err != nil {
 				handleError(w, err)
 				return

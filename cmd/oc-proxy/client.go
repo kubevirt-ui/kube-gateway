@@ -71,9 +71,14 @@ func ServerEndpoint(serverURL string, transport *http.Transport) (Endpoint, erro
 }
 
 // GetEndpoints gets authentication server endpoints
-func GetEndpoints(oauthServerAuthURL *string, oauthServerTokenURL *string, apiServer *string, transport *http.Transport) (Endpoint, error) {
+func GetEndpoints(oauthServerAuthURL *string, oauthServerTokenURL *string, apiServer *string, disable bool, transport *http.Transport) (Endpoint, error) {
 	var endpoint Endpoint
 	var err error
+
+	if disable {
+		log.Print("interactive oauth server option is disabled")
+		return endpoint, nil
+	}
 
 	if *oauthServerAuthURL != "" && *oauthServerTokenURL != "" {
 		endpoint.Token = *oauthServerTokenURL

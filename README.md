@@ -1,7 +1,7 @@
 # oc-proxy
 
 OC Proxy provides an interactive and non-interactive authentication proxy to Kubernetes clusters, using OAuth2 authentication issuer, 
-and bearer [JWT](https://jwt.io/) (HS256) Authorization header.
+and bearer [JWT](https://jwt.io/) (HS256, RS256) Authorization header.
 
 ## Modes
 
@@ -11,10 +11,10 @@ and bearer [JWT](https://jwt.io/) (HS256) Authorization header.
 
 ## Features
 
-- Proxying the Kubernetes API
-- Serving frontend static assets
-- Interactive user Authentication, using OAuth2 server (require JWT token using HS256 hash)
-- Non interactive Bearer token Authentication (require JWT using HS256 hash)
+- Proxying the Kubernetes API.
+- Serving frontend static assets.
+- Interactive user Authentication, using OAuth2 server.
+- Non interactive Bearer token Authentication.
 - oc-proxy can proxy WebSockets, the [noVNC](https://novnc.com/) demo shows WebSocket access to [kubevirt](https://kubevirt.io/) viertual machines noVNC server.
 - oc-proxy can get an access token via [Openshifts OAuth2 server](https://docs.openshift.com/container-platform/4.7/authentication/configuring-internal-oauth.html), if this OAuth2 server is used, the proxy will not require a pre existing token to run, the server is installed by default on [OKD](https://www.okd.io/) k8s clusters.
 

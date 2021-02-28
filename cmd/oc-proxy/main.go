@@ -34,8 +34,8 @@ func main() {
 	caFile := flag.String("ca-file", "", "PEM File containing trusted certificates for k8s API server. If not present, the system's Root CAs will be used.")
 	skipVerifyTLS := flag.Bool("skip-verify-tls", false, "When true, skip verification of certs presented by k8s API server.")
 
-	certFile := flag.String("cert-file", "cert.pem", "PEM File containing certificates.")
-	keyFile := flag.String("key-file", "key.pem", "PEM File containing certificate key.")
+	certFile := flag.String("cert-file", "test/cert.pem", "PEM File containing certificates.")
+	keyFile := flag.String("key-file", "test/key.pem", "PEM File containing certificate key.")
 
 	oauthServerDisable := flag.Bool("oauth-server-disable", false, "If true will disable interactive authentication using OAuth2 issuer.")
 	oauthServerTokenURL := flag.String("oauth-server-token-url", "", "OAuth2 issuer token endpoint URL.")
@@ -58,8 +58,7 @@ func main() {
 	}
 
 	// Parse allowed http methods
-	log.Print("allowed HTTP methods for k8s API calls:")
-	log.Printf("%s", *k8sAllowedAPIMethodsCommaSepList)
+	log.Printf("allowed HTTP methods for k8s API calls: %s", *k8sAllowedAPIMethodsCommaSepList)
 
 	// Compile allowed API regexp
 	k8sAllowedAPIRegexp := regexp.MustCompile(*k8sAllowedAPIRegexpStr)
@@ -93,32 +92,26 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-	log.Printf("read JWTfile [%s]", *jwtTokenKeyFile)
+	log.Printf("read JWT (HS256-secret or rsa-public-key file) [%s]", *jwtTokenKeyFile)
 
-	var endpoint Endpoint
-	var oauthConf = &oauth2.Config{}
-	if !*oauthServerDisable {
-		var err error
+	// Get auth endpoint from authentication server
+	endpoint, err := GetEndpoints(oauthServerAuthURL, oauthServerTokenURL, apiServer, *oauthServerDisable, transport)
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Printf("endpoints: %+v", endpoint)
 
-		// Get auth endpoint from authentication server
-		endpoint, err = GetEndpoints(oauthServerAuthURL, oauthServerTokenURL, apiServer, transport)
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("endpoints: %+v", endpoint)
-
-		// Set oauth config
-		redirectURL := fmt.Sprintf("%s%s", *baseAddress, authLoginCallbackEndpoint)
-		oauthConf = &oauth2.Config{
-			ClientID:     *oauthClientID,
-			ClientSecret: *oauthClientSecret,
-			Scopes:       []string{"user:full"},
-			Endpoint: oauth2.Endpoint{
-				TokenURL: endpoint.Token,
-				AuthURL:  endpoint.Auth,
-			},
-			RedirectURL: redirectURL,
-		}
+	// Set oauth config
+	redirectURL := fmt.Sprintf("%s%s", *baseAddress, authLoginCallbackEndpoint)
+	oauthConf := &oauth2.Config{
+		ClientID:     *oauthClientID,
+		ClientSecret: *oauthClientSecret,
+		Scopes:       []string{"user:full"},
+		Endpoint: oauth2.Endpoint{
+			TokenURL: endpoint.Token,
+			AuthURL:  endpoint.Auth,
+		},
+		RedirectURL: redirectURL,
 	}
 
 	// Init server
@@ -168,6 +161,7 @@ func main() {
 	case "http":
 		err = http.ListenAndServe(u.Host, nil)
 	case "https":
+		log.Printf("Cert file: [%s] Key file: [%s]\n", *certFile, *keyFile)
 		err = http.ListenAndServeTLS(u.Host, *certFile, *keyFile, nil)
 	default:
 		err = fmt.Errorf("Unknown url schema %s", u.Scheme)
