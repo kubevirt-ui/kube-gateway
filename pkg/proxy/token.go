@@ -1,6 +1,7 @@
 package proxy
 
 import (
+	"crypto/rsa"
 	"fmt"
 	"net/http"
 	"regexp"
@@ -35,18 +36,14 @@ func validateRequest(httpMethod string, httpPath string, apiPAth string, allowed
 	return nil
 }
 
-func validateToken(token string, key []byte, apiPath string, httpMethod string, httpPath string) (*jwt.Token, error) {
+func validateToken(token string, secret []byte, publicKey *rsa.PublicKey, apiPath string, httpMethod string, httpPath string) (*jwt.Token, error) {
 	tok, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); ok {
-			return key, nil
+			return secret, nil
 		}
 
 		if _, ok := t.Method.(*jwt.SigningMethodRSA); ok {
-			verifyKey, err := jwt.ParseRSAPublicKeyFromPEM(key)
-			if err != nil {
-				return nil, err
-			}
-			return verifyKey, nil
+			return publicKey, nil
 		}
 
 		return nil, fmt.Errorf("failed to parse token signing")

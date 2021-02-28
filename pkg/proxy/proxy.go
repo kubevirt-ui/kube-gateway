@@ -2,6 +2,7 @@ package proxy
 
 import (
 	"context"
+	"crypto/rsa"
 	"fmt"
 	"log"
 	"net/http"
@@ -34,6 +35,7 @@ type Server struct {
 	BearerToken            string
 	BearerTokenPassthrough bool
 	JWTTokenKey            []byte
+	JWTTokenRSAKey         *rsa.PublicKey
 
 	OAuthServerDisable bool
 }
@@ -115,7 +117,7 @@ func (s Server) AuthMiddleware(next http.Handler) http.Handler {
 		// If not using token passthrogh validate JWT token
 		// and replace the token with the k8s access token
 		if !s.BearerTokenPassthrough && s.BearerToken != "" && token != "" {
-			_, err := validateToken(token, s.JWTTokenKey, s.APIPath, r.Method, r.URL.Path)
+			_, err := validateToken(token, s.JWTTokenKey, s.JWTTokenRSAKey, s.APIPath, r.Method, r.URL.Path)
 			if err != nil {
 				handleError(w, err)
 				return

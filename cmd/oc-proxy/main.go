@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/rsa"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -12,6 +13,7 @@ import (
 
 	"cmd/ocproxy/pkg/proxy"
 
+	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/oauth2"
 )
 
@@ -44,6 +46,7 @@ func main() {
 	oauthClientSecret := flag.String("oauth-client-secret", "my-secret", "OAuth2 client secret defined in a OAuthClient k8s object.")
 
 	jwtTokenKeyFile := flag.String("jwt-token-key-file", "", "validate JWT token recived from OAuth2 using the key in this file.")
+	jwtTokenKeyAlg := flag.String("jwt-token-key-alg", "RS265", "JWT token key signing algorithm (supported algorithms HS265, RS265).")
 	k8sBearerToken := flag.String("k8s-bearer-token", "", "Replace valid JWT tokens with this token for k8s API calls.")
 	k8sBearerTokenPassthrough := flag.Bool("k8s-bearer-token-passthrough", false, "If true use token recived from OAuth2 server as the token for k8s API calls.")
 	k8sAllowedAPIMethodsCommaSepList := flag.String("k8s-allowed-methods", "get,options", "Comma seperated list of allowed HTTP methods for k8s API calls.")
@@ -86,20 +89,26 @@ func main() {
 
 	// Read JWT secret file
 	var jwtTokenKey []byte
+	var jwtTokenRSAKey *rsa.PublicKey
 	if *jwtTokenKeyFile != "" {
 		jwtTokenKey, err = ioutil.ReadFile(*jwtTokenKeyFile)
 		if err != nil {
 			log.Fatal(err)
 		}
+		if *jwtTokenKeyAlg == "RS265" {
+			jwtTokenRSAKey, err = jwt.ParseRSAPublicKeyFromPEM(jwtTokenKey)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
 	}
-	log.Printf("read JWT (HS256-secret or rsa-public-key file) [%s]", *jwtTokenKeyFile)
+	log.Printf("read JWT key file [%s]", *jwtTokenKeyFile)
 
 	// Get auth endpoint from authentication server
 	endpoint, err := GetEndpoints(oauthServerAuthURL, oauthServerTokenURL, apiServer, *oauthServerDisable, transport)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("endpoints: %+v", endpoint)
 
 	// Set oauth config
 	redirectURL := fmt.Sprintf("%s%s", *baseAddress, authLoginCallbackEndpoint)
@@ -131,6 +140,7 @@ func main() {
 		BearerToken:            *k8sBearerToken,
 		BearerTokenPassthrough: *k8sBearerTokenPassthrough,
 		JWTTokenKey:            jwtTokenKey,
+		JWTTokenRSAKey:         jwtTokenRSAKey,
 
 		OAuthServerDisable: *oauthServerDisable,
 	}
@@ -154,14 +164,29 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Check for API server address
+	if *apiServer == "" {
+		log.Fatal("missing API server address")
+	}
+
+	// Log back end endpoints
+	log.Print("-------------------------------------")
+	log.Printf("k8s API server: %s", *apiServer)
+	log.Printf("OAuth Token   : %s", endpoint.Token)
+	log.Printf("OAuth Auth    : %s", endpoint.Auth)
+	log.Printf("OAuth Issuer  : %s", endpoint.Issuer)
+
 	// Start proxy server
+	log.Print("-------------------------------------")
 	log.Printf("starting server %s\n", *baseAddress)
 	log.Printf("listening on [%s] %s :%s\n", u.Scheme, u.Hostname(), u.Port())
+	log.Printf("Cert file: [%s] Key file: [%s]\n", *certFile, *keyFile)
+	log.Print("-------------------------------------")
+
 	switch u.Scheme {
 	case "http":
 		err = http.ListenAndServe(u.Host, nil)
 	case "https":
-		log.Printf("Cert file: [%s] Key file: [%s]\n", *certFile, *keyFile)
 		err = http.ListenAndServeTLS(u.Host, *certFile, *keyFile, nil)
 	default:
 		err = fmt.Errorf("Unknown url schema %s", u.Scheme)
