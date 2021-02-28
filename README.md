@@ -1,7 +1,12 @@
+![alt gopher network](https://raw.githubusercontent.com/yaacov/oc-proxy/main/web/public/network-side.png)
+
 # oc-proxy
 
 OC Proxy provides an interactive and non-interactive authentication proxy to [Kubernetes](https://kubernetes.io/) clusters, using [OAuth2](https://oauth.net/2/) authentication issuer, 
 and bearer [JWT](https://jwt.io/) (HS256, RS256) Authorization header.
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/yaacov/oc-proxy)](https://goreportcard.com/report/github.com/yaacov/oc-proxy)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## What can I do with it ?
 
