@@ -23,6 +23,13 @@ When using custom tokens, operator will provide a k8s token to access the k8s AP
 In this configuration an operator will create JWT expiring payloads that will restrict access to cluster resources,
 then sign the token using a private key.
 The proxy will verify the JWT using a public key, and restrict access acording the the recived JWT specification.
+The proxy will allow only requests that match the JWT restrictions and use the operator provider k8s token to fetch the
+data from the cluster.
+Allowed JWT claims are:
+
+- exp - unix time of token expiration
+- allowedAPIMethods - comma seperated list of allowed API methods (default is "get,options")
+- allowedAPIRegexp - a reular expresion of allowed api call paths.
 
 ![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-proxy/main/web/public/custom_tokens.gif)
 
@@ -44,37 +51,9 @@ send an API request using the proxy-known k8s token.
 go build -o ./ ./cmd/oc-proxy/
 
 ./oc-proxy --help
-
-# Run without an OAuth2 server
-# This method will only support non-interactive authentication
-./oc-proxy \
-    --api-server <your k8s API server URL> \
-    --skip-verify-tls \
-    --oauth-server-disable \
-    --jwt-token-key-file deploy/secret \
-    --k8s-bearer-token $(oc whoami -t)
-
-# Create a token with path restriction, oc-proxy will check "allowedAPIMethods" and "allowedAPIRegexp" claims 
-echo {\"allowedAPIRegexp\":\"^/k8s/api/v1/pods/cert-manager-5597cff495-mb2vx\"} | jwt -key ./deploy/secret -alg HS256 -sign -
-# Create a token with experation date
-echo {\"exp\": $(expr $(date +%s) + 100)} | jwt -key ./deploy/secret -alg HS256 -sign -
-
-# Use bearer authentication
-# The token will be validated and the "allowedAPIRegexp" claim will be checked agains the API call path
-export TOKEN=<the signed token>
-curl -k -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" https://localhost:8080/k8s/api/v1/pods/cert-manager-5597cff495-mb2vx | jq
-
-# Run using OKD internal OAuth2 server
-# This method requires OKD or Openshift cluster
-oc create -f deploy/oauth-client-example.yaml
-./oc-proxy \
-    --api-server <your k8s API server URL>  \
-    --listen http://0.0.0.0:8080 \
-    --base-address http://localhost:8080 \
-    --skip-verify-tls
 ```
 
-## Example
+## Example using OKD internal OAuth server
 
 ``` bash
 # git clone the source and cd into the base directory.
@@ -85,7 +64,7 @@ go build -o ./ ./cmd/oc-proxy/
 # Create an oauthclient CR for the demo
 oc create -f deploy/oauth-client-example.yaml
 
-# Creat self sighned certificate (needed if server use TLS)
+# Creat self signed certificate (needed if server use TLS)
 openssl genrsa -out key.pem
 openssl req -new -x509 -sha256 -key key.pem -out cert.pem -days 3650
 
@@ -108,3 +87,35 @@ git clone https://github.com/novnc/noVNC web/public/noVNC
 https://localhost:8080/noVNC/vnc_lite.html?path=k8s/apis/subresources.kubevirt.io/v1alpha3/namespaces/yzamir/virtualmachineinstances/rhel7-steep-cod/vnc
 ```
 
+## Example using custom JWT access tokens
+
+``` bash
+# When running without the internal OAuth server, operator must supply a valid k8s token
+# This token will be used to fetch resources from the cluster API when the proxy
+# validates the JWT and apply the restrictions
+export TOKEN=<the operator k8s token that will be used to fetch data from the cluster>
+
+# Run without an OAuth2 server
+./oc-proxy \
+    --api-server <your k8s API server URL> \
+    --skip-verify-tls \
+    --oauth-server-disable \
+    --jwt-token-key-file test/crt.pem \
+    --k8s-bearer-token $TOKEN
+
+# Creat self signed certificate (needed for signing and verifying JWT payload)
+openssl genrsa -out key.pem
+openssl req -new -x509 -sha256 -key key.pem -out cert.pem -days 3650
+
+# Create a token with path restriction,
+# oc-proxy will check "exp", "allowedAPIMethods" and "allowedAPIRegexp" claims 
+echo {\"allowedAPIRegexp\":\"^/k8s/api/v1/pods\"} | jwt -key ./test/key.pem -alg RS256 -sign -
+
+# Create a token with experation date
+echo {\"exp\": $(expr $(date +%s) + 100)} | jwt -key ./deploy/secret -alg HS256 -sign -
+
+# Use bearer authentication
+# The token will be validated and the "allowedAPIRegexp" claim will be checked agains the API call path
+export TOKEN=<the signed token>
+curl -k -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" https://localhost:8080/k8s/api/v1/pods/cert-manager-5597cff495-mb2vx | jq
+```
