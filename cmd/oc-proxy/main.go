@@ -1,10 +1,8 @@
 package main
 
 import (
-	"crypto/rsa"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -13,7 +11,6 @@ import (
 
 	"cmd/ocproxy/pkg/proxy"
 
-	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/oauth2"
 )
 
@@ -88,20 +85,7 @@ func main() {
 	}
 
 	// Read JWT secret file
-	var jwtTokenKey []byte
-	var jwtTokenRSAKey *rsa.PublicKey
-	if *jwtTokenKeyFile != "" {
-		jwtTokenKey, err = ioutil.ReadFile(*jwtTokenKeyFile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		if *jwtTokenKeyAlg == "RS265" {
-			jwtTokenRSAKey, err = jwt.ParseRSAPublicKeyFromPEM(jwtTokenKey)
-			if err != nil {
-				log.Fatal(err)
-			}
-		}
-	}
+	jwtTokenKey, jwtTokenRSAKey := ReadJWTKey(*jwtTokenKeyFile, *jwtTokenKeyAlg)
 	log.Printf("read JWT key file [%s]", *jwtTokenKeyFile)
 
 	// Get auth endpoint from authentication server

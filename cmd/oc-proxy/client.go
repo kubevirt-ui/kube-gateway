@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/rsa"
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
@@ -10,6 +11,8 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
 // Endpoint holds the API server authorization URL.
@@ -101,4 +104,26 @@ func GetOAuthServerEndpoints(oauthServerAuthURL *string, oauthServerTokenURL *st
 	}
 
 	return endpoint, nil
+}
+
+// ReadJWTKey reads the JWT secret key file, and create an RSA key
+func ReadJWTKey(filename string, alg string) ([]byte, *rsa.PublicKey) {
+	var err error
+	var jwtTokenKey []byte
+	var jwtTokenRSAKey *rsa.PublicKey
+
+	if filename != "" {
+		jwtTokenKey, err = ioutil.ReadFile(filename)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if alg == "RS265" {
+			jwtTokenRSAKey, err = jwt.ParseRSAPublicKeyFromPEM(jwtTokenKey)
+			if err != nil {
+				log.Fatal(err)
+			}
+		}
+	}
+
+	return jwtTokenKey, jwtTokenRSAKey
 }
