@@ -18,7 +18,7 @@ and bearer [JWT](https://jwt.io/) (HS256, RS256) Authorization header.
 - oc-proxy can proxy WebSockets, the [noVNC](https://novnc.com/) demo shows WebSocket access to [kubevirt](https://kubevirt.io/) viertual machines noVNC server.
 - oc-proxy can get an access token via [Openshifts OAuth2 server](https://docs.openshift.com/container-platform/4.7/authentication/configuring-internal-oauth.html), if this OAuth2 server is used, the proxy will not require a pre existing token to run, the server is installed by default on [OKD](https://www.okd.io/) k8s clusters.
 
-The proxy will validate JWT bearer tokens (HS256) check for "allowedAPIMethods" and "allowedAPIRegexp" claims, and if token and request are valid,
+The proxy will validate JWT bearer tokens check for "allowedAPIMethods" and "allowedAPIRegexp" claims, and if token and request are valid,
 send an API request using the proxy-known k8s token.
 
 ## Compile and run
