@@ -132,8 +132,8 @@ func (s Server) AuthMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-// Proxy return a Handler func that will proxy request to k8s API.
-func (s Server) Proxy() http.Handler {
+// APIProxy return a Handler func that will proxy request to k8s API.
+func (s Server) APIProxy() http.Handler {
 	// Parse the url
 	url, _ := url.Parse(s.APIServerURL)
 

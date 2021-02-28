@@ -105,7 +105,12 @@ func main() {
 	log.Printf("read JWT key file [%s]", *jwtTokenKeyFile)
 
 	// Get auth endpoint from authentication server
-	endpoint, err := GetEndpoints(oauthServerAuthURL, oauthServerTokenURL, apiServer, *oauthServerDisable, transport)
+	endpoint, err := GetOAuthServerEndpoints(
+		oauthServerAuthURL,
+		oauthServerTokenURL,
+		apiServer,
+		*oauthServerDisable,
+		transport)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -152,7 +157,7 @@ func main() {
 	}
 
 	// Register proxy service
-	http.Handle(s.APIPath, s.AuthMiddleware(s.Proxy()))
+	http.Handle(s.APIPath, s.AuthMiddleware(s.APIProxy()))
 
 	// Register static file server
 	fs := http.FileServer(http.Dir(*publicDir))

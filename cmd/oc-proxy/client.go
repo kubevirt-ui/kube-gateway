@@ -19,6 +19,24 @@ type Endpoint struct {
 	Token  string `json:"token_endpoint"`
 }
 
+// getServerEndpoint gets the API server well known oauth authorization endpoints.
+func getServerEndpoint(serverURL string, transport *http.Transport) (Endpoint, error) {
+	var endpoint Endpoint
+	client := &http.Client{Transport: transport, Timeout: 30 * time.Second}
+
+	wellKnownURL := fmt.Sprintf("%s/.well-known/oauth-authorization-server", serverURL)
+	resp, err := client.Get(wellKnownURL)
+	if err != nil {
+		return endpoint, fmt.Errorf("fail to get well-known oauth-authorization-server: %+v", err)
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&endpoint); err != nil {
+		return endpoint, fmt.Errorf("fail to get well known authorization endpoints: %+v", err)
+	}
+
+	return endpoint, nil
+}
+
 // ClientTransport reads the CAFile and return init the http.Transport for the oauth2 server.
 func ClientTransport(CAFile string, skipVerifyTLS bool) (*http.Transport, error) {
 	var transport *http.Transport
@@ -52,26 +70,8 @@ func ClientTransport(CAFile string, skipVerifyTLS bool) (*http.Transport, error)
 	return transport, nil
 }
 
-// ServerEndpoint gets the API server well known oauth authorization endpoints.
-func ServerEndpoint(serverURL string, transport *http.Transport) (Endpoint, error) {
-	var endpoint Endpoint
-	client := &http.Client{Transport: transport, Timeout: 30 * time.Second}
-
-	wellKnownURL := fmt.Sprintf("%s/.well-known/oauth-authorization-server", serverURL)
-	resp, err := client.Get(wellKnownURL)
-	if err != nil {
-		return endpoint, fmt.Errorf("fail to get well-known oauth-authorization-server: %+v", err)
-	}
-
-	if err := json.NewDecoder(resp.Body).Decode(&endpoint); err != nil {
-		return endpoint, fmt.Errorf("fail to get well known authorization endpoints: %+v", err)
-	}
-
-	return endpoint, nil
-}
-
-// GetEndpoints gets authentication server endpoints
-func GetEndpoints(oauthServerAuthURL *string, oauthServerTokenURL *string, apiServer *string, disable bool, transport *http.Transport) (Endpoint, error) {
+// GetOAuthServerEndpoints gets authentication server endpoints
+func GetOAuthServerEndpoints(oauthServerAuthURL *string, oauthServerTokenURL *string, apiServer *string, disable bool, transport *http.Transport) (Endpoint, error) {
 	var endpoint Endpoint
 	var err error
 
@@ -93,7 +93,7 @@ func GetEndpoints(oauthServerAuthURL *string, oauthServerTokenURL *string, apiSe
 
 		log.Print("using user defined oauth server endpoints")
 	} else {
-		endpoint, err = ServerEndpoint(*apiServer, transport)
+		endpoint, err = getServerEndpoint(*apiServer, transport)
 		if err != nil {
 			return endpoint, err
 		}
