@@ -8,6 +8,8 @@ and bearer [JWT](https://jwt.io/) (HS256, RS256) Authorization header.
 [![Go Report Card](https://goreportcard.com/badge/github.com/yaacov/oc-proxy)](https://goreportcard.com/report/github.com/yaacov/oc-proxy)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
+(gopher network image - [egonelbre/gophers](https://github.com/egonelbre/gophers))
+
 ## What can I do with it ?
 
 - Create secure web applications leveraging the power of k8s API using interactive OAuth authentication.
