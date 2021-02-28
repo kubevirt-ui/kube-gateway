@@ -33,7 +33,7 @@ type Server struct {
 	JWTTokenKey            []byte
 	JWTTokenRSAKey         *rsa.PublicKey
 
-	OAuthServerDisable bool
+	InteractiveAuth bool
 }
 
 // Login redirects to OAuth2 authtorization login endpoint.
@@ -89,41 +89,41 @@ func (s Server) Callback(w http.ResponseWriter, r *http.Request) {
 // AuthMiddleware will look for a seesion cookie and use it as a Bearer token.
 func (s Server) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		var token string
-
 		// Log request
 		log.Printf("%s %v: %+v", r.RemoteAddr, r.Method, r.URL)
 
-		// Check for Authorization HTTP header
-		if authorization := r.Header.Get("Authorization"); len(authorization) > 7 && authorization[:7] == "Bearer " {
-			token = authorization[7:]
+		// Get request token from Authorization header and session cookie
+		token, _ := s.GetRequestToken(w, r)
+
+		// If using interactive login and no token, redirect user to login endpoint
+		if s.InteractiveAuth && token == "" {
+			http.Redirect(w, r, s.LoginEndpoint, http.StatusTemporaryRedirect)
+			return
 		}
 
-		// If bearer authorization is missing and interactive authentication is active
-		// check for session cookie
-		if token == "" && !s.OAuthServerDisable {
-			cookie, err := r.Cookie(ocproxySessionCookieName)
-			if err != nil || cookie.Value == "" {
-				http.Redirect(w, r, s.LoginEndpoint, http.StatusTemporaryRedirect)
-				return
-			}
-			token = cookie.Value
+		// If using non interactive login and noe token, send an error.
+		if token == "" {
+			handleError(w, fmt.Errorf("no token recived"))
+			return
+		}
+
+		// If using token pass through, continue with user token
+		if s.BearerTokenPassthrough {
+			r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+			next.ServeHTTP(w, r)
+			return
 		}
 
 		// If not using token passthrogh validate JWT token
 		// and replace the token with the k8s access token
-		if !s.BearerTokenPassthrough && s.BearerToken != "" && token != "" {
-			_, err := validateToken(token, s.JWTTokenKey, s.JWTTokenRSAKey, s.APIPath, r.Method, r.URL.Path)
-			if err != nil {
-				handleError(w, err)
-				return
-			}
-
-			token = s.BearerToken
+		_, err := validateToken(token, s.JWTTokenKey, s.JWTTokenRSAKey, s.APIPath, r.Method, r.URL.Path)
+		if err != nil {
+			handleError(w, err)
+			return
 		}
 
-		// Set Authorization header
-		r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+		// If user token is validated, send request using the operator token
+		r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", s.BearerToken))
 		next.ServeHTTP(w, r)
 	})
 }
@@ -150,4 +150,19 @@ func (s Server) APIProxy() http.Handler {
 			// Call server
 			proxy.ServeHTTP(w, r)
 		})
+}
+
+// GetRequestToken parses a request and get the token to pass to k8s API
+func (s Server) GetRequestToken(w http.ResponseWriter, r *http.Request) (string, error) {
+	// Check for Authorization HTTP header
+	if authorization := r.Header.Get("Authorization"); len(authorization) > 7 && authorization[:7] == "Bearer " {
+		return authorization[7:], nil
+	}
+
+	// Check for session cookie
+	cookie, err := r.Cookie(ocproxySessionCookieName)
+	if err != nil || cookie.Value == "" {
+		return "", err
+	}
+	return cookie.Value, nil
 }

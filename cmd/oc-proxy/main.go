@@ -123,7 +123,7 @@ func main() {
 		JWTTokenKey:            jwtTokenKey,
 		JWTTokenRSAKey:         jwtTokenRSAKey,
 
-		OAuthServerDisable: *oauthServerDisable,
+		InteractiveAuth: !*oauthServerDisable,
 	}
 
 	// Register auth endpoints
