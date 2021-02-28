@@ -45,11 +45,11 @@ func main() {
 	oauthClientID := flag.String("oauth-client-id", "ocproxy-client", "OAuth2 client ID defined in a OAuthClient k8s object.")
 	oauthClientSecret := flag.String("oauth-client-secret", "my-secret", "OAuth2 client secret defined in a OAuthClient k8s object.")
 
-	jwtTokenKeyFile := flag.String("jwt-token-key-file", "", "validate JWT token recived from OAuth2 using the key in this file.")
+	jwtTokenKeyFile := flag.String("jwt-token-key-file", "", "validate JWT token received from OAuth2 using the key in this file.")
 	jwtTokenKeyAlg := flag.String("jwt-token-key-alg", "RS265", "JWT token key signing algorithm (supported algorithms HS265, RS265).")
 	k8sBearerToken := flag.String("k8s-bearer-token", "", "Replace valid JWT tokens with this token for k8s API calls.")
-	k8sBearerTokenPassthrough := flag.Bool("k8s-bearer-token-passthrough", false, "If true use token recived from OAuth2 server as the token for k8s API calls.")
-	k8sAllowedAPIMethodsCommaSepList := flag.String("k8s-allowed-methods", "get,options", "Comma seperated list of allowed HTTP methods for k8s API calls.")
+	k8sBearerTokenPassthrough := flag.Bool("k8s-bearer-token-passthrough", false, "If true use token received from OAuth2 server as the token for k8s API calls.")
+	k8sAllowedAPIMethodsCommaSepList := flag.String("k8s-allowed-methods", "get,options", "Comma separated list of allowed HTTP methods for k8s API calls.")
 	k8sAllowedAPIRegexpStr := flag.String("k8s-allowed-regexp", "", "If exist only API calls matching this regexp will be allowed.")
 
 	flag.Parse()
