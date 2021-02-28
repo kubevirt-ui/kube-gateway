@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	jwt "github.com/dgrijalva/jwt-go/v4"
+	"github.com/dgrijalva/jwt-go"
 )
 
 func handleError(w http.ResponseWriter, err error) {
