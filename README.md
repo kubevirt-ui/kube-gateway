@@ -46,7 +46,7 @@ Allowed JWT claims are:
 
 - exp - int, expiration (unix time)
 - nbf - int, not before (unix time)
-- allowedAPIMethods - string, comma seperated list of allowed API methods (default is "get,options")
+- allowedAPIMethods - string, comma seperated list of allowed API methods (e.g. is "get,post")
 - allowedAPIRegexp - string, a reular expresion of allowed api call paths.
 
 ![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-proxy/main/web/public/custom_tokens.gif)
