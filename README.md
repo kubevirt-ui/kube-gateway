@@ -29,19 +29,17 @@ go install github.com/yaacov/oc-proxy/cmd/oc-proxy
 
 ### Running using ODK internal OAuth2 server
 
-When running using OKD (Openshift) OAuth issuer, operator does not need to provide a user token,
+When running using OKD (Openshift) OAuth issuer, operator does not need to provide a k8s service acount token,
 the internal OAuth2 server will issue tokens that can be verified by the cluster.
 
 ![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-proxy/main/web/public/using_okd_oauth.gif)
 
 ### Verifying RSA signed JWT authentication tokens
 
-When using custom tokens, operator will provide a k8s token to access the k8s API.
-In this configuration an operator will create JWT expiring payloads that will restrict access to cluster resources,
-then sign the token using a private key.
-The proxy will verify the JWT using a public key, and restrict access acording the the recived JWT specification.
-The proxy will allow only requests that match the JWT restrictions and use the operator provider k8s token to fetch the
-data from the cluster.
+When using JWT custom tokens, operator will provide a k8s service acount token to access the k8s API.
+In this configuration an operator will create signed expiring JWT tokens that will allow access to specific cluster resources.
+The proxy will verify the JWT using a public key, and allow access after verification of the JWT.
+The proxy will allow only requests that match the JWT claims and use the service account k8s token to access the cluster.
 Allowed JWT claims are:
 
 - exp - int, expiration (unix time)
@@ -60,8 +58,8 @@ Allowed JWT claims are:
 - oc-proxy can proxy WebSockets, the [noVNC](https://novnc.com/) demo shows WebSocket access to [kubevirt](https://kubevirt.io/) viertual machines noVNC server.
 - oc-proxy can get an access token via [Openshifts OAuth2 server](https://docs.openshift.com/container-platform/4.7/authentication/configuring-internal-oauth.html), if this OAuth2 server is used, the proxy will not require a pre existing token to run, the server is installed by default on [OKD](https://www.okd.io/) k8s clusters.
 
-The proxy will validate JWT bearer tokens check for "allowedAPIMethods" and "allowedAPIRegexp" claims, and if token and request are valid,
-send an API request using the proxy-known k8s token.
+The proxy will validate JWT bearer tokens, check for "allowedAPIMethods" and "allowedAPIRegexp" claims, and if token and request are valid,
+send an API request using the service account k8s token.
 
 ## Compile and run
 
