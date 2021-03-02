@@ -62,8 +62,8 @@ Create a JWT specific for the k8s object you want to allow holder of this JWT to
 # Create a token with path restriction,
 echo {\"allowedAPIRegexp\":\"^/k8s/api/v1/pods\"} | jwt -key ./test/key.pem -alg RS256 -sign -
 
-# Create a token with experation date
-echo {\"exp\": $(expr $(date +%s) + 100)} | jwt -key ./test/key.pem -alg RS256 -sign -
+# Create a token with experation date and allowed API path
+echo {\"exp\": $(expr $(date +%s) + 100),\"allowedAPIRegexp\":\"^/k8s/api/v1/namespaces/test\"} | jwt -key ./test/key.pem -alg RS256 -sign -
 ```
 
 This token can now be given to a user that will have access only to this specific k8s object(s).
