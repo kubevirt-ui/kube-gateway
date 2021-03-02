@@ -7,3 +7,4 @@ secret: my-secret
 redirectURIs:
 - http://localhost:8080/auth/callback
 - https://localhost:8080/auth/callback
+- https://test-proxy.apps.ostest.test.metalkube.org/auth/callback
