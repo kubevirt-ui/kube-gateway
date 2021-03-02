@@ -114,19 +114,17 @@ func (s Server) AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
+		// If static path, skip token validation
+		if len(r.URL.Path) <= len(s.APIPath) || r.URL.Path[:len(s.APIPath)] != s.APIPath {
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		// If not using token passthrogh validate JWT token
 		// and replace the token with the k8s access token
 		_, err := validateToken(token, s.JWTTokenKey, s.JWTTokenRSAKey, s.APIPath, r.Method, r.URL.Path)
 		if err != nil {
-			// If not interactive view redirect to error page
-			if !s.InteractiveAuth {
-				handleError(w, err)
-				return
-			}
-
-			// If interactive, try to passthrogh the token to the api server
-			r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
-			next.ServeHTTP(w, r)
+			handleError(w, err)
 			return
 		}
 
