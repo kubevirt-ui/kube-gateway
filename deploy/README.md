@@ -44,6 +44,9 @@ oc create -f deploy/oc-proxy-template.yaml
 # Note: routes are OKD thing too, OKD install a default proxy / loadbalancer
 # that route outside requests to k8s services.
 oc process -p ROUTE_URL=<the HOST of your oc-proxy> oc-proxy | oc create -f -
+
+# For interactive deploy using OKD OAuth2 default server, use bearer token pass through.
+oc process -p ROUTE_URL=<the HOST of your oc-proxy> oc-proxy -p TOKEN_PASSTHROUGH=true | oc create -f -
 ```
 
 ## Create a token, and fetch k8s objects using it

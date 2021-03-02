@@ -24,6 +24,9 @@ parameters:
 - description: The namespace to instantiate heapster under. Defaults to 'kube-system'.
   name: NAMESPACE
   value: oc-proxy
+- description: Pass through the token given by the OAuth2 server directly to the API. Defaults to 'false'.
+  name: TOKEN_PASSTHROUGH
+  value: "false"
 objects:
 - apiVersion: route.openshift.io/v1
   kind: Route
@@ -112,6 +115,7 @@ objects:
           - "-listen=https://0.0.0.0:8080"
           - "-jwt-token-key-file=/jwt-secret/cert.pem"
           - "-k8s-bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token"
+          - "-k8s-bearer-token-passthrough=${TOKEN_PASSTHROUGH}"
         volumes:
         - name: oc-proxy-secrets
           secret:
