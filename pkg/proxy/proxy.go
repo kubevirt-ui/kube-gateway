@@ -124,7 +124,7 @@ func (s Server) AuthMiddleware(next http.Handler) http.Handler {
 				return
 			}
 
-			// If non interactive, try to passthrogh the token to the api server
+			// If interactive, try to passthrogh the token to the api server
 			r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 			next.ServeHTTP(w, r)
 			return
