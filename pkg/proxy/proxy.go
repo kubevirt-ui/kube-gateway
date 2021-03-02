@@ -118,8 +118,8 @@ func (s Server) AuthMiddleware(next http.Handler) http.Handler {
 		// and replace the token with the k8s access token
 		_, err := validateToken(token, s.JWTTokenKey, s.JWTTokenRSAKey, s.APIPath, r.Method, r.URL.Path)
 		if err != nil {
-			// If interactive view redirect to error page
-			if s.InteractiveAuth {
+			// If not interactive view redirect to error page
+			if !s.InteractiveAuth {
 				handleError(w, err)
 				return
 			}
