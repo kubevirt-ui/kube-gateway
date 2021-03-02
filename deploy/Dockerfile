@@ -1,8 +1,7 @@
 # build stage
-FROM golang:alpine AS build
+FROM quay.io/fedora/fedora:34-x86_64 AS build
 WORKDIR /app
-RUN apk --no-cache add ca-certificates
-RUN apk --no-cache add git
+RUN sudo dnf install -y git golang
 
 RUN git clone https://github.com/yaacov/oc-proxy.git /app \
   && git clone https://github.com/novnc/noVNC /app/web/public/noVNC \
@@ -10,7 +9,7 @@ RUN git clone https://github.com/yaacov/oc-proxy.git /app \
   && go build -o /app/ /app/cmd/oc-proxy/
 
 # dep stage
-FROM alpine
+FROM quay.io/fedora/fedora:34-x86_64
 WORKDIR /app
 RUN mkdir -p /app/wep/public/noVNC/
 
