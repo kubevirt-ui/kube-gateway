@@ -53,7 +53,7 @@ objects:
   metadata:
     name: oc-proxy-cluster-reader
   roleRef:
-    name: cluster-reader
+    name: cluster-admin
   subjects:
   - kind: ServiceAccount
     name: oc-proxy
