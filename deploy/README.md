@@ -3,7 +3,7 @@
 
 ## Before you start
 
-This folder include demo deploy files that happily use non specifiv RBAC roles, please do not use them on none dev/testing env.
+This folder include demo deploy files that happily use non specific RBAC roles, please do not use them on none dev/testing env.
 
 ## Deploy
 
