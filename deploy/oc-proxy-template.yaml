@@ -1,0 +1,122 @@
+kind: Template
+apiVersion: v1
+metadata:
+  name: oc-proxy
+  annotations:
+    "openshift.io/display-name": OC Proxy
+    description: |
+      Proxy for k8s resource subletting.
+    iconClass: icon-cogs
+    tags: "openshift"
+parameters:
+- description: External URL for the oc-proxy route
+  name: ROUTE_URL
+  value: ""
+- description: Internal URL for the api, for authentication retrieval
+  name: API_URL
+  value: https://kubernetes.default.svc
+- description: External OAUTH2 server
+  name: OAUTH2_URL
+  value: ""
+- description: JWT secret name holding RS256 puplic key file cert.pem file
+  name: JWT_SECRET_NAME
+  value: oc-proxy-jwt-secret
+- description: The namespace to instantiate heapster under. Defaults to 'kube-system'.
+  name: NAMESPACE
+  value: oc-proxy
+objects:
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    name: oc-proxy
+    namespace: "${NAMESPACE}"
+  spec:
+    host: "${ROUTE_URL}"
+    to:
+      kind: Service
+      name: oc-proxy
+      weight: 100
+    tls:
+      termination: reencrypt
+    port:
+      targetPort: 8080
+    wildcardPolicy: None
+- apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: oc-proxy
+    namespace: "${NAMESPACE}"
+  secrets:
+  - name: oc-proxy-secrets
+- apiVersion: v1
+  kind: ClusterRoleBinding
+  metadata:
+    name: oc-proxy-cluster-reader
+  roleRef:
+    name: cluster-reader
+  subjects:
+  - kind: ServiceAccount
+    name: oc-proxy
+    namespace: "${NAMESPACE}"
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: oc-proxy
+    namespace: "${NAMESPACE}"
+    labels:
+      name: oc-proxy
+    annotations:
+      "service.alpha.openshift.io/serving-cert-secret-name": oc-proxy-secrets
+  spec:
+    selector:
+      name: oc-proxy
+    ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: 8080
+- apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    name: oc-proxy
+    namespace: "${NAMESPACE}"
+    labels:
+      name: oc-proxy
+  spec:
+    selector:
+      name: oc-proxy
+    replicas: 1
+    template:
+      version: v1
+      metadata:
+        labels:
+          name: oc-proxy
+      spec:
+        containers:
+        - image: "quay.io/yaacov/oc-proxy:latest"
+          name: oc-proxy
+          ports:
+          - name: oc-proxy-https
+            containerPort: 8080
+          volumeMounts:
+          - name: oc-proxy-secrets
+            mountPath: "/secrets"
+          - name: oc-proxy-jwt-secret
+            mountPath: "/jwt-secret"
+          command:
+          - "./oc-proxy"
+          - "-api-server=${API_URL}"
+          - "-ca-file=/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt"
+          - "-cert-file=/secrets/tls.crt"
+          - "-key-file=/secrets/tls.key"
+          - "-base-address=https://${ROUTE_URL}"
+          - "-listen=https://0.0.0.0:8080"
+          - "-jwt-token-key-file=/jwt-secret/cert.pem"
+          - "-k8s-bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token"
+        volumes:
+        - name: oc-proxy-secrets
+          secret:
+            secretName: oc-proxy-secrets
+        - name: oc-proxy-jwt-secret
+          secret:
+            secretName: ${JWT_SECRET_NAME}
+        serviceAccount: oc-proxy
