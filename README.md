@@ -79,16 +79,18 @@ See the [deploy](/deploy) directory for more details deploy examples.
 # --api-server : the k8s API server, this command assumes this cluster is an OKD (Openshift) cluster
 #                and the proxy will look up it's OAuth server automatically and pass tokens provided
 #                by the internal authentication issuer directly to the cluster.
-./oc-proxy --api-server https://api.ostest.test.metalkube.org:6443
+./oc-proxy \
+  --api-server https://api.ostest.test.metalkube.org:6443 \
+  --k8s-bearer-token-passthrough true \
+  --ca-file test/ca.crt
 
 # Run without an OAuth2 server
-# --jwt-token-key-file : the public key used to verify JWT access tokens
-# --k8s-bearer-token   : the k8s token that will be used by the proxy to fetch k8s resources for all
-#                        verified users
+# --jwt-token-key-file    : the public key used to verify JWT access tokens
+# --k8s-bearer-token-file : the k8s token that will be used by the proxy to fetch k8s resources for all
+#                           verified users
 ./oc-proxy \
-    --api-server <your k8s API server URL> \
-    --skip-verify-tls \
-    --oauth-server-disable \
-    --jwt-token-key-file test/crt.pem \
-    --k8s-bearer-token $TOKEN
+  --api-server https://api.ostest.test.metalkube.org:6443 \
+  --k8s-bearer-token-file token.txt \
+  --jwt-token-key-file test/cert.pem \
+  --skip-verify-tls
 ```

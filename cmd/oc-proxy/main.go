@@ -63,11 +63,15 @@ func main() {
 		os.Exit(0)
 	}
 
+	// Read the k8s service account token from a file
 	k8sBearerToken, err := ReadSABearerToken(*k8sBearerTokenfile)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// Parse pass through string into boolean,
+	// Note: making boolean input a string helps automation,
+	// it's easier to automate "true"/"false" then "-k8s-bearer-token-passthrough"/""
 	if *k8sBearerTokenPassthrough != "false" || k8sBearerToken == "" {
 		log.Print("pass through bearer token from oauth issuer to k8s API calls")
 	} else {
