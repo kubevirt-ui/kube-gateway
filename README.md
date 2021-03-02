@@ -21,7 +21,10 @@ go install github.com/yaacov/oc-proxy/cmd/oc-proxy
 Using container image:
 
 ``` bash
-podman run -p 8080:8080 --privileged --mount type=bind,source=test,target=/app/test -it quay.io/yaacov/oc-proxy ./oc-proxy -api-server <URL of k8s API server>
+podman run -p 8080:8080 --privileged \
+  --mount type=bind,source=test,target=/app/test \
+  -it quay.io/yaacov/oc-proxy \
+  ./oc-proxy -api-server <URL of k8s API server>
 ```
 
 ## What can I do with it ?
