@@ -15,5 +15,4 @@
 # vendor/
 web/public/noVNC
 ca.crt
-go.sum
 oc-proxy
