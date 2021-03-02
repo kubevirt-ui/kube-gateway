@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -45,7 +44,7 @@ func main() {
 	jwtTokenKeyFile := flag.String("jwt-token-key-file", "", "validate JWT token received from OAuth2 using the key in this file.")
 	jwtTokenKeyAlg := flag.String("jwt-token-key-alg", "RS265", "JWT token key signing algorithm (supported algorithms HS265, RS265).")
 	k8sBearerTokenfile := flag.String("k8s-bearer-token-file", "", "Replace valid JWT tokens with this token for k8s API calls.")
-	k8sBearerTokenPassthrough := flag.Bool("k8s-bearer-token-passthrough", false, "If true use token received from OAuth2 server as the token for k8s API calls.")
+	k8sBearerTokenPassthrough := flag.String("k8s-bearer-token-passthrough", "false", "If \"true\" use token received from OAuth2 server as the token for k8s API calls.")
 
 	flag.Parse()
 
@@ -64,16 +63,12 @@ func main() {
 		os.Exit(0)
 	}
 
-	var k8sBearerToken string
-	if *k8sBearerTokenfile != "" {
-		k8sBearerTokenBytes, err := ioutil.ReadFile(*k8sBearerTokenfile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		k8sBearerToken = string(k8sBearerTokenBytes)
+	k8sBearerToken, err := ReadSABearerToken(*k8sBearerTokenfile)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	if *k8sBearerTokenPassthrough || k8sBearerToken == "" {
+	if *k8sBearerTokenPassthrough != "false" || k8sBearerToken == "" {
 		log.Print("pass through bearer token from oauth issuer to k8s API calls")
 	} else {
 		log.Print("use user defined bearer token for k8s API calls")
@@ -129,7 +124,7 @@ func main() {
 		LoginEndpoint:  authLoginEndpoint,
 
 		BearerToken:            k8sBearerToken,
-		BearerTokenPassthrough: *k8sBearerTokenPassthrough,
+		BearerTokenPassthrough: *k8sBearerTokenPassthrough != "false",
 		JWTTokenKey:            jwtTokenKey,
 		JWTTokenRSAKey:         jwtTokenRSAKey,
 

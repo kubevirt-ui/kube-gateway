@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -126,4 +127,18 @@ func ReadJWTKey(filename string, alg string) ([]byte, *rsa.PublicKey) {
 	}
 
 	return jwtTokenKey, jwtTokenRSAKey
+}
+
+// ReadSABearerToken read the k8s service account access token file
+func ReadSABearerToken(filename string) (string, error) {
+	var k8sBearerToken string
+	if filename != "" {
+		k8sBearerTokenBytes, err := ioutil.ReadFile(filename)
+		if err != nil {
+			return "", err
+		}
+		k8sBearerToken = string(k8sBearerTokenBytes)
+	}
+
+	return strings.TrimSpace(k8sBearerToken), nil
 }
