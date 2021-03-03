@@ -72,11 +72,11 @@ go build -o ./ ./cmd/oc-proxy/
 
 See the [deploy](/deploy) directory for more details deploy examples.
 
-```bash
-# Get some pre requirments
+### Get some pre requirments
 
+```bash
 # Get the k8s API CA, this is used for secure comunication with the server.
-# Note: use can use "-skip-verify-tls" flag to comunicate unsecurly with server
+# Note: you can use "-skip-verify-tls" flag to comunicate unsecurly with server
 # instead of fetching this file.
 oc get secrets -n default --field-selector type=kubernetes.io/service-account-token -o json | \
     jq '.items[0].data."ca.crt"' -r | python -m base64 -d > test/ca.crt
@@ -94,6 +94,8 @@ openssl req -new -x509 -sha256 -key test/key.pem -out test/cert.pem -days 3650
 # Note: this example use "oc cli" for shortcut, you can always use the secret to get the token.
 oc whoami -t > test/token
 ```
+
+### Run the proxy locally
 
 ``` bash
 # Proxy the noVNC html files mixed with k8s API (replace the cluster with one you own)
