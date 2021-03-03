@@ -6,10 +6,15 @@ RUN sudo dnf install -y git golang
 RUN git clone https://github.com/yaacov/oc-proxy.git /app \
   && git clone https://github.com/novnc/noVNC /app/web/public/noVNC \
   && go get github.com/yaacov/oc-proxy/cmd/oc-proxy \
-  && go build -o /app/ /app/cmd/oc-proxy/
+  && CGO_ENABLED=0 GOOS=linux go build -o /app/ /app/cmd/oc-proxy/
 
-# dep stage
-FROM quay.io/fedora/fedora:34-x86_64
+# deploy stage
+
+# quay does not have an alpine image, if you don't want to use dockerhub
+# an option is to switch to using fedora-minimal:
+# FROM quay.io/fedora/fedora-minimal:34-x86_64
+FROM alpine
+
 WORKDIR /app
 RUN mkdir -p /app/wep/public/noVNC/
 
