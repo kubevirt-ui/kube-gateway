@@ -14,7 +14,10 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 web/public/noVNC
-ca.crt
-cert.pem.backup
-key.pem.backup
+
+test/ca.crt
+test/cert.pem.backup
+test/key.pem.backup
+test/token
+
 oc-proxy

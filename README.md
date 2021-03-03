@@ -72,6 +72,29 @@ go build -o ./ ./cmd/oc-proxy/
 
 See the [deploy](/deploy) directory for more details deploy examples.
 
+```bash
+# Get some pre requirments
+
+# Get the k8s API CA, this is used for secure comunication with the server.
+# Note: use can use "-skip-verify-tls" flag to comunicate unsecurly with server
+# instead of fetching this file.
+oc get secrets -n default --field-selector type=kubernetes.io/service-account-token -o json | \
+    jq '.items[0].data."ca.crt"' -r | python -m base64 -d > test/ca.crt
+
+# Create a public and private keys, this will be used to verify comunication with the oc-proxy
+# server, and to sign and verify JWT tokens.
+# Note: use your own private and public keys if you already have them.
+# Note II: oc-proxy JWT verification only support RS265 RSA signiture algorithm
+#          make sure you use rsa keys for the JWT creation and verification.
+openssl genrsa -out test/key.pem
+openssl req -new -x509 -sha256 -key test/key.pem -out test/cert.pem -days 3650
+
+# Getting a service account token, the serive account token is stored in a secret matched
+# to the service account.
+# Note: this example use "oc cli" for shortcut, you can always use the secret to get the token.
+oc whoami -t > test/token
+```
+
 ``` bash
 # Proxy the noVNC html files mixed with k8s API (replace the cluster with one you own)
 # note that the proxy address must match the redirect address in the oauthclient CR we created
@@ -90,7 +113,7 @@ See the [deploy](/deploy) directory for more details deploy examples.
 #                           verified users
 ./oc-proxy \
   --api-server https://api.ostest.test.metalkube.org:6443 \
-  --k8s-bearer-token-file token.txt \
+  --k8s-bearer-token-file test/token \
   --jwt-token-key-file test/cert.pem \
   --skip-verify-tls
 ```
