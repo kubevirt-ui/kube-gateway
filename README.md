@@ -70,7 +70,7 @@ go build -o ./ ./cmd/oc-proxy/
 
 ## Examples
 
-See the [deploy](/deploy) directory for more details deploy examples.
+See the [deploy](/deploy) directory for cluster deploy examples.
 
 ### Get some pre requirments
 
