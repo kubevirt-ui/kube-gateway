@@ -15,4 +15,6 @@
 # vendor/
 web/public/noVNC
 ca.crt
+cert.pem.backup
+key.pem.backup
 oc-proxy
