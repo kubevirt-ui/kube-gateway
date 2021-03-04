@@ -37,6 +37,10 @@ token:
 ca.crt:
 	oc get secrets -n default --field-selector type=kubernetes.io/service-account-token -o json | jq '.items[0].data."ca.crt"' -r | python -m base64 -d > test/ca.crt
 
+.PHONY: novnc
+novnc:
+	git clone https://github.com/novnc/noVNC web/public/noVNC
+
 .PHONY: image
 image:
 	podman build -t yaacov/oc-gate ./deploy

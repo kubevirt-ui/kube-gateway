@@ -124,6 +124,10 @@ oc-gate \
   --k8s-bearer-token-file test/token \
   --jwt-token-key-file test/cert.pem \
   --skip-verify-tls
+
+# For the noVNC demo, you can git clone the noVNC static html files into the `web/public`
+# directory
+git clone https://github.com/novnc/noVNC web/public/noVNC
 ```
 
 ### Run the proxy locally using a container image
