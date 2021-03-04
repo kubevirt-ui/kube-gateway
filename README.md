@@ -104,9 +104,20 @@ NAME                               HOST/PORT                       PATH   SERVIC
 route.route.openshift.io/oc-gate   oc-gate.apps.ocp4.xxx.xxx          oc-gate    8080   reencrypt     None
 ```
 
+# Steps to authenticate console noVNC access to a virtual machine console
 
+## 1- Create the following variables with virtual machine name, namespace, path and token expiry:
+$ vm=rhel6-150.ocp4.xxx.xxx
+$ ns=ocs-cnv
+$ path=k8s/apis/subresources.kubevirt.io/v1alpha3/namespaces/$ns/virtualmachineinstances/$vm/vnc
+$ token_exiry=3600
 
-
+## 2- Create JWT token signed by private SSL key:
+$ TOKEN=$(echo {\"exp\": $(expr $(date +%s) + $token_exiry),\"allowedAPIRegexp\":\"^/path\"} | jwt -key ./test/key.pem -alg RS256 -sign -)
+$ echo $TOKEN
+``` bash
+eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbGxvd2VkQVBJUmVnZXhwIjoiXi9wYXRoIiwiZXhwIjoxNjE0ODk1NjAwfQ.j6AqKritRobMWoKjUGjnp7Khntxsr2BsXZ2-GZmb20VLBAX4r6VDzsN4VP5wBalDjYn8o0mlt7kJ4BWy81hMOLWst8TD-d3Vt6xXr0Eo8rVUnodjXP_YctO4lHT1eoizNFnook80XTsHoDgXEGm04nqoKbIB71Re-7cQFZQSfWFPjUM4Qbl32ebFqfjDI-29UoerB3M5eyonYhmLHLS9LlL_XRbaDh1XOBEDMwQ9jQMw5fLQ2P7wtmyVHkHkUqmaA9d51KKuiGQrz0mQtdiHaq_DQYkoZ9Z47eZHrlOUlcAS7IEfaw3ZSCLB9kwXExQ5X0BmYP7hqvHeQTPsd1aWVg
+```
 
 ## Running using ODK internal OAuth2 server
 
