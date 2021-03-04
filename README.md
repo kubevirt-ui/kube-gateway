@@ -1,7 +1,6 @@
 # Steps to deploy oc-gate on OCP cluster
 
 ## 1 - Create test dir and populate it with SSL certs:
-
 $ mkdir test
 
 $ openssl genrsa -out test/key.pem
@@ -39,7 +38,6 @@ $
 ```
 
 ## 2- Login into OCP cluster to deploy oc-gate app:
-
 $ oc login https://api.ocp4.xxx.xxx:6443
 ``` bash
 Authentication required for https://api.ocp4.xxx.xxx:6443 (openshift)
@@ -53,6 +51,20 @@ Using project "default".
 $
 ```
 
+## 3- Create oc-gateway project:
+$ oc new-project oc-proxy
+``` bash
+Now using project "oc-proxy" on server "https://api.ocp4.goldman.lab:6443".
+
+You can add applications to this project with the 'new-app' command. For example, try:
+
+    oc new-app rails-postgresql-example
+
+to build a new example application in Ruby. Or use kubectl to deploy a simple Kubernetes application:
+
+    kubectl create deployment hello-node --image=k8s.gcr.io/serve_hostname
+$
+```
 
 
 ## Running using ODK internal OAuth2 server
