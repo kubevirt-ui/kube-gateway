@@ -1,6 +1,6 @@
-## Steps to deploy on OCP cluster
+# Steps to deploy on OCP cluster
 
-1 - Create test dir and populate it with SSL certs:
+##1 - Create test dir and populate it with SSL certs:
 
 $ mkdir test
 
