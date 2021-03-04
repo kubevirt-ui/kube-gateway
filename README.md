@@ -2,10 +2,9 @@
 
 1 - Create test dir and populate it with SSL certs:
 
-``` bash
 $ mkdir test
 $
-$
+``` bash
 $ openssl genrsa -out test/key.pem
 ``` bash
 Generating RSA private key, 2048 bit long modulus (2 primes)
@@ -14,7 +13,6 @@ Generating RSA private key, 2048 bit long modulus (2 primes)
 e is 65537 (0x010001)
 $
 ```
-$
 $ openssl req -new -x509 -sha256 -key test/key.pem -out test/cert.pem -days 3650
 ``` bash
 You are about to be asked to enter information that will be incorporated
