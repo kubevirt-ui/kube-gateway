@@ -51,7 +51,7 @@ Using project "default".
 $
 ```
 
-## 3- Create oc-gateway project:
+## 3- Create oc-gate project:
 $ oc new-project oc-gate
 ``` bash
 Now using project "oc-gate" on server "https://api.xxx.xxx.lab:6443".
@@ -66,7 +66,7 @@ to build a new example application in Ruby. Or use kubectl to deploy a simple Ku
 $
 ```
 
-## 4- Create a new secret oc-gate-jwt-secret in the oc-gateway project:
+## 4- Create a new secret oc-gate-jwt-secret in the oc-gate project:
 $ oc create secret generic oc-gate-jwt-secret --from-file=test/cert.pem
 ``` bash
 secret/oc-gate-jwt-secret created
