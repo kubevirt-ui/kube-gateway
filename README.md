@@ -25,7 +25,7 @@ podman run -p 8080:8080 --privileged \
   --mount type=bind,source=test,target=/app/test \
   -it quay.io/yaacov/oc-proxy \
   ./oc-proxy \
-  < Required flags, see the below for reqired flags, e.g. -api-server=... -ca-file=...  >
+  < Required flags, see below for reqired flags, e.g. -api-server=... -ca-file=...  >
 ```
 
 ## What can I do with it ?
