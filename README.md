@@ -101,8 +101,7 @@ oc whoami -t > test/token
 
 ### Run the proxy locally
 
-Make sure you compiled the `oc-proxy` tool, and have all the pre-required certifations in the test directory,
-if you installed the tool using `go install ...` command, run using `oc-proxy` instead of `.os-proxy`.
+Make sure you have all the pre-required certifations in the test directory.
 
 ``` bash
 # Proxy the noVNC html files mixed with k8s API (replace the cluster with one you own)
@@ -111,7 +110,7 @@ if you installed the tool using `go install ...` command, run using `oc-proxy` i
 # --api-server : the k8s API server, this command assumes this cluster is an OKD (Openshift) cluster
 #                and the proxy will look up it's OAuth server automatically and pass tokens provided
 #                by the internal authentication issuer directly to the cluster.
-./oc-proxy \
+oc-proxy \
   --api-server https://api.ostest.test.metalkube.org:6443 \
   --k8s-bearer-token-passthrough true \
   --ca-file test/ca.crt
@@ -120,7 +119,7 @@ if you installed the tool using `go install ...` command, run using `oc-proxy` i
 # --jwt-token-key-file    : the public key used to verify JWT access tokens
 # --k8s-bearer-token-file : the k8s token that will be used by the proxy to 
 #                           fetch k8s resources for all verified users
-./oc-proxy \
+oc-proxy \
   --api-server https://api.ostest.test.metalkube.org:6443 \
   --k8s-bearer-token-file test/token \
   --jwt-token-key-file test/cert.pem \
