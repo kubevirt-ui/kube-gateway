@@ -74,7 +74,7 @@ go build -o ./ ./cmd/oc-proxy/
 
 ## Examples
 
-See the [deploy](/deploy) directory for cluster deploy examples.
+See [deploy/README.md](/deploy) for cluster deployment set examples.
 
 ### Get some pre requirments
 
@@ -118,8 +118,8 @@ if you installed the tool using `go install ...` command, run using `oc-proxy` i
 
 # Run without an OAuth2 server
 # --jwt-token-key-file    : the public key used to verify JWT access tokens
-# --k8s-bearer-token-file : the k8s token that will be used by the proxy to fetch k8s resources for all
-#                           verified users
+# --k8s-bearer-token-file : the k8s token that will be used by the proxy to 
+#                           fetch k8s resources for all verified users
 ./oc-proxy \
   --api-server https://api.ostest.test.metalkube.org:6443 \
   --k8s-bearer-token-file test/token \
@@ -137,8 +137,8 @@ you can run:
 ``` bash
 # Run without an OAuth2 server
 # --jwt-token-key-file    : the public key used to verify JWT access tokens
-# --k8s-bearer-token-file : the k8s token that will be used by the proxy to fetch k8s resources for all
-#                           verified users
+# --k8s-bearer-token-file : the k8s token that will be used by the proxy to 
+#                           fetch k8s resources for all verified users
 podman run -p 8080:8080 --privileged \
   --mount type=bind,source=test,target=/app/test \
   -it quay.io/yaacov/oc-proxy \
