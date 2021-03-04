@@ -50,6 +50,9 @@ oc process -p ROUTE_URL=<the HOST of your oc-gate> oc-gate | oc create -f -
 
 # For interactive deploy using OKD OAuth2 default server, use bearer token pass through.
 oc process -p ROUTE_URL=<the HOST of your oc-gate> oc-gate -p TOKEN_PASSTHROUGH=true | oc create -f -
+
+# The template will create a route to the oc-get server, get the route path using:
+oc get route
 ```
 
 ## Create a token, and fetch k8s objects using it
