@@ -52,9 +52,9 @@ $
 ```
 
 ## 3- Create oc-gateway project:
-$ oc new-project oc-proxy
+$ oc new-project oc-gate
 ``` bash
-Now using project "oc-proxy" on server "https://api.ocp4.goldman.lab:6443".
+Now using project "oc-gate" on server "https://api.xxx.xxx.lab:6443".
 
 You can add applications to this project with the 'new-app' command. For example, try:
 
@@ -65,6 +65,13 @@ to build a new example application in Ruby. Or use kubectl to deploy a simple Ku
     kubectl create deployment hello-node --image=k8s.gcr.io/serve_hostname
 $
 ```
+
+## 4- Create a new secret oc-gate-jwt-secret in the oc-gateway project:
+$ oc create secret generic oc-gate-jwt-secret --from-file=test/cert.pem
+``` bash
+secret/oc-gate-jwt-secret created
+```
+
 
 
 ## Running using ODK internal OAuth2 server
