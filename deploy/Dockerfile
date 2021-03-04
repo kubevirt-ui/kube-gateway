@@ -10,10 +10,11 @@ RUN git clone https://github.com/yaacov/oc-gate.git /app \
 
 # deploy stage
 
-# quay does not have an alpine image, if you don't want to use dockerhub
-# an option is to switch to using fedora-minimal:
-# FROM quay.io/fedora/fedora-minimal:34-x86_64
-FROM alpine
+# quay does not have an alpine image,
+# an option is to switch to using fedora-minimal
+# another option is to use alpine (only from dockerhub)
+FROM quay.io/fedora/fedora-minimal:34-x86_64
+# FROM alpine
 
 WORKDIR /app
 RUN mkdir -p /app/wep/public/noVNC/
