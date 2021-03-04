@@ -25,7 +25,7 @@ podman run -p 8080:8080 --privileged \
   --mount type=bind,source=test,target=/app/test \
   -it quay.io/yaacov/oc-proxy \
   ./oc-proxy \
-  < Required flags, see the below for reqired flags >
+  < Required flags, see the below for reqired flags, e.g. -api-server=... -ca-file=...  >
 ```
 
 ## What can I do with it ?
@@ -98,6 +98,9 @@ oc whoami -t > test/token
 
 ### Run the proxy locally
 
+Make sure you compiled the `oc-proxy` tool, and have all the pre-required certifations in the test directory,
+if you installed the tool using `go install ...` command, run using `oc-proxy` instead of `.os-proxy`.
+
 ``` bash
 # Proxy the noVNC html files mixed with k8s API (replace the cluster with one you own)
 # note that the proxy address must match the redirect address in the oauthclient CR we created
@@ -115,6 +118,28 @@ oc whoami -t > test/token
 # --k8s-bearer-token-file : the k8s token that will be used by the proxy to fetch k8s resources for all
 #                           verified users
 ./oc-proxy \
+  --api-server https://api.ostest.test.metalkube.org:6443 \
+  --k8s-bearer-token-file test/token \
+  --jwt-token-key-file test/cert.pem \
+  --skip-verify-tls
+```
+
+### Run the proxy locally using a container image
+
+When running from container image replage the local CLI command `oc-proxy` with a `podman run ...` call.
+
+For example, after verifying that you have the `./test` dierctory with all the neccary certification,
+you can run:
+
+``` bash
+# Run without an OAuth2 server
+# --jwt-token-key-file    : the public key used to verify JWT access tokens
+# --k8s-bearer-token-file : the k8s token that will be used by the proxy to fetch k8s resources for all
+#                           verified users
+podman run -p 8080:8080 --privileged \
+  --mount type=bind,source=test,target=/app/test \
+  -it quay.io/yaacov/oc-proxy \
+  ./oc-proxy \
   --api-server https://api.ostest.test.metalkube.org:6443 \
   --k8s-bearer-token-file test/token \
   --jwt-token-key-file test/cert.pem \
