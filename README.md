@@ -116,8 +116,9 @@ Make sure you have all the pre-required certifations in the test directory.
 # --api-server : the k8s API server, this command assumes this cluster is an OKD (Openshift) cluster
 #                and the proxy will look up it's OAuth server automatically and pass tokens provided
 #                by the internal authentication issuer directly to the cluster.
+#                for example --api-server=https://api.ostest.test.metalkube.org:6443
 oc-gate \
-  --api-server https://api.ostest.test.metalkube.org:6443 \
+  --api-server $(oc whoami --show-server) \
   --k8s-bearer-token-passthrough true \
   --ca-file test/ca.crt
 
@@ -126,7 +127,7 @@ oc-gate \
 # --k8s-bearer-token-file : the k8s token that will be used by the proxy to 
 #                           fetch k8s resources for all verified users
 oc-gate \
-  --api-server https://api.ostest.test.metalkube.org:6443 \
+  --api-server $(oc whoami --show-server) \
   --k8s-bearer-token-file test/token \
   --jwt-token-key-file test/cert.pem \
   --skip-verify-tls
@@ -148,7 +149,7 @@ podman run -p 8080:8080 --privileged \
   --mount type=bind,source=test,target=/app/test \
   -it quay.io/yaacov/oc-gate \
   ./oc-gate \
-  --api-server https://api.ostest.test.metalkube.org:6443 \
+  --api-server $(oc whoami --show-server) \
   --k8s-bearer-token-file test/token \
   --jwt-token-key-file test/cert.pem \
   --skip-verify-tls
