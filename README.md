@@ -2,6 +2,7 @@
 
 1 - Create certs in a directory called test:
 
+``` bash
 $ mkdir test
 $
 $ openssl genrsa -out test/key.pem
@@ -9,7 +10,7 @@ Generating RSA private key, 2048 bit long modulus (2 primes)
 ..............+++++
 ..............................+++++
 e is 65537 (0x010001)
-
+```
 
 ## Running using ODK internal OAuth2 server
 
