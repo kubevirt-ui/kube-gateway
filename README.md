@@ -153,3 +153,11 @@ podman run -p 8080:8080 --privileged \
   --jwt-token-key-file test/cert.pem \
   --skip-verify-tls
 ```
+
+### Special paths
+
+- /auth/login - login path to start OAuth2 authentication process.
+- /auth/callback - OAuth2 authentication callback endpoint.
+- /auth/token - endpoint for setting session cookie, this query parameters are available:
+  - token - the value to push into the session cookie
+  - redirect - path to redirect to after cookie is set

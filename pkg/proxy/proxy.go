@@ -95,6 +95,11 @@ func (s Server) Token(w http.ResponseWriter, r *http.Request) {
 	token := q.Get("token")
 	redirect := q.Get("redirect")
 
+	// Empty redirect, means go home
+	if redirect == "" {
+		redirect = "/"
+	}
+
 	// Set session cookie.
 	http.SetCookie(w, &http.Cookie{
 		Name:     ocgateSessionCookieName,
