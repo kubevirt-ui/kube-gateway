@@ -1,7 +1,6 @@
 ## Steps to deploy on OCP cluster
 
-- Interactive authentication using a OAuth2 authentication issuer.
-- Non interative authentication using bearer JWT Authorization header.
+#1 - Create certs
 
 ## Running using ODK internal OAuth2 server
 
