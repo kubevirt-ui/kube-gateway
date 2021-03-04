@@ -28,6 +28,9 @@ podman run -p 8080:8080 --privileged \
   < Required flags, see below for reqired flags, e.g. -api-server=... -ca-file=...  >
 ```
 
+Deploy as pods in a cluster:
+See [deploy/README.md](/deploy) for cluster deployment set examples.
+
 ## What can I do with it ?
 
 - Create secure web applications leveraging the power of k8s API.
