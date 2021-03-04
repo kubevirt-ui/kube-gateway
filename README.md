@@ -1,6 +1,7 @@
 ## Steps to deploy on OCP cluster
 
 1 - Create certs in a directory called test:
+
 $ mkdir test
 $
 $ openssl genrsa -out test/key.pem
