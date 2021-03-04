@@ -1,15 +1,17 @@
 ## Steps to deploy on OCP cluster
 
-1 - Create test dir and populate it with certs:
+1 - Create test dir and populate it with SSL certs:
 
 ``` bash
 $ mkdir test
+$
 $
 $ openssl genrsa -out test/key.pem
 Generating RSA private key, 2048 bit long modulus (2 primes)
 ..............+++++
 ..............................+++++
 e is 65537 (0x010001)
+$
 $
 $ openssl req -new -x509 -sha256 -key test/key.pem -out test/cert.pem -days 3650
 You are about to be asked to enter information that will be incorporated
@@ -27,10 +29,26 @@ Organizational Unit Name (eg, section) []:
 Common Name (eg, your name or your server's hostname) []:
 Email Address []:
 $
+$
 $ ls test
 cert.pem  key.pem
 $
 ```
+
+2- Login into OCP cluster to deploy oc-gate app:
+
+$ oc login https://api.ocp4.xxx.xxx:6443
+Authentication required for https://api.ocp4.xxx.xxx:6443 (openshift)
+Username: xxxx
+Password: 
+Login successful.
+
+You have access to xx projects, the list has been suppressed. You can list all projects with ' projects'
+
+Using project "default".
+$
+
+
 
 ## Running using ODK internal OAuth2 server
 
