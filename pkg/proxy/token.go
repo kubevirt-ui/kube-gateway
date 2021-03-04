@@ -28,7 +28,7 @@ func validateRequest(httpMethod string, httpPath string, apiPAth string, allowed
 	// validate the requested regexp
 	if len(httpPath) > len(apiPAth) &&
 		httpPath[:len(apiPAth)] == apiPAth &&
-		httpPath[len(apiPAth):] != ".well-known/oauth-authorization-server" &&
+		httpPath[len(apiPAth):] != "/.well-known/oauth-authorization-server" &&
 		!k8sAllowedAPIRegexp.MatchString(httpPath) {
 		return fmt.Errorf("%s path not allowed", httpPath)
 	}
