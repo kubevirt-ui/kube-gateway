@@ -2,9 +2,7 @@
 
 ![alt gopher network](https://raw.githubusercontent.com/yaacov/oc-proxy/main/web/public/network-side.png)
 
-OC Proxy gate API access to your k8s resources based in time windws and resource name,
-k8s [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) is a powerfull tool, but is hard to fine tune
-to specific resource name or limit by time. oc-proxy provide a filtering layer on top of k8s RABC that filter requests by validating time of request
+OC Proxy provide a filtering layer on top of k8s RABC that filter requests by validating time of request
 and object name before passing them to k8s RBAC for final proccessing.
 
 OC Proxy provides an interactive and non-interactive authentication proxy to [Kubernetes](https://kubernetes.io/) clusters.
