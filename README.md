@@ -72,6 +72,40 @@ $ oc create secret generic oc-gate-jwt-secret --from-file=test/cert.pem
 secret/oc-gate-jwt-secret created
 ```
 
+## 5- Create oc-gate template using included oc-gate-template.yaml:
+$ oc create -f oc-gate-template.yaml 
+``` bash
+template.template.openshift.io/oc-gate created
+```
+
+## 6- Create oc-gate OCP objects using the oc-gate template:
+$ oc process -p ROUTE_URL=oc-gate.apps.ocp4.xxx.xxx oc-gate | oc create -f -
+``` bash
+route.route.openshift.io/oc-gate created
+serviceaccount/oc-gate created
+clusterrolebinding.authorization.openshift.io/oc-gate-cluster-reader created
+service/oc-gate created
+replicationcontroller/oc-gate created
+```
+
+## 7- Verify OCP objects created and running:
+$ oc get all
+``` bash
+NAME                READY   STATUS    RESTARTS   AGE
+pod/oc-gate-rx4p4   1/1     Running   0          2m24s
+
+NAME                            DESIRED   CURRENT   READY   AGE
+replicationcontroller/oc-gate   1         1         1       2m25s
+
+NAME              TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+service/oc-gate   ClusterIP   172.30.140.240   <none>        8080/TCP   2m25s
+
+NAME                               HOST/PORT                       PATH   SERVICES   PORT   TERMINATION   WILDCARD
+route.route.openshift.io/oc-gate   oc-gate.apps.ocp4.xxx.xxx          oc-gate    8080   reencrypt     None
+```
+
+
+
 
 
 ## Running using ODK internal OAuth2 server
