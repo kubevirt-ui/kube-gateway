@@ -5,6 +5,8 @@
 OC Gate provide a filtering layer on top of k8s RABC that filter requests by validating time of request
 and object name before passing them to k8s RBAC for final proccessing.
 
+It allows k8s users, with access to a list of objects, to give other users time limited access to a sub-set of their objects.
+
 [![Go Report Card](https://goreportcard.com/badge/github.com/yaacov/oc-gate)](https://goreportcard.com/report/github.com/yaacov/oc-gate)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
