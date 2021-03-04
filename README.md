@@ -24,7 +24,8 @@ Using container image:
 podman run -p 8080:8080 --privileged \
   --mount type=bind,source=test,target=/app/test \
   -it quay.io/yaacov/oc-proxy \
-  ./oc-proxy -api-server <URL of k8s API server>
+  ./oc-proxy -api-server <URL of k8s API server> \
+  < Required flags, see the below for reqired flags >
 ```
 
 ## What can I do with it ?
