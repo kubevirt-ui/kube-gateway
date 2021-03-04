@@ -35,6 +35,9 @@ oc create -f deploy/oc-gate-oauth-client.yaml
 Use the example template to deploy the proxy server
 
 ``` bash
+# Create the example namespace
+oc new-project oc-gate
+
 # Note: templates are an OKD thing, if running on k8s cluster without OKD
 # you will neen to install the objects using a different method.
 oc create -f deploy/oc-gate-template.yaml 

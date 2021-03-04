@@ -1,6 +1,6 @@
 SOURCE := cmd/oc-gate/*.go pkg/proxy/*.go
 
-all: oc-gate
+all: oc-gate certificate
 
 oc-gate: $(SOURCE)
 	go build -v ./cmd/...
