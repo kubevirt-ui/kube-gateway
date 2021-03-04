@@ -38,7 +38,7 @@ func main() {
 	oauthServerDisable := flag.Bool("oauth-server-disable", false, "If true will disable interactive authentication using OAuth2 issuer.")
 	oauthServerTokenURL := flag.String("oauth-server-token-url", "", "OAuth2 issuer token endpoint URL.")
 	oauthServerAuthURL := flag.String("oauth-server-auth-url", "", "OAuth2 issuer authentication endpoint URL.")
-	oauthClientID := flag.String("oauth-client-id", "ocproxy-client", "OAuth2 client ID defined in a OAuthClient k8s object.")
+	oauthClientID := flag.String("oauth-client-id", "ocgate-client", "OAuth2 client ID defined in a OAuthClient k8s object.")
 	oauthClientSecret := flag.String("oauth-client-secret", "my-secret", "OAuth2 client secret defined in a OAuthClient k8s object.")
 
 	jwtTokenKeyFile := flag.String("jwt-token-key-file", "", "validate JWT token received from OAuth2 using the key in this file.")

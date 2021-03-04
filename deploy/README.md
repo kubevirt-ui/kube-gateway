@@ -29,7 +29,7 @@ For interactive type of deploy create an oauthclient k8s object
 # OKD (Openshift) install an OAuth2 server on new clusters by default.
 # Note: on k8s cluters without OKD, you will need to use a different
 # OAuth server.
-oc create -f deploy/oauth-client-example.yaml
+oc create -f deploy/oc-gate-oauth-client.yaml
 ```
 
 Use the example template to deploy the proxy server

@@ -1,7 +1,7 @@
 apiVersion: oauth.openshift.io/v1
 kind: OAuthClient
 metadata:
-  name: ocproxy-client
+  name: ocgate-client
 grantMethod: auto
 secret: my-secret
 redirectURIs:

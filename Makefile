@@ -21,9 +21,13 @@ certificate:
 	openssl genrsa -out test/key.pem
 	openssl req -new -x509 -sha256 -key test/key.pem -out test/cert.pem -days 3650
 
-.PHONY: secret
-secret:
-	oc create secret generic oc-gate-jwt-secret --from-file=cert.pem
+.PHONY: k8s-secret
+k8s-secret:
+	oc create secret generic oc-gate-jwt-secret --from-file=test/cert.pem
+
+.PHONY: k8s-oauth-client
+k8s-oauth-client:
+	oc create -f deploy/oc-gate-oauth-client.yaml
 
 .PHONY: token
 token:

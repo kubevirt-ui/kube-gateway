@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	ocproxySessionCookieName = "ocproxy-session-token"
+	ocgateSessionCookieName = "ocgate-session-token"
 )
 
 // Server holds information required for serving files.
@@ -43,7 +43,7 @@ func (s Server) Login(w http.ResponseWriter, r *http.Request) {
 
 	// Set session cookie.
 	http.SetCookie(w, &http.Cookie{
-		Name:     ocproxySessionCookieName,
+		Name:     ocgateSessionCookieName,
 		Value:    "",
 		Path:     "/",
 		SameSite: http.SameSiteLaxMode,
@@ -78,7 +78,7 @@ func (s Server) Callback(w http.ResponseWriter, r *http.Request) {
 
 	// Set session cookie.
 	http.SetCookie(w, &http.Cookie{
-		Name:     ocproxySessionCookieName,
+		Name:     ocgateSessionCookieName,
 		Value:    tok.AccessToken,
 		Path:     "/",
 		SameSite: http.SameSiteLaxMode,
@@ -166,7 +166,7 @@ func (s Server) GetRequestToken(w http.ResponseWriter, r *http.Request) (string,
 	}
 
 	// Check for session cookie
-	cookie, err := r.Cookie(ocproxySessionCookieName)
+	cookie, err := r.Cookie(ocgateSessionCookieName)
 	if err != nil || cookie.Value == "" {
 		return "", err
 	}
