@@ -19,5 +19,3 @@ test/ca.crt
 test/cert.pem.backup
 test/key.pem.backup
 test/token
-
-oc-proxy

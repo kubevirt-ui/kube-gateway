@@ -1,4 +1,4 @@
-module github.com/yaacov/oc-proxy
+module github.com/yaacov/oc-gate
 
 go 1.15
 

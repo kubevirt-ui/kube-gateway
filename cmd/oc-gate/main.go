@@ -10,7 +10,7 @@ import (
 
 	"golang.org/x/oauth2"
 
-	"github.com/yaacov/oc-proxy/pkg/proxy"
+	"github.com/yaacov/oc-gate/pkg/proxy"
 )
 
 const (
@@ -58,7 +58,7 @@ func main() {
 	if *apiServer == "" {
 		log.Println("missing API server address")
 
-		fmt.Println("Usage of oc-proxy:")
+		fmt.Println("Usage of oc-gate:")
 		flag.PrintDefaults()
 		os.Exit(0)
 	}

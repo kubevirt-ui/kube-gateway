@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: v1
 metadata:
-  name: oc-proxy
+  name: oc-gate
   annotations:
     "openshift.io/display-name": OC Proxy
     description: |
@@ -9,7 +9,7 @@ metadata:
     iconClass: icon-cogs
     tags: "openshift"
 parameters:
-- description: External URL for the oc-proxy route
+- description: External URL for the oc-gate route
   name: ROUTE_URL
   value: ""
 - description: Internal URL for the api, for authentication retrieval
@@ -20,10 +20,10 @@ parameters:
   value: ""
 - description: JWT secret name holding RS256 puplic key file cert.pem file
   name: JWT_SECRET_NAME
-  value: oc-proxy-jwt-secret
+  value: oc-gate-jwt-secret
 - description: The namespace to instantiate heapster under. Defaults to 'kube-system'.
   name: NAMESPACE
-  value: oc-proxy
+  value: oc-gate
 - description: Pass through the token given by the OAuth2 server directly to the API. Defaults to 'false'.
   name: TOKEN_PASSTHROUGH
   value: "false"
@@ -31,13 +31,13 @@ objects:
 - apiVersion: route.openshift.io/v1
   kind: Route
   metadata:
-    name: oc-proxy
+    name: oc-gate
     namespace: "${NAMESPACE}"
   spec:
     host: "${ROUTE_URL}"
     to:
       kind: Service
-      name: oc-proxy
+      name: oc-gate
       weight: 100
     tls:
       termination: reencrypt
@@ -47,32 +47,32 @@ objects:
 - apiVersion: v1
   kind: ServiceAccount
   metadata:
-    name: oc-proxy
+    name: oc-gate
     namespace: "${NAMESPACE}"
   secrets:
-  - name: oc-proxy-secrets
+  - name: oc-gate-secrets
 - apiVersion: v1
   kind: ClusterRoleBinding
   metadata:
-    name: oc-proxy-cluster-reader
+    name: oc-gate-cluster-reader
   roleRef:
     name: cluster-admin
   subjects:
   - kind: ServiceAccount
-    name: oc-proxy
+    name: oc-gate
     namespace: "${NAMESPACE}"
 - apiVersion: v1
   kind: Service
   metadata:
-    name: oc-proxy
+    name: oc-gate
     namespace: "${NAMESPACE}"
     labels:
-      name: oc-proxy
+      name: oc-gate
     annotations:
-      "service.alpha.openshift.io/serving-cert-secret-name": oc-proxy-secrets
+      "service.alpha.openshift.io/serving-cert-secret-name": oc-gate-secrets
   spec:
     selector:
-      name: oc-proxy
+      name: oc-gate
     ports:
     - port: 8080
       protocol: TCP
@@ -80,33 +80,33 @@ objects:
 - apiVersion: v1
   kind: ReplicationController
   metadata:
-    name: oc-proxy
+    name: oc-gate
     namespace: "${NAMESPACE}"
     labels:
-      name: oc-proxy
+      name: oc-gate
   spec:
     selector:
-      name: oc-proxy
+      name: oc-gate
     replicas: 1
     template:
       version: v1
       metadata:
         labels:
-          name: oc-proxy
+          name: oc-gate
       spec:
         containers:
-        - image: "quay.io/yaacov/oc-proxy:latest"
-          name: oc-proxy
+        - image: "quay.io/yaacov/oc-gate:latest"
+          name: oc-gate
           ports:
-          - name: oc-proxy-https
+          - name: oc-gate-https
             containerPort: 8080
           volumeMounts:
-          - name: oc-proxy-secrets
+          - name: oc-gate-secrets
             mountPath: "/secrets"
-          - name: oc-proxy-jwt-secret
+          - name: oc-gate-jwt-secret
             mountPath: "/jwt-secret"
           command:
-          - "./oc-proxy"
+          - "./oc-gate"
           - "-api-server=${API_URL}"
           - "-ca-file=/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt"
           - "-cert-file=/secrets/tls.crt"
@@ -117,10 +117,10 @@ objects:
           - "-k8s-bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token"
           - "-k8s-bearer-token-passthrough=${TOKEN_PASSTHROUGH}"
         volumes:
-        - name: oc-proxy-secrets
+        - name: oc-gate-secrets
           secret:
-            secretName: oc-proxy-secrets
-        - name: oc-proxy-jwt-secret
+            secretName: oc-gate-secrets
+        - name: oc-gate-jwt-secret
           secret:
             secretName: ${JWT_SECRET_NAME}
-        serviceAccount: oc-proxy
+        serviceAccount: oc-gate

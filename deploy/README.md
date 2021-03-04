@@ -19,7 +19,7 @@ Create a secret holding a public key for verification of JWT tokens
 
 ``` bash
 # We can use the same key as the server, or create a new pair just for JWT tokens.
-kubectl create secret generic oc-proxy-jwt-secret --from-file=cert.pem
+kubectl create secret generic oc-gate-jwt-secret --from-file=cert.pem
 ```
 
 For interactive type of deploy create an oauthclient k8s object
@@ -37,16 +37,16 @@ Use the example template to deploy the proxy server
 ``` bash
 # Note: templates are an OKD thing, if running on k8s cluster without OKD
 # you will neen to install the objects using a different method.
-oc create -f deploy/oc-proxy-template.yaml 
+oc create -f deploy/oc-gate-template.yaml 
 
-# The template requires the HOST of the oc-proxy server.
+# The template requires the HOST of the oc-gate server.
 # for example: ROUTE_URL=test-proxy.apps.ostest.test.metalkube.org
 # Note: routes are OKD thing too, OKD install a default proxy / loadbalancer
 # that route outside requests to k8s services.
-oc process -p ROUTE_URL=<the HOST of your oc-proxy> oc-proxy | oc create -f -
+oc process -p ROUTE_URL=<the HOST of your oc-gate> oc-gate | oc create -f -
 
 # For interactive deploy using OKD OAuth2 default server, use bearer token pass through.
-oc process -p ROUTE_URL=<the HOST of your oc-proxy> oc-proxy -p TOKEN_PASSTHROUGH=true | oc create -f -
+oc process -p ROUTE_URL=<the HOST of your oc-gate> oc-gate -p TOKEN_PASSTHROUGH=true | oc create -f -
 ```
 
 ## Create a token, and fetch k8s objects using it
@@ -54,7 +54,7 @@ oc process -p ROUTE_URL=<the HOST of your oc-proxy> oc-proxy -p TOKEN_PASSTHROUG
 Create a JWT specific for the k8s object you want to allow holder of this JWT to access:
 
 ``` bash
-# To sign the JWT use the private key that belong to the public key in the running oc-proxy
+# To sign the JWT use the private key that belong to the public key in the running oc-gate
 # The "allowedAPIRegexp" claim use regexp to allow specific k8s path
 # use '^' to force start of path, and '$' to force end of path.
 # Other claims the proxy will respect are: allowedAPIMethods, exp and nbf
@@ -69,11 +69,11 @@ echo {\"exp\": $(expr $(date +%s) + 100),\"allowedAPIRegexp\":\"^/k8s/api/v1/nam
 This token can now be given to a user that will have access only to this specific k8s object(s).
 
 ``` bash
-# A user of this token can now send requests to the oc-proxy using the new JWT
+# A user of this token can now send requests to the oc-gate using the new JWT
 # If the JWT is authentic, did not expire (if exp or nbf claims are used), and match the allowed path -
 # the proxy will replace the JWT with the token of the service account running the proxy,
 # Depending on k8s RBAC rulls the object will be fetched or not.
-curl -k -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" https://<route to your oc proxy>/k8s/<API path of k8s object> | jq
+curl -k -H 'Accept: application/json' -H "Authorization: Bearer ${TOKEN}" https://<route to your oc gate>/k8s/<API path of k8s object> | jq
 ```
 
 ### jwt CLI tool

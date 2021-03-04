@@ -1,17 +1,17 @@
-SOURCE := cmd/oc-proxy/*.go pkg/proxy/*.go
+SOURCE := cmd/oc-gate/*.go pkg/proxy/*.go
 
-all: oc-proxy
+all: oc-gate
 
-oc-proxy: $(SOURCE)
+oc-gate: $(SOURCE)
 	go build -v ./cmd/...
 
 .PHONY: clean
 clean:
-	$(RM) oc-proxy
+	$(RM) oc-gate
 
 .PHONY: cleanall
 cleanall:
-	$(RM) oc-proxy
+	$(RM) oc-gate
 	$(RM) test/*.pem
 	$(RM) test/token
 	$(RM) test/ca.crt
@@ -23,7 +23,7 @@ certificate:
 
 .PHONY: secret
 secret:
-	oc create secret generic oc-proxy-jwt-secret --from-file=cert.pem
+	oc create secret generic oc-gate-jwt-secret --from-file=cert.pem
 
 .PHONY: token
 token:
@@ -35,6 +35,6 @@ ca.crt:
 
 .PHONY: image
 image:
-	podman build -t yaacov/oc-proxy ./deploy
-	podman tag yaacov/oc-proxy quay.io/yaacov/oc-proxy
-	# podman push quay.io/yaacov/oc-proxy
+	podman build -t yaacov/oc-gate ./deploy
+	podman tag yaacov/oc-gate quay.io/yaacov/oc-gate
+	# podman push quay.io/yaacov/oc-gate

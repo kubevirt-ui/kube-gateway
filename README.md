@@ -1,11 +1,11 @@
-# oc-proxy
+# oc-gate
 
-![alt gopher network](https://raw.githubusercontent.com/yaacov/oc-proxy/main/web/public/network-side.png)
+![alt gopher network](https://raw.githubusercontent.com/yaacov/oc-gate/main/web/public/network-side.png)
 
 OC Proxy provide a filtering layer on top of k8s RABC that filter requests by validating time of request
 and object name before passing them to k8s RBAC for final proccessing.
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/yaacov/oc-proxy)](https://goreportcard.com/report/github.com/yaacov/oc-proxy)
+[![Go Report Card](https://goreportcard.com/badge/github.com/yaacov/oc-gate)](https://goreportcard.com/report/github.com/yaacov/oc-gate)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 (gopher network image - [egonelbre/gophers](https://github.com/egonelbre/gophers))
@@ -15,7 +15,7 @@ and object name before passing them to k8s RBAC for final proccessing.
 Using go install:
 
 ``` bash
-go install github.com/yaacov/oc-proxy/cmd/oc-proxy
+go install github.com/yaacov/oc-gate/cmd/oc-gate
 ```
 
 Using container image:
@@ -23,8 +23,8 @@ Using container image:
 ``` bash
 podman run -p 8080:8080 --privileged \
   --mount type=bind,source=test,target=/app/test \
-  -it quay.io/yaacov/oc-proxy \
-  ./oc-proxy \
+  -it quay.io/yaacov/oc-gate \
+  ./oc-gate \
   < Required flags, see below for reqired flags, e.g. -api-server=... -ca-file=...  >
 ```
 
@@ -46,7 +46,7 @@ See [deploy/README.md](/deploy) for cluster deployment set examples.
 When running using OKD (Openshift) OAuth issuer, operator does not need to provide a k8s service acount token,
 the internal OAuth2 server will issue tokens that can be verified by the cluster.
 
-![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-proxy/main/web/public/using_okd_oauth.gif)
+![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-gate/main/web/public/using_okd_oauth.gif)
 
 ## Verifying RSA signed JWT authentication tokens
 
@@ -62,14 +62,14 @@ Allowed JWT claims are:
 - allowedAPIMethods - string, comma seperated list of allowed API methods (e.g. is "get,post")
 - allowedAPIRegexp - string, a reular expresion of allowed api call paths.
 
-![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-proxy/main/web/public/custom_tokens.gif)
+![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-gate/main/web/public/custom_tokens.gif)
 
 ## Compile and run
 
 ``` bash
-go build -o ./ ./cmd/oc-proxy/
+go build -o ./ ./cmd/oc-gate/
 
-./oc-proxy --help
+./oc-gate --help
 ```
 
 ## Examples
@@ -85,10 +85,10 @@ See [deploy/README.md](/deploy) for cluster deployment set examples.
 oc get secrets -n default --field-selector type=kubernetes.io/service-account-token -o json | \
     jq '.items[0].data."ca.crt"' -r | python -m base64 -d > test/ca.crt
 
-# Create a public and private keys, this will be used to verify comunication with the oc-proxy
+# Create a public and private keys, this will be used to verify comunication with the oc-gate
 # server, and to sign and verify JWT tokens.
 # Note: use your own private and public keys if you already have them.
-# Note II: oc-proxy JWT verification only support RS265 RSA signiture algorithm
+# Note II: oc-gate JWT verification only support RS265 RSA signiture algorithm
 #          make sure you use rsa keys for the JWT creation and verification.
 openssl genrsa -out test/key.pem
 openssl req -new -x509 -sha256 -key test/key.pem -out test/cert.pem -days 3650
@@ -110,7 +110,7 @@ Make sure you have all the pre-required certifations in the test directory.
 # --api-server : the k8s API server, this command assumes this cluster is an OKD (Openshift) cluster
 #                and the proxy will look up it's OAuth server automatically and pass tokens provided
 #                by the internal authentication issuer directly to the cluster.
-oc-proxy \
+oc-gate \
   --api-server https://api.ostest.test.metalkube.org:6443 \
   --k8s-bearer-token-passthrough true \
   --ca-file test/ca.crt
@@ -119,7 +119,7 @@ oc-proxy \
 # --jwt-token-key-file    : the public key used to verify JWT access tokens
 # --k8s-bearer-token-file : the k8s token that will be used by the proxy to 
 #                           fetch k8s resources for all verified users
-oc-proxy \
+oc-gate \
   --api-server https://api.ostest.test.metalkube.org:6443 \
   --k8s-bearer-token-file test/token \
   --jwt-token-key-file test/cert.pem \
@@ -128,7 +128,7 @@ oc-proxy \
 
 ### Run the proxy locally using a container image
 
-When running from container image replage the local CLI command `oc-proxy` with a `podman run ...` call.
+When running from container image replage the local CLI command `oc-gate` with a `podman run ...` call.
 
 For example, after verifying that you have the `./test` dierctory with all the neccary certification,
 you can run:
@@ -140,8 +140,8 @@ you can run:
 #                           fetch k8s resources for all verified users
 podman run -p 8080:8080 --privileged \
   --mount type=bind,source=test,target=/app/test \
-  -it quay.io/yaacov/oc-proxy \
-  ./oc-proxy \
+  -it quay.io/yaacov/oc-gate \
+  ./oc-gate \
   --api-server https://api.ostest.test.metalkube.org:6443 \
   --k8s-bearer-token-file test/token \
   --jwt-token-key-file test/cert.pem \
