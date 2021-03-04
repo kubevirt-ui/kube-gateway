@@ -5,9 +5,6 @@
 OC Proxy provide a filtering layer on top of k8s RABC that filter requests by validating time of request
 and object name before passing them to k8s RBAC for final proccessing.
 
-OC Proxy provides an interactive and non-interactive authentication proxy to [Kubernetes](https://kubernetes.io/) clusters.
-OC Proxy use [JWT](https://jwt.io/) (HS256, RS256) tokens for user authorization.
-
 [![Go Report Card](https://goreportcard.com/badge/github.com/yaacov/oc-proxy)](https://goreportcard.com/report/github.com/yaacov/oc-proxy)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
