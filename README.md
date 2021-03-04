@@ -2,7 +2,7 @@
 
 ![alt gopher network](https://raw.githubusercontent.com/yaacov/oc-gate/main/web/public/network-side.png)
 
-OC Proxy provide a filtering layer on top of k8s RABC that filter requests by validating time of request
+OC Gate provide a filtering layer on top of k8s RABC that filter requests by validating time of request
 and object name before passing them to k8s RBAC for final proccessing.
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/yaacov/oc-gate)](https://goreportcard.com/report/github.com/yaacov/oc-gate)

@@ -3,9 +3,9 @@ apiVersion: v1
 metadata:
   name: oc-gate
   annotations:
-    "openshift.io/display-name": OC Proxy
+    "openshift.io/display-name": OC Gate
     description: |
-      Proxy for k8s resource subletting.
+      Gate k8s resources by object name and request time.
     iconClass: icon-cogs
     tags: "openshift"
 parameters:
