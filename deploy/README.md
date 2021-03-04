@@ -11,15 +11,15 @@ Create public and private keys for signing and verifiying JWT tokens
 
 ``` bash
 # Creat self signed certificate (needed if server use TLS)
-openssl genrsa -out key.pem
-openssl req -new -x509 -sha256 -key key.pem -out cert.pem -days 3650
+openssl genrsa -out test/key.pem
+openssl req -new -x509 -sha256 -key test/key.pem -out test/cert.pem -days 3650
 ```
 
 Create a secret holding a public key for verification of JWT tokens
 
 ``` bash
 # We can use the same key as the server, or create a new pair just for JWT tokens.
-kubectl create secret generic oc-gate-jwt-secret --from-file=cert.pem
+kubectl create secret generic oc-gate-jwt-secret --from-file=test/cert.pem
 ```
 
 For interactive type of deploy create an oauthclient k8s object
