@@ -16,6 +16,7 @@ import (
 const (
 	authLoginEndpoint         = "/auth/login"
 	authLoginCallbackEndpoint = "/auth/callback"
+	authTokenEndpoint         = "/auth/token"
 )
 
 func main() {
@@ -140,6 +141,7 @@ func main() {
 		http.HandleFunc(authLoginEndpoint, s.Login)
 		http.HandleFunc(authLoginCallbackEndpoint, s.Callback)
 	}
+	http.HandleFunc(authTokenEndpoint, s.Token)
 
 	// Register proxy service
 	http.Handle(s.APIPath, s.AuthMiddleware(s.APIProxy()))

@@ -86,6 +86,25 @@ func (s Server) Callback(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
+// Token handle callbacs from OAuth2 authtorization server.
+func (s Server) Token(w http.ResponseWriter, r *http.Request) {
+	// Log request
+	log.Printf("%s %v: %+v", r.RemoteAddr, r.Method, r.URL)
+
+	q := r.URL.Query()
+	token := q.Get("token")
+	redirect := q.Get("redirect")
+
+	// Set session cookie.
+	http.SetCookie(w, &http.Cookie{
+		Name:     ocgateSessionCookieName,
+		Value:    token,
+		Path:     "/",
+		SameSite: http.SameSiteLaxMode,
+		HttpOnly: true})
+	http.Redirect(w, r, redirect, http.StatusFound)
+}
+
 // AuthMiddleware will look for a seesion cookie and use it as a Bearer token.
 func (s Server) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

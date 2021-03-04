@@ -15,7 +15,7 @@
 # vendor/
 web/public/noVNC
 
-test/ca.crt
-test/cert.pem.backup
-test/key.pem.backup
+*.crt
+*.pem
 test/token
+oc-gate
