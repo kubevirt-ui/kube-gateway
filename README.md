@@ -38,9 +38,10 @@ cert.pem  key.pem
 $
 ```
 
-2- Login into OCP cluster to deploy oc-gate app:
+## 2- Login into OCP cluster to deploy oc-gate app:
 
 $ oc login https://api.ocp4.xxx.xxx:6443
+``` bash
 Authentication required for https://api.ocp4.xxx.xxx:6443 (openshift)
 Username: xxxx
 Password: 
@@ -50,6 +51,7 @@ You have access to xx projects, the list has been suppressed. You can list all p
 
 Using project "default".
 $
+```
 
 
 
