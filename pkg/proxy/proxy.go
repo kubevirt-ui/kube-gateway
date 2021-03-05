@@ -91,13 +91,18 @@ func (s Server) Token(w http.ResponseWriter, r *http.Request) {
 	// Log request
 	log.Printf("%s %v: %+v", r.RemoteAddr, r.Method, r.URL)
 
-	q := r.URL.Query()
-	token := q.Get("token")
-	redirect := q.Get("redirect")
+	if r.Method != http.MethodPost {
+		handleError(w, fmt.Errorf("%s is not allowed", r.Method))
+		return
+	}
+
+	// Get token and redirect from post
+	token := r.FormValue("token")
+	then := r.FormValue("then")
 
 	// Empty redirect, means go home
-	if redirect == "" {
-		redirect = "/"
+	if then == "" {
+		then = "/"
 	}
 
 	// Set session cookie.
@@ -107,7 +112,7 @@ func (s Server) Token(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		SameSite: http.SameSiteLaxMode,
 		HttpOnly: true})
-	http.Redirect(w, r, redirect, http.StatusFound)
+	http.Redirect(w, r, then, http.StatusFound)
 }
 
 // AuthMiddleware will look for a seesion cookie and use it as a Bearer token.

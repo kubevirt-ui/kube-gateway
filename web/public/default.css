@@ -31,3 +31,7 @@ a:link {
 a:visited {
   color: rgba(36, 36, 36);
 }
+
+input {
+  margin-bottom: 10px;
+}
