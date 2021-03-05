@@ -23,7 +23,7 @@ certificate:
 
 .PHONY: k8s-secret
 k8s-secret:
-	oc create secret generic oc-gate-jwt-secret --from-file=test/cert.pem
+	oc create -n oc-gate secret generic oc-gate-jwt-secret --from-file=test/cert.pem --from-file=test/key.pem
 
 .PHONY: k8s-oauth-client
 k8s-oauth-client:

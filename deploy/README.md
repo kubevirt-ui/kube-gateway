@@ -19,7 +19,7 @@ Create a secret holding a public key for verification of JWT tokens
 
 ``` bash
 # We can use the same key as the server, or create a new pair just for JWT tokens.
-kubectl create secret generic oc-gate-jwt-secret --from-file=test/cert.pem
+oc create -n oc-gate secret generic oc-gate-jwt-secret --from-file=test/cert.pem --from-file=test/key.pem
 ```
 
 For interactive type of deploy create an oauthclient k8s object
@@ -46,10 +46,12 @@ oc create -f deploy/oc-gate-template.yaml
 # for example: ROUTE_URL=test-proxy.apps.ostest.test.metalkube.org
 # Note: routes are OKD thing too, OKD install a default proxy / loadbalancer
 # that route outside requests to k8s services.
-oc process -p ROUTE_URL=<the HOST of your oc-gate> oc-gate | oc create -f -
+export ROUTE_URL=<the HOST of your oc-gate>
+oc process -p ROUTE_URL=${ROUTE_URL} oc-gate | oc create -f -
 
 # For interactive deploy using OKD OAuth2 default server, use bearer token pass through.
-oc process -p ROUTE_URL=<the HOST of your oc-gate> oc-gate -p TOKEN_PASSTHROUGH=true | oc create -f -
+export ROUTE_URL=<the HOST of your oc-gate>
+oc process -p ROUTE_URL=${ROUTE_URL} oc-gate -p TOKEN_PASSTHROUGH=true | oc create -f -
 
 # The template will create a route to the oc-get server, get the route path using:
 oc get route
