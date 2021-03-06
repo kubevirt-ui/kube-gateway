@@ -40,6 +40,8 @@ See [deploy/README.md](/deploy) for cluster deployment set examples.
 
 ![Peek 2021-03-06 21-57](https://user-images.githubusercontent.com/2181522/110219350-4c61c680-7ec7-11eb-822f-e6073bd11c6c.gif)
 
+The above screencast use [oc-gate-operator](https://github.com/yaacov/oc-gate-operator) ro create the tokens.
+
 ## Modes
 
 - Interactive authentication using a OAuth2 authentication issuer.
