@@ -61,8 +61,8 @@ Allowed JWT claims are:
 
 - exp - int, expiration (unix time)
 - nbf - int, not before (unix time)
-- allowedAPIMethods - string, comma seperated list of allowed API methods (e.g. is "get,post")
-- allowedAPIRegexp - string, a reular expresion of allowed api call paths.
+- matchMethod - string, comma seperated list of allowed API methods (e.g. is "get,post")
+- matchPath - string, a reular expresion of allowed api call paths.
 
 ![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-gate/main/web/public/custom_tokens.gif)
 

@@ -63,15 +63,15 @@ Create a JWT specific for the k8s object you want to allow holder of this JWT to
 
 ``` bash
 # To sign the JWT use the private key that belong to the public key in the running oc-gate
-# The "allowedAPIRegexp" claim use regexp to allow specific k8s path
+# The "matchPath" claim use regexp to allow specific k8s path
 # use '^' to force start of path, and '$' to force end of path.
-# Other claims the proxy will respect are: allowedAPIMethods, exp and nbf
+# Other claims the proxy will respect are: matchMethod, exp and nbf
 
 # Create a token with path restriction,
-echo {\"allowedAPIRegexp\":\"^/k8s/api/v1/pods\"} | jwt -key ./test/key.pem -alg RS256 -sign -
+echo {\"matchPath\":\"^/k8s/api/v1/pods\"} | jwt -key ./test/key.pem -alg RS256 -sign -
 
 # Create a token with experation date and allowed API path
-echo {\"exp\": $(expr $(date +%s) + 100),\"allowedAPIRegexp\":\"^/k8s/api/v1/namespaces/test\"} | jwt -key ./test/key.pem -alg RS256 -sign -
+echo {\"exp\": $(expr $(date +%s) + 100),\"matchPath\":\"^/k8s/api/v1/namespaces/test\"} | jwt -key ./test/key.pem -alg RS256 -sign -
 ```
 
 This token can now be given to a user that will have access only to this specific k8s object(s).

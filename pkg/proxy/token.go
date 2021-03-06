@@ -16,10 +16,10 @@ func handleError(w http.ResponseWriter, err error) {
 	fmt.Fprintf(w, "{\"kind\": \"Status\", \"api\": \"ocgate\", \"status\": \"Forbidden\", \"message\": \"%s\",\"code\": %d}", err, http.StatusForbidden)
 }
 
-func validateRequest(httpMethod string, httpPath string, apiPAth string, allowedAPIMethods string, k8sAllowedAPIRegexp *regexp.Regexp) error {
+func validateRequest(httpMethod string, httpPath string, apiPAth string, matchMethod string, matchPathRegexp *regexp.Regexp) error {
 	// Validate method
-	if allowedAPIMethods != "" {
-		if !strings.Contains(allowedAPIMethods, strings.ToLower(httpMethod)) {
+	if matchMethod != "" {
+		if !strings.Contains(strings.ToLower(matchMethod), strings.ToLower(httpMethod)) {
 			return fmt.Errorf("%s method not allowedd", httpMethod)
 		}
 	}
@@ -29,7 +29,7 @@ func validateRequest(httpMethod string, httpPath string, apiPAth string, allowed
 	if len(httpPath) > len(apiPAth) &&
 		httpPath[:len(apiPAth)] == apiPAth &&
 		httpPath[len(apiPAth):] != "/.well-known/oauth-authorization-server" &&
-		!k8sAllowedAPIRegexp.MatchString(httpPath) {
+		!matchPathRegexp.MatchString(httpPath) {
 		return fmt.Errorf("%s path not allowed", httpPath)
 	}
 
@@ -53,18 +53,18 @@ func validateToken(token string, secret []byte, publicKey *rsa.PublicKey, apiPat
 	}
 
 	if claims, ok := tok.Claims.(jwt.MapClaims); ok && tok.Valid {
-		var allowedAPIMethods string
-		var allowedAPIRegexp string
+		var matchMethod string
+		var matchPath string
 
-		if allowedAPIMethods, ok = claims["allowedAPIMethods"].(string); !ok {
-			allowedAPIMethods = ""
+		if matchMethod, ok = claims["matchMethod"].(string); !ok {
+			matchMethod = ""
 		}
-		if allowedAPIRegexp, ok = claims["allowedAPIRegexp"].(string); !ok {
-			allowedAPIRegexp = ""
+		if matchPath, ok = claims["matchPath"].(string); !ok {
+			matchPath = ""
 		}
-		k8sAllowedAPIRegexp := regexp.MustCompile(allowedAPIRegexp)
+		matchPathRegexp := regexp.MustCompile(matchPath)
 
-		err := validateRequest(httpMethod, httpPath, apiPath, allowedAPIMethods, k8sAllowedAPIRegexp)
+		err := validateRequest(httpMethod, httpPath, apiPath, matchMethod, matchPathRegexp)
 		if err != nil {
 			return nil, err
 		}
