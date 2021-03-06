@@ -38,6 +38,8 @@ See [deploy/README.md](/deploy) for cluster deployment set examples.
 - Create secure web applications leveraging the power of k8s API.
 - Sublet access to your k8s resources for limited time, based on API path matching.
 
+![Peek 2021-03-06 21-57](https://user-images.githubusercontent.com/2181522/110219350-4c61c680-7ec7-11eb-822f-e6073bd11c6c.gif)
+
 ## Modes
 
 - Interactive authentication using a OAuth2 authentication issuer.
