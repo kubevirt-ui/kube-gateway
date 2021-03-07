@@ -59,6 +59,10 @@ oc get route
 
 ## Create a token, and fetch k8s objects using it
 
+Fore automated creation of tokens use [oc-gate-operator](https://github.com/yaacov/oc-gate-operator).
+
+### Manual creation of tokens
+
 Create a JWT specific for the k8s object you want to allow holder of this JWT to access:
 
 ``` bash
