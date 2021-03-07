@@ -60,7 +60,8 @@ func validateToken(token string, secret []byte, publicKey *rsa.PublicKey, apiPat
 			matchMethod = ""
 		}
 		if matchPath, ok = claims["matchPath"].(string); !ok {
-			matchPath = ""
+			// Do not allow any request
+			matchPath = "^$"
 		}
 		matchPathRegexp := regexp.MustCompile(matchPath)
 
