@@ -25,6 +25,7 @@ Using container image:
 ``` bash
 podman run -p 8080:8080 --privileged \
   --mount type=bind,source=test,target=/app/test \
+  --mount type=bind,source=<your web application directory>,target=/app/web/public \
   -it quay.io/yaacov/oc-gate \
   ./oc-gate \
   < Required flags, see below for reqired flags, e.g. -api-server=... -ca-file=...  >
