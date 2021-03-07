@@ -77,8 +77,8 @@ objects:
     - port: 8080
       protocol: TCP
       targetPort: 8080
-- apiVersion: v1
-  kind: ReplicationController
+- apiVersion: apps/v1
+  kind: Deployment
   metadata:
     name: oc-gate
     namespace: "${NAMESPACE}"
@@ -86,7 +86,8 @@ objects:
       name: oc-gate
   spec:
     selector:
-      name: oc-gate
+      matchLabels:
+        name: oc-gate
     replicas: 1
     template:
       version: v1
