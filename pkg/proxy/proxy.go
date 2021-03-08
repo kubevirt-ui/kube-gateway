@@ -121,6 +121,11 @@ func (s Server) AuthMiddleware(next http.Handler) http.Handler {
 		// Log request
 		log.Printf("%s %v: %+v", r.RemoteAddr, r.Method, r.URL)
 
+		if r.URL.Path == "/login.html" {
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		// Get request token from Authorization header and session cookie
 		token, _ := s.GetRequestToken(w, r)
 

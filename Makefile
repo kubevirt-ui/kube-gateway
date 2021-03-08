@@ -43,6 +43,6 @@ novnc:
 
 .PHONY: image
 image:
-	podman build -t yaacov/oc-gate ./deploy
+	podman build -t yaacov/oc-gate .
 	podman tag yaacov/oc-gate quay.io/yaacov/oc-gate
 	# podman push quay.io/yaacov/oc-gate

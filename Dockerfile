@@ -1,18 +1,10 @@
 # build stage
-FROM quay.io/fedora/fedora:34-x86_64 AS build
+FROM golang:1.15 AS build
+
 WORKDIR /app
-RUN sudo dnf install -y git golang
+COPY . .
 
-RUN git clone https://github.com/yaacov/oc-gate.git /app \
-  && git clone https://github.com/novnc/noVNC /app/web/public/noVNC \
-  && go get github.com/yaacov/oc-gate/cmd/oc-gate \
-  && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /app/ /app/cmd/oc-gate/
-
-# deploy stage
-
-# quay does not have an alpine image,
-# an option is to switch to using fedora-minimal
-# another option is to use alpine (only from dockerhub)
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o /app/ /app/cmd/... 
 
 # FROM quay.io/fedora/fedora-minimal:34-x86_64
 FROM alpine
