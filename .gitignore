@@ -15,6 +15,7 @@
 # vendor/
 web/public/noVNC
 
+.vscode
 *.crt
 *.pem
 test/token
