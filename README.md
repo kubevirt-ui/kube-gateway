@@ -20,19 +20,7 @@ Using go install:
 go install github.com/yaacov/oc-gate/cmd/oc-gate
 ```
 
-Using container image:
-
-``` bash
-podman run -p 8080:8080 --privileged \
-  --mount type=bind,source=test,target=/app/test \
-  --mount type=bind,source=<your web application directory>,target=/app/web/public \
-  -it quay.io/yaacov/oc-gate \
-  ./oc-gate \
-  < Required flags, see below, e.g. -api-server=... -ca-file=...  >
-```
-
-Deploy as pods in a cluster:
-See [deploy/README.md](/deploy) for cluster deployment set examples.
+See [oc-gate-operator](https://github.com/yaacov/oc-gate-operator) for cluster deployment.
 
 ## What can I do with it ?
 
