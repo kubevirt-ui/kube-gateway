@@ -20,6 +20,8 @@ Using go install:
 go install github.com/yaacov/oc-gate/cmd/oc-gate
 ```
 
+## Deploy using an operator
+
 See [oc-gate-operator](https://github.com/yaacov/oc-gate-operator) for cluster deployment.
 
 ## What can I do with it ?
