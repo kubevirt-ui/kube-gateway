@@ -43,6 +43,15 @@ novnc:
 
 .PHONY: image
 image:
-	podman build -t yaacov/oc-gate .
-	podman tag yaacov/oc-gate quay.io/yaacov/oc-gate
-	# podman push quay.io/yaacov/oc-gate
+	podman build -t quay.io/yaacov/oc-gate .
+	podman push quay.io/yaacov/oc-gate
+
+.PHONY: image-web-app
+image-web-app:
+	podman build -t quay.io/yaacov/oc-gate-web-app -f web-app.Dockerfile .
+	podman push quay.io/yaacov/oc-gate-web-app
+
+.PHONY: image-web-app-novnc
+image-web-app-novnc:
+	podman build -t quay.io/yaacov/oc-gate-web-app-novnc -f web-app-noVNC.Dockerfile .
+	podman push quay.io/yaacov/oc-gate-web-app-novnc

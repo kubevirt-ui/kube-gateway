@@ -2,12 +2,28 @@
 
 <head>
     <link rel="stylesheet" href="default.css">
+    <script type="module" crossorigin="anonymous">
+        function load() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            const then = urlParams.get('then');
+
+            document.getElementById("token").value = token
+            document.getElementById("then").value = then
+
+            if (token && then) {
+                document.getElementById("login").submit(); 
+            }
+        }
+
+        window.addEventListener("load", load, false);
+    </script>
 </head>
 
 <body id="body">
-    <p>Please enter token:</p>
+    <p>Login</p>
     <div>
-        <form name="logout" action="/auth/token" method="POST">
+        <form id="login" name="login" action="/auth/token" method="POST">
             <label for="token">Token</label><br/>
             <textarea name="token" id="token" rows="10" cols="40"></textarea><br/>
             <label for="then">Then</label><br/>
