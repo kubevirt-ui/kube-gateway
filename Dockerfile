@@ -14,5 +14,6 @@ RUN mkdir -p /app/web/public/
 
 COPY --from=build /app/oc-gate /app/
 
-COPY --from=build /app/web/public/default.css /app/web/public/
-COPY --from=build /app/web/public/login.html /app/web/public/index.html
+COPY ./web/public/default.css /app/web/public/
+COPY ./web/public/network-side.png /data/web/public/
+COPY ./web/public/login.html /app/web/public/index.html

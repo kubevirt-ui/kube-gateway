@@ -121,7 +121,7 @@ func (s Server) AuthMiddleware(next http.Handler) http.Handler {
 		// Log request
 		log.Printf("%s %v: %+v", r.RemoteAddr, r.Method, r.URL)
 
-		if r.URL.Path == "/login.html" {
+		if r.URL.Path[:11] == "/login.html" {
 			next.ServeHTTP(w, r)
 			return
 		}
