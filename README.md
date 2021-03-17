@@ -8,6 +8,7 @@ OC Gate provide a filtering layer on top of k8s RABC that filter requests by val
 and object name before passing them to k8s RBAC for final proccessing.
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/yaacov/oc-gate)](https://goreportcard.com/report/github.com/yaacov/oc-gate)
+[![Go Reference](https://pkg.go.dev/badge/github.com/yaacov/oc-gate.svg)](https://pkg.go.dev/github.com/yaacov/oc-gate)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 (gopher network image - [egonelbre/gophers](https://github.com/egonelbre/gophers))
@@ -79,21 +80,18 @@ See [deploy/README.md](/deploy) for cluster deployment set examples.
 # Get the k8s API CA, this is used for secure comunication with the server.
 # Note: you can use "-skip-verify-tls" flag to comunicate unsecurly with server
 # instead of fetching this file.
-oc get secrets -n default --field-selector type=kubernetes.io/service-account-token -o json | \
+kubectl get secrets -n default --field-selector type=kubernetes.io/service-account-token -o json | \
     jq '.items[0].data."ca.crt"' -r | python -m base64 -d > test/ca.crt
 
-# Create a public and private keys, this will be used to verify comunication with the oc-gate
+# Create RSA256 pem private and private key pair, this will be used to verify comunication with the oc-gate
 # server, and to sign and verify JWT tokens.
-# Note: use your own private and public keys if you already have them.
-# Note II: oc-gate JWT verification only support RS265 RSA signiture algorithm
-#          make sure you use rsa keys for the JWT creation and verification.
 openssl genrsa -out test/key.pem
 openssl req -new -x509 -sha256 -key test/key.pem -out test/cert.pem -days 3650
 
 # Getting a service account token, the serive account token is stored in a secret matched
 # to the service account.
 # Note: this example use "oc cli" for shortcut, you can always use the secret to get the token.
-oc whoami -t > test/token
+kubectl get secrets -n default --field-selector type=kubernetes.io/service-account-token -o json | jq '.items[0].data."token"'
 
 # For the noVNC demo, you can git clone the noVNC static html files into the `web/public`
 # directory
