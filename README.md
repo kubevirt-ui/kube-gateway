@@ -91,7 +91,8 @@ openssl req -new -x509 -sha256 -key test/key.pem -out test/cert.pem -days 3650
 # Getting a service account token, the serive account token is stored in a secret matched
 # to the service account.
 # Note: this example use "oc cli" for shortcut, you can always use the secret to get the token.
-kubectl get secrets -n default --field-selector type=kubernetes.io/service-account-token -o json | jq '.items[0].data."token"'
+kubectl get secrets -n default --field-selector type=kubernetes.io/service-account-token -o json | \
+    jq '.items[0].data."token"'
 
 # For the noVNC demo, you can git clone the noVNC static html files into the `web/public`
 # directory
