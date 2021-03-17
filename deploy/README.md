@@ -19,7 +19,7 @@ Create a secret holding a public key for verification of JWT tokens
 
 ``` bash
 # We can use the same key as the server, or create a new pair just for JWT tokens.
-oc create -n oc-gate secret generic oc-gate-jwt-secret --from-file=test/cert.pem --from-file=test/key.pem
+kubectl create -n oc-gate secret generic oc-gate-jwt-secret --from-file=test/cert.pem --from-file=test/key.pem
 ```
 
 For interactive type of deploy create an oauthclient k8s object
@@ -29,18 +29,18 @@ For interactive type of deploy create an oauthclient k8s object
 # OKD (Openshift) install an OAuth2 server on new clusters by default.
 # Note: on k8s cluters without OKD, you will need to use a different
 # OAuth server.
-oc create -f deploy/oc-gate-oauth-client.yaml
+kubectl create -f deploy/oc-gate-oauth-client.yaml
 ```
 
 Use the example template to deploy the proxy server
 
 ``` bash
 # Create the example namespace
-oc new-project oc-gate
+kubectl create namespace oc-gate
 
 # Note: templates are an OKD thing, if running on k8s cluster without OKD
 # you will neen to install the objects using a different method.
-oc create -f deploy/oc-gate-template.yaml 
+kubectl create -f deploy/oc-gate-template.yaml 
 
 # The template requires the HOST of the oc-gate server.
 # for example: ROUTE_URL=test-proxy.apps.ostest.test.metalkube.org
@@ -54,7 +54,7 @@ export ROUTE_URL=<the HOST of your oc-gate>
 oc process -p ROUTE_URL=${ROUTE_URL} oc-gate -p TOKEN_PASSTHROUGH=true | oc create -f -
 
 # The template will create a route to the oc-get server, get the route path using:
-oc get route
+kubectl get route
 ```
 
 ## Create a token, and fetch k8s objects using it
