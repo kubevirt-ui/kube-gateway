@@ -74,7 +74,7 @@ go build -o ./ ./cmd/oc-gate/
 
 See [deploy/README.md](/deploy) for cluster deployment set examples.
 
-### Get k8s 
+### Get k8s certificates, and create RSA key pair
 
 ```bash
 # Get the k8s API CA, this is used for secure comunication with the server.
