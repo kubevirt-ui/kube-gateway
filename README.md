@@ -127,28 +127,6 @@ oc-gate \
   --skip-verify-tls
 ```
 
-### Run the proxy locally using a container image
-
-When running from container image replage the local CLI command `oc-gate` with a `podman run ...` call.
-
-For example, after verifying that you have the `./test` dierctory with all the neccary certification,
-you can run:
-
-``` bash
-# Run without an OAuth2 server
-# --jwt-token-key-file    : the public key used to verify JWT access tokens
-# --k8s-bearer-token-file : the k8s token that will be used by the proxy to 
-#                           fetch k8s resources for all verified users
-podman run -p 8080:8080 --privileged \
-  --mount type=bind,source=test,target=/app/test \
-  -it quay.io/yaacov/oc-gate \
-  ./oc-gate \
-  --api-server $(oc whoami --show-server) \
-  --k8s-bearer-token-file test/token \
-  --jwt-token-key-file test/cert.pem \
-  --skip-verify-tls
-```
-
 ### Special paths
 
 - /auth/login - login path to start OAuth2 authentication process.
