@@ -74,7 +74,7 @@ go build -o ./ ./cmd/oc-gate/
 
 See [deploy/README.md](/deploy) for cluster deployment set examples.
 
-### Get some pre requirments
+### Get k8s 
 
 ```bash
 # Get the k8s API CA, this is used for secure comunication with the server.
@@ -107,10 +107,11 @@ Make sure you have all the pre-required certifations in the test directory.
 # Proxy the noVNC html files mixed with k8s API (replace the cluster with one you own)
 # note that the proxy address must match the redirect address in the oauthclient CR we created
 # earlier.
-# --api-server : the k8s API server, this command assumes this cluster is an OKD (Openshift) cluster
-#                and the proxy will look up it's OAuth server automatically and pass tokens provided
-#                by the internal authentication issuer directly to the cluster.
-#                for example --api-server=https://api.ostest.test.metalkube.org:6443
+# --api-server                   : the k8s API server.
+# --k8s-bearer-token-passthrough : this command assumes this cluster is an OKD (Openshift) cluster
+#                                  and the proxy will look up it's OAuth server automatically and
+#                                  pass tokens provided by the internal authentication issuer
+#                                  directly to the cluster.
 oc-gate \
   --api-server $(oc whoami --show-server) \
   --k8s-bearer-token-passthrough true \
@@ -124,7 +125,7 @@ oc-gate \
   --api-server $(oc whoami --show-server) \
   --k8s-bearer-token-file test/token \
   --jwt-token-key-file test/cert.pem \
-  --skip-verify-tls
+  --ca-file test/ca.crt
 ```
 
 ### Special paths
