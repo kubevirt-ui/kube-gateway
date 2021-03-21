@@ -109,7 +109,7 @@ spec:
         - -r
         - /data/web/public
         - /app/web/
-        image: quay.io/yaacov/oc-gate-web-app
+        image: quay.io/yaacov/oc-gate-web-app-novnc
         name: oc-gate-web-app
         volumeMounts:
         - mountPath: /app/web

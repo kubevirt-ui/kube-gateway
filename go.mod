@@ -7,5 +7,4 @@ require (
 	github.com/yaacov/oc-gate-operator v0.0.2
 	golang.org/x/oauth2 v0.0.0-20210220000619-9bb904979d93
 	k8s.io/api v0.20.5
-	sigs.k8s.io/kustomize/kustomize/v3 v3.8.7 // indirect
 )

@@ -107,12 +107,6 @@ func (s Server) Token(w http.ResponseWriter, r *http.Request) {
 		then = r.FormValue("then")
 	}
 
-	// Empty token is not allowed
-	if token == "" {
-		handleError(w, fmt.Errorf("token parameter is missing"))
-		return
-	}
-
 	// Empty redirect, means go home
 	if then == "" {
 		then = "/"

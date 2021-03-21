@@ -1,6 +1,6 @@
 SOURCE := cmd/oc-gate/*.go pkg/proxy/*.go
 IMG ?= quay.io/yaacov/oc-gate
-IMG_WEB_APP ?= quay.io/yaacov/oc-gate-web-app
+IMG_WEB_APP ?= quay.io/yaacov/oc-gate-web-app-novnc
 
 all: oc-gate
 
@@ -58,7 +58,7 @@ deploy-dir:
 	kustomize build config/openshift > ./deploy/oc-gate.openshift.yaml
 
 .PHONY: deploy
-deploy: deploy-dir
+deploy: deploy-dir certs
 	-kubectl create namespace oc-gate
 	-kubectl create secret generic oc-gate-jwt-secret --from-file=test/cert.pem --from-file=test/key.pem -n oc-gate
 	-kubectl apply -f ./deploy/oc-gate.yaml
