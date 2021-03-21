@@ -138,11 +138,12 @@ func main() {
 		InteractiveAuth: !*oauthServerDisable,
 	}
 
-	// Register auth endpoints
+	// Register oauth2 endpoints
 	if !*oauthServerDisable {
 		http.HandleFunc(authLoginEndpoint, s.Login)
 		http.HandleFunc(authLoginCallbackEndpoint, s.Callback)
 	}
+	// Register manual auth endpoint
 	http.HandleFunc(authSetTokenEndpoint, s.Token)
 
 	// Register proxy service
@@ -157,6 +158,8 @@ func main() {
 		APIServerURL: *apiServer,
 		APITransport: transport,
 	}
+
+	// Register request token endpoint
 	http.HandleFunc(authGetTokenEndpoint, g.GataToken)
 
 	// Parse listen address

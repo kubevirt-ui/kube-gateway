@@ -24,9 +24,9 @@ certs:
 	openssl req -new -x509 -sha256 -key test/key.pem -out test/cert.pem -days 3650 -subj "/C=/ST=/L=/O=/OU=/CN=/emailAddress="
 	kubectl get secrets -n default --field-selector type=kubernetes.io/service-account-token -o json | jq '.items[0].data."ca.crt"' -r | python -m base64 -d > test/ca.crt
 
-.PHONY: oc-gate-token
-oc-gate-token:
-	kubectl get secrets -n oc-gate -o json | jq '.items[] | select(.metadata.name | contains("sa")) | .data.token' | python -m base64 -d
+.PHONY: token
+token:
+	kubectl get secrets -n oc-gate -o json | jq '.items[] | select(.metadata.name | contains("sa")) | .data.token' | python -m base64 -d | tee test/token -
 
 .PHONY: novnc
 novnc:
@@ -56,10 +56,9 @@ deploy-dir:
 .PHONY: deploy
 deploy: deploy-dir
 	kubectl create namespace oc-gate
-	kubectl create secret generic oc-gate-jwt-secret --from-file=test/cert.pem --from-file=test/key.pem
+	kubectl create secret generic oc-gate-jwt-secret --from-file=test/cert.pem --from-file=test/key.pem -n oc-gate
 	kubectl apply -f ./deploy/oc-gate.yaml
 
 .PHONY: undeploy
 undeploy:
-	kubectl delete -f ./deploy/oc-gate.yaml
 	kubectl delete namespace oc-gate

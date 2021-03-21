@@ -86,19 +86,32 @@ func (s Server) Callback(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-// Token handle callbacs from OAuth2 authtorization server.
+// Token handle manual login requests.
 func (s Server) Token(w http.ResponseWriter, r *http.Request) {
+	var token string
+	var then string
+
 	// Log request
 	log.Printf("%s %v: %+v", r.RemoteAddr, r.Method, r.URL)
 
-	if r.Method != http.MethodPost {
-		handleError(w, fmt.Errorf("%s is not allowed", r.Method))
-		return
+	// Get token and redirect from get request
+	if r.Method == http.MethodGet {
+		query := r.URL.Query()
+		token = query.Get("token")
+		then = query.Get("then")
 	}
 
-	// Get token and redirect from post
-	token := r.FormValue("token")
-	then := r.FormValue("then")
+	// Get token and redirect from post request
+	if r.Method == http.MethodPost {
+		token = r.FormValue("token")
+		then = r.FormValue("then")
+	}
+
+	// Empty token is not allowed
+	if token == "" {
+		handleError(w, fmt.Errorf("token parameter is missing"))
+		return
+	}
 
 	// Empty redirect, means go home
 	if then == "" {
@@ -121,6 +134,7 @@ func (s Server) AuthMiddleware(next http.Handler) http.Handler {
 		// Log request
 		log.Printf("%s %v: %+v", r.RemoteAddr, r.Method, r.URL)
 
+		// login.html is a special static file, access is always allowed
 		if r.URL.Path == "/login.html" {
 			next.ServeHTTP(w, r)
 			return
