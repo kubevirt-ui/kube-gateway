@@ -23,9 +23,12 @@ Using go install:
 go install github.com/yaacov/oc-gate/cmd/oc-gate
 ```
 
+![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-gate/main/web/public/novnc.gif)
+
 ## Deploy
 
 See deployment examples for minikube and code-ready-containrs in [deploy](https://github.com/yaacov/oc-gate/tree/main/deploy) 
+
 ``` bash
 git clone git@github.com:yaacov/oc-gate.git
 cd oc-gate
