@@ -32,9 +32,16 @@ go install github.com/yaacov/oc-gate/cmd/oc-gate
 
 ### Demo: use JWT access key to none-interactivly login into a k8s web application
 
+Deploy the noVNC web application on a minikube cluster.
+Use admin token to generate a JWT that can access a kubevirt virtuall machine for 1h.
+Use the JWT access key to login into the noVNC web application.
+
 ![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-gate/main/web/public/novnc.gif)
 
 ### Demo: use OAuth2 Issuer to interactivly login into a k8s web application
+
+Deploy the demo web application on a CRC cluster.
+Use OAuth2 Issuer to login into the demo web application.
 
 ![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-gate/main/web/public/oauth.gif)
 
