@@ -135,3 +135,6 @@ oc-gate \
 - /auth/token - endpoint for setting session cookie, this query parameters are available:
   - token - the value to push into the session cookie
   - then - path to redirect to after cookie is set
+- /auth/gettoken - endpoint for generating tokens:
+  - resives a JSON with gate token spec
+  - returns a JSON with gate token status and token

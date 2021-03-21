@@ -127,7 +127,7 @@ func (s Server) AuthMiddleware(next http.Handler) http.Handler {
 		}
 
 		// Get request token from Authorization header and session cookie
-		token, _ := s.GetRequestToken(w, r)
+		token, _ := GetRequestToken(r)
 
 		// If using interactive login and no token, redirect user to login endpoint
 		if s.InteractiveAuth && token == "" {
@@ -192,8 +192,14 @@ func (s Server) APIProxy() http.Handler {
 		})
 }
 
+func handleError(w http.ResponseWriter, err error) {
+	w.WriteHeader(http.StatusForbidden)
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, "{\"kind\": \"Status\", \"api\": \"ocgate\", \"status\": \"Forbidden\", \"message\": \"%s\",\"code\": %d}", err, http.StatusForbidden)
+}
+
 // GetRequestToken parses a request and get the token to pass to k8s API
-func (s Server) GetRequestToken(w http.ResponseWriter, r *http.Request) (string, error) {
+func GetRequestToken(r *http.Request) (string, error) {
 	// Check for Authorization HTTP header
 	if authorization := r.Header.Get("Authorization"); len(authorization) > 7 && authorization[:7] == "Bearer " {
 		return authorization[7:], nil

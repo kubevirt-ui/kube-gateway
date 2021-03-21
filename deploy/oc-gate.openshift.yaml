@@ -77,6 +77,14 @@ objects:
     - port: 8080
       protocol: TCP
       targetPort: 8080
+- apiVersion: oauth.openshift.io/v1
+  kind: OAuthClient
+  metadata:
+    name: ocgate-client
+  grantMethod: auto
+  secret: my-secret
+  redirectURIs:
+  - https://${ROUTE_URL}/auth/callback
 - apiVersion: apps/v1
   kind: Deployment
   metadata:

@@ -10,13 +10,15 @@ import (
 
 	"golang.org/x/oauth2"
 
+	"github.com/yaacov/oc-gate/pkg/gatetoken"
 	"github.com/yaacov/oc-gate/pkg/proxy"
 )
 
 const (
 	authLoginEndpoint         = "/auth/login"
 	authLoginCallbackEndpoint = "/auth/callback"
-	authTokenEndpoint         = "/auth/token"
+	authSetTokenEndpoint      = "/auth/token"
+	authGetTokenEndpoint      = "/auth/gettoken"
 )
 
 func main() {
@@ -118,7 +120,7 @@ func main() {
 	}
 
 	// Init server
-	s := &proxy.Server{
+	p := &proxy.Server{
 		APIPath:      *apiPath,
 		APIServerURL: *apiServer,
 		APITransport: transport,
@@ -138,17 +140,24 @@ func main() {
 
 	// Register auth endpoints
 	if !*oauthServerDisable {
-		http.HandleFunc(authLoginEndpoint, s.Login)
-		http.HandleFunc(authLoginCallbackEndpoint, s.Callback)
+		http.HandleFunc(authLoginEndpoint, p.Login)
+		http.HandleFunc(authLoginCallbackEndpoint, p.Callback)
 	}
-	http.HandleFunc(authTokenEndpoint, s.Token)
+	http.HandleFunc(authSetTokenEndpoint, p.Token)
 
 	// Register proxy service
-	http.Handle(s.APIPath, s.AuthMiddleware(s.APIProxy()))
+	http.Handle(p.APIPath, p.AuthMiddleware(p.APIProxy()))
 
 	// Register static file server
 	fs := http.FileServer(http.Dir(*publicDir))
-	http.Handle(*basePath, s.AuthMiddleware(fs))
+	http.Handle(*basePath, p.AuthMiddleware(fs))
+
+	// Init gatetoken generation server
+	s := &gatetoken.Server{
+		APIServerURL: *apiServer,
+		APITransport: transport,
+	}
+	http.HandleFunc(authGetTokenEndpoint, s.GataToken)
 
 	// Parse listen address
 	u, err := url.Parse(*listen)

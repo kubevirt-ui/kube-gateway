@@ -4,7 +4,7 @@ FROM golang:1.15 AS build
 WORKDIR /app
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o /app/ /app/cmd/... 
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o /app/ /app/cmd/oc-gate/... 
 
 # deploy stage
 FROM alpine

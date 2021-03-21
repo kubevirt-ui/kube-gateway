@@ -3,18 +3,11 @@ package proxy
 import (
 	"crypto/rsa"
 	"fmt"
-	"net/http"
 	"regexp"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
 )
-
-func handleError(w http.ResponseWriter, err error) {
-	w.WriteHeader(http.StatusForbidden)
-	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, "{\"kind\": \"Status\", \"api\": \"ocgate\", \"status\": \"Forbidden\", \"message\": \"%s\",\"code\": %d}", err, http.StatusForbidden)
-}
 
 func validateRequest(httpMethod string, httpPath string, apiPAth string, matchMethod string, matchPathRegexp *regexp.Regexp) error {
 	// Validate method
