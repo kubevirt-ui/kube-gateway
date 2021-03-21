@@ -25,8 +25,10 @@ go install github.com/yaacov/oc-gate/cmd/oc-gate
 
 ## What can I do with it ?
 
-- Create secure web applications leveraging the power of k8s API.
-- Sublet access to your k8s resources for limited time, based on API path matching.
+- Create secure web applications using k8s API.
+- Use temporary JWT keys to access k8s API.
+- Use OAuth2 Issuer to access k8s API.
+- Use k8s service account tokens to access k8s API.
 
 ### Demo: use JWT access key to login into a kubevirt noVNC web application
 
@@ -34,7 +36,7 @@ go install github.com/yaacov/oc-gate/cmd/oc-gate
 
 ### Demo: use OAuth2 Issuer to Interactivly login into a k8s web application
 
-![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-gate/main/web/public/oauth2.gif)
+![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-gate/main/web/public/oauth.gif)
 
 ## Deploy
 
