@@ -16,6 +16,7 @@ cleanall:
 	$(RM) oc-gate
 	$(RM) test/*
 	$(RM) deploy/oc-gate.yaml
+	$(RM) deploy/oc-gate.openshift.yaml
 
 .PHONY: certs
 certs:
@@ -52,13 +53,17 @@ deploy-dir:
 	cd config/proxy && kustomize edit set image proxy=${IMG}
 	cd config/proxy && kustomize edit set image web-app=${IMG_WEB_APP}
 	kustomize build config/default > ./deploy/oc-gate.yaml
+	cd config/oauth2 && kustomize edit set image proxy=${IMG}
+	cd config/oauth2 && kustomize edit set image web-app=${IMG_WEB_APP}
+	kustomize build config/openshift > ./deploy/oc-gate.openshift.yaml
 
 .PHONY: deploy
 deploy: deploy-dir
-	kubectl create namespace oc-gate
-	kubectl create secret generic oc-gate-jwt-secret --from-file=test/cert.pem --from-file=test/key.pem -n oc-gate
-	kubectl apply -f ./deploy/oc-gate.yaml
+	-kubectl create namespace oc-gate
+	-kubectl create secret generic oc-gate-jwt-secret --from-file=test/cert.pem --from-file=test/key.pem -n oc-gate
+	-kubectl apply -f ./deploy/oc-gate.yaml
 
 .PHONY: undeploy
 undeploy:
-	kubectl delete namespace oc-gate
+	-kubectl delete -f ./deploy/oc-gate.yaml
+	-kubectl delete namespace oc-gate

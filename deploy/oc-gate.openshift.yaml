@@ -1,135 +1,154 @@
-kind: Template
 apiVersion: v1
+kind: ServiceAccount
 metadata:
-  name: oc-gate
-  annotations:
-    "openshift.io/display-name": OC Gate
-    description: |
-      Gate k8s resources by object name and request time.
-    iconClass: icon-cogs
-    tags: "openshift"
-parameters:
-- description: External URL for the oc-gate route
-  name: ROUTE_URL
-  value: ""
-- description: Internal URL for the api, for authentication retrieval
-  name: API_URL
-  value: https://kubernetes.default.svc
-- description: External OAUTH2 server
-  name: OAUTH2_URL
-  value: ""
-- description: JWT secret name holding RS256 puplic key file cert.pem file
-  name: JWT_SECRET_NAME
-  value: oc-gate-jwt-secret
-- description: The namespace to instantiate heapster under. Defaults to 'kube-system'.
-  name: NAMESPACE
-  value: oc-gate
-- description: Pass through the token given by the OAuth2 server directly to the API. Defaults to 'false'.
-  name: TOKEN_PASSTHROUGH
-  value: "false"
-objects:
-- apiVersion: route.openshift.io/v1
-  kind: Route
-  metadata:
-    name: oc-gate
-    namespace: "${NAMESPACE}"
-  spec:
-    host: "${ROUTE_URL}"
-    to:
-      kind: Service
-      name: oc-gate
-      weight: 100
-    tls:
-      termination: reencrypt
-    port:
-      targetPort: 8080
-    wildcardPolicy: None
-- apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    name: oc-gate
-    namespace: "${NAMESPACE}"
-  secrets:
-  - name: oc-gate-secrets
-- apiVersion: v1
-  kind: ClusterRoleBinding
-  metadata:
-    name: oc-gate-cluster-reader
-  roleRef:
-    name: cluster-admin
-  subjects:
-  - kind: ServiceAccount
-    name: oc-gate
-    namespace: "${NAMESPACE}"
-- apiVersion: v1
-  kind: Service
-  metadata:
-    name: oc-gate
-    namespace: "${NAMESPACE}"
-    labels:
-      name: oc-gate
-    annotations:
-      "service.alpha.openshift.io/serving-cert-secret-name": oc-gate-secrets
-  spec:
-    selector:
-      name: oc-gate
-    ports:
-    - port: 8080
-      protocol: TCP
-      targetPort: 8080
-- apiVersion: oauth.openshift.io/v1
-  kind: OAuthClient
-  metadata:
-    name: ocgate-client
-  grantMethod: auto
-  secret: my-secret
-  redirectURIs:
-  - https://${ROUTE_URL}/auth/callback
-- apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    name: oc-gate
-    namespace: "${NAMESPACE}"
-    labels:
-      name: oc-gate
-  spec:
-    selector:
-      matchLabels:
+  labels:
+    app: oc-gate
+  name: oc-gate-sa
+  namespace: oc-gate
+secrets:
+- name: oc-gate-secrets
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app: oc-gate
+  name: oc-gate-cluster-reader
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - get
+  - watch
+  - list
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app: oc-gate
+  name: oc-gate-cluster-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: oc-gate-cluster-reader
+subjects:
+- kind: ServiceAccount
+  name: oc-gate-sa
+  namespace: oc-gate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: oc-gate
+  name: oc-gate-svc
+  namespace: oc-gate
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: oc-gate
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: oc-gate
+  name: oc-gate-proxy
+  namespace: oc-gate
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oc-gate
+  template:
+    metadata:
+      labels:
+        app: oc-gate
+    spec:
+      containers:
+      - command:
+        - ./oc-gate
+        - -api-server=$(API_URL)
+        - -ca-file=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        - -cert-file=/secrets/tls.crt
+        - -key-file=/secrets/tls.key
+        - -base-address=https://$(ROUTE_URL)
+        - -listen=$(LISTEN)
+        - -jwt-token-key-file=/secrets/cert.pem
+        - -k8s-bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+        - -k8s-bearer-token-passthrough=$(TOKEN_PASSTHROUGH)
+        env:
+        - name: API_URL
+          value: https://kubernetes.default.svc
+        - name: ROUTE_URL
+          value: https://oc-gate.apps.example.com
+        - name: TOKEN_PASSTHROUGH
+          value: "false"
+        - name: LISTEN
+          value: https://0.0.0.0:8080
+        image: quay.io/yaacov/oc-gate
         name: oc-gate
-    replicas: 1
-    template:
-      version: v1
-      metadata:
-        labels:
-          name: oc-gate
-      spec:
-        containers:
-        - image: "quay.io/yaacov/oc-gate:latest"
-          name: oc-gate
-          ports:
-          - name: oc-gate-https
-            containerPort: 8080
-          volumeMounts:
-          - name: oc-gate-secrets
-            mountPath: "/secrets"
-          - name: oc-gate-jwt-secret
-            mountPath: "/jwt-secret"
-          command:
-          - "./oc-gate"
-          - "-api-server=${API_URL}"
-          - "-ca-file=/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt"
-          - "-cert-file=/secrets/tls.crt"
-          - "-key-file=/secrets/tls.key"
-          - "-base-address=https://${ROUTE_URL}"
-          - "-listen=https://0.0.0.0:8080"
-          - "-jwt-token-key-file=/jwt-secret/cert.pem"
-          - "-k8s-bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token"
-          - "-k8s-bearer-token-passthrough=${TOKEN_PASSTHROUGH}"
-        volumes:
-        - name: oc-gate-secrets
-          secret:
-            secretName: oc-gate-secrets
-        - name: oc-gate-jwt-secret
-          secret:
-            secretName: ${JWT_SECRET_NAME}
-        serviceAccount: oc-gate
+        ports:
+        - containerPort: 8080
+          name: oc-gate-https
+        volumeMounts:
+        - mountPath: /secrets
+          name: secrets
+        - mountPath: /app/web
+          name: web-app
+      initContainers:
+      - command:
+        - /bin/cp
+        - -r
+        - /data/web/public
+        - /app/web/
+        image: quay.io/yaacov/oc-gate-web-app
+        name: oc-gate-web-app
+        volumeMounts:
+        - mountPath: /app/web
+          name: web-app
+      serviceAccountName: oc-gate-sa
+      volumes:
+      - name: secrets
+        secret:
+          secretName: oc-gate-jwt-secret
+      - emptyDir: {}
+        name: web-app
+---
+apiVersion: oauth.openshift.io/v1
+grantMethod: auto
+kind: OAuthClient
+metadata:
+  labels:
+    app: oc-gate
+  name: oc-gate-client
+  namespace: oc-gate
+redirectURIs:
+- https://oc-gate.apps.example.com/auth/callback
+secret: my-secret
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: oc-gate
+  name: oc-gate-route
+  namespace: oc-gate
+spec:
+  host: oc-gate.apps.example.com
+  port:
+    targetPort: 8080
+  tls:
+    termination: reencrypt
+  to:
+    kind: Service
+    name: oc-gate-svc
+    weight: 100
+  wildcardPolicy: None
