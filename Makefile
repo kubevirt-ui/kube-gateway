@@ -27,7 +27,7 @@ certs:
 
 .PHONY: token
 token:
-	kubectl get secrets -n oc-gate -o json | jq '.items[] | select(.metadata.name | contains("sa")) | .data.token' | python -m base64 -d | tee test/token -
+	kubectl get secrets -n oc-gate -o json | jq '.items[] | select(.metadata.name | contains("sa")) | .data.token' | python -m base64 -d | tee test/token
 
 .PHONY: novnc
 novnc:
