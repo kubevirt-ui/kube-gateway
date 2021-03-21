@@ -10,4 +10,4 @@ images:
 - name: proxy
   newName: quay.io/yaacov/oc-gate
 - name: web-app
-  newName: quay.io/yaacov/oc-gate-web-app-novnc
+  newName: quay.io/yaacov/oc-gate-web-app

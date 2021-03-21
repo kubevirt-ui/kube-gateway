@@ -42,6 +42,8 @@ subjects:
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    service.alpha.openshift.io/serving-cert-secret-name: oc-gate-secrets
   labels:
     app: oc-gate
   name: oc-gate-svc
@@ -81,16 +83,14 @@ spec:
         - -key-file=/secrets/tls.key
         - -base-address=https://$(ROUTE_URL)
         - -listen=$(LISTEN)
-        - -jwt-token-key-file=/secrets/cert.pem
-        - -k8s-bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token
         - -k8s-bearer-token-passthrough=$(TOKEN_PASSTHROUGH)
         env:
         - name: API_URL
           value: https://kubernetes.default.svc
         - name: ROUTE_URL
-          value: https://oc-gate.apps.example.com
+          value: oc-gate.apps-crc.testing
         - name: TOKEN_PASSTHROUGH
-          value: "false"
+          value: "true"
         - name: LISTEN
           value: https://0.0.0.0:8080
         image: quay.io/yaacov/oc-gate
@@ -109,7 +109,7 @@ spec:
         - -r
         - /data/web/public
         - /app/web/
-        image: quay.io/yaacov/oc-gate-web-app-novnc
+        image: quay.io/yaacov/oc-gate-web-app
         name: oc-gate-web-app
         volumeMounts:
         - mountPath: /app/web
@@ -118,7 +118,7 @@ spec:
       volumes:
       - name: secrets
         secret:
-          secretName: oc-gate-jwt-secret
+          secretName: oc-gate-secrets
       - emptyDir: {}
         name: web-app
 ---
@@ -131,7 +131,7 @@ metadata:
   name: oc-gate-client
   namespace: oc-gate
 redirectURIs:
-- https://oc-gate.apps.example.com/auth/callback
+- https://oc-gate.apps-crc.testing/auth/callback
 secret: my-secret
 ---
 apiVersion: route.openshift.io/v1
@@ -142,7 +142,7 @@ metadata:
   name: oc-gate-route
   namespace: oc-gate
 spec:
-  host: oc-gate.apps.example.com
+  host: oc-gate.apps-crc.testing
   port:
     targetPort: 8080
   tls:

@@ -30,6 +30,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: svc
+  annotations:
+      "service.alpha.openshift.io/serving-cert-secret-name": oc-gate-secrets
 spec:
   type: LoadBalancer
   ports:
@@ -42,7 +44,7 @@ kind: Route
 metadata:
   name: route
 spec:
-  host: oc-gate.apps.example.com
+  host: oc-gate.apps-crc.testing
   to:
     kind: Service
     name: oc-gate-svc
@@ -60,7 +62,7 @@ metadata:
 grantMethod: auto
 secret: my-secret
 redirectURIs:
-- https://oc-gate.apps.example.com/auth/callback
+- https://oc-gate.apps-crc.testing/auth/callback
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -96,9 +98,9 @@ spec:
         - name: API_URL
           value: "https://kubernetes.default.svc"
         - name: ROUTE_URL
-          value: "https://oc-gate.apps.example.com"
+          value: "oc-gate.apps-crc.testing"
         - name: TOKEN_PASSTHROUGH
-          value: "false"
+          value: "true"
         - name: LISTEN
           value: "https://0.0.0.0:8080"
         command:
@@ -109,13 +111,11 @@ spec:
         - "-key-file=/secrets/tls.key"
         - "-base-address=https://$(ROUTE_URL)"
         - "-listen=$(LISTEN)"
-        - "-jwt-token-key-file=/secrets/cert.pem"
-        - "-k8s-bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token"
         - "-k8s-bearer-token-passthrough=$(TOKEN_PASSTHROUGH)"
       volumes:
       - name: secrets
         secret:
-          secretName: oc-gate-jwt-secret
+          secretName: oc-gate-secrets
       - name: web-app
         emptyDir: {}
       serviceAccountName: sa
