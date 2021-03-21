@@ -26,9 +26,9 @@ certs:
 	openssl req -new -x509 -sha256 -key test/key.pem -out test/cert.pem -days 3650 -subj "/C=/ST=/L=/O=/OU=/CN=/emailAddress="
 	kubectl get secrets -n default --field-selector type=kubernetes.io/service-account-token -o json | jq '.items[0].data."ca.crt"' -r | python -m base64 -d > test/ca.crt
 
-.PHONY: token
-token:
-	kubectl get secrets -n oc-gate -o json | jq '.items[] | select(.metadata.name | contains("sa")) | .data.token' | python -m base64 -d | tee test/token
+.PHONY: admin-token
+admin-token:
+	kubectl get secrets -n oc-gate -o json | jq '[.items[] | select(.metadata.name | contains("oc-gate-sa")) | select(.type | contains("service-account-token")) | .data.token][0]' | python -m base64 -d | tee test/token
 
 .PHONY: novnc
 novnc:
