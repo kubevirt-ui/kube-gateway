@@ -23,6 +23,8 @@ Using go install:
 go install github.com/yaacov/oc-gate/cmd/oc-gate
 ```
 
+### Demo: use temporary JWT access key to login into a noVNC web application
+
 ![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-gate/main/web/public/novnc.gif)
 
 ## Deploy
