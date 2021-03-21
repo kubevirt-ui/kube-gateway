@@ -120,7 +120,7 @@ func main() {
 	}
 
 	// Init server
-	p := &proxy.Server{
+	s := &proxy.Server{
 		APIPath:      *apiPath,
 		APIServerURL: *apiServer,
 		APITransport: transport,
@@ -140,24 +140,24 @@ func main() {
 
 	// Register auth endpoints
 	if !*oauthServerDisable {
-		http.HandleFunc(authLoginEndpoint, p.Login)
-		http.HandleFunc(authLoginCallbackEndpoint, p.Callback)
+		http.HandleFunc(authLoginEndpoint, s.Login)
+		http.HandleFunc(authLoginCallbackEndpoint, s.Callback)
 	}
-	http.HandleFunc(authSetTokenEndpoint, p.Token)
+	http.HandleFunc(authSetTokenEndpoint, s.Token)
 
 	// Register proxy service
-	http.Handle(p.APIPath, p.AuthMiddleware(p.APIProxy()))
+	http.Handle(s.APIPath, s.AuthMiddleware(s.APIProxy()))
 
 	// Register static file server
 	fs := http.FileServer(http.Dir(*publicDir))
-	http.Handle(*basePath, p.AuthMiddleware(fs))
+	http.Handle(*basePath, s.AuthMiddleware(fs))
 
 	// Init gatetoken generation server
-	s := &gatetoken.Server{
+	g := &gatetoken.Server{
 		APIServerURL: *apiServer,
 		APITransport: transport,
 	}
-	http.HandleFunc(authGetTokenEndpoint, s.GataToken)
+	http.HandleFunc(authGetTokenEndpoint, g.GataToken)
 
 	// Parse listen address
 	u, err := url.Parse(*listen)
