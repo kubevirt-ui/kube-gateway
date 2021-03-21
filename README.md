@@ -2,7 +2,7 @@
 
 ![alt gopher network](https://raw.githubusercontent.com/yaacov/oc-gate/main/web/public/network-side.png)
 
-OC Gate allows web applications running inside (or outside) a k8s cluster to use autheticated calls to k8s API.
+OC Gate allow web applications running inside (or outside) a k8s cluster to use autheticated calls to k8s API.
 
 OC Gate can provide a filtering layer on top of k8s RABC that filter requests by validating time of request
 and object name before passing them to k8s RBAC for final proccessing.
