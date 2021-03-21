@@ -43,13 +43,12 @@ make deploy
 - Non interative authentication using bearer JWT Authorization header.
 - Interactive authentication using a OAuth2 authentication issuer.
 
-### Endpoints
+### Proxy server endpoints
 
-- /auth/login - login path to start OAuth2 authentication process.
-- /auth/callback - OAuth2 authentication callback endpoint.
-- /auth/token - endpoint for setting session cookie, this query parameters are available:
-  - token - the value to push into the session cookie
-  - then - path to redirect to after cookie is set
-- /auth/gettoken - endpoint for generating JWT access keys:
-  - resives a JSON with gate token spec
-  - returns a JSON with gate token status and token
+| endpoint | description
+|---|----|
+| / | web application static files |
+| /auth/login | login path to start OAuth2 authentication process |
+| /auth/callback | OAuth2 authentication callback endpoint |
+| /auth/token | endpoint for setting session cookie |
+| /auth/gettoken | endpoint for generating JWT access keys|
