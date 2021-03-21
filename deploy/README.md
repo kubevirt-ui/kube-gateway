@@ -39,3 +39,17 @@ google-chrome  "${proxyurl}/auth/token?token=${jwt}&then=/noVNC/vnc_lite.html?pa
 ```
 
 ## Deploy on code ready containers
+
+``` bash
+# Using crc
+crc status
+oc whoami
+oc get pods --all-namespaces
+
+# Deploy OC Gate noVNC demo deployment
+make deploy-ouath2 
+oc get routes -n oc-gate
+
+# Start the web application, oc-gate proxy automatically start oauth2 login
+google-chrome https://oc-gate.apps-crc.testing
+```
