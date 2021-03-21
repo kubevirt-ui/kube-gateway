@@ -23,9 +23,18 @@ Using go install:
 go install github.com/yaacov/oc-gate/cmd/oc-gate
 ```
 
-### Demo: use temporary JWT access key to login into a noVNC web application
+## What can I do with it ?
+
+- Create secure web applications leveraging the power of k8s API.
+- Sublet access to your k8s resources for limited time, based on API path matching.
+
+### Demo: use JWT access key to login into a kubevirt noVNC web application
 
 ![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-gate/main/web/public/novnc.gif)
+
+### Demo: use OAuth2 Issuer to Interactivly login into a k8s web application
+
+![alt demo gif](https://raw.githubusercontent.com/yaacov/oc-gate/main/web/public/oauth2.gif)
 
 ## Deploy
 
@@ -37,16 +46,6 @@ cd oc-gate
 
 make deploy
 ```
-
-## What can I do with it ?
-
-- Create secure web applications leveraging the power of k8s API.
-- Sublet access to your k8s resources for limited time, based on API path matching.
-
-## Modes
-
-- Non interative authentication using bearer JWT Authorization header.
-- Interactive authentication using a OAuth2 authentication issuer.
 
 ### Proxy server endpoints
 
