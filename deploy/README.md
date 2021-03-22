@@ -13,6 +13,10 @@ k get pods --all-namespaces
 k apply -f https://raw.githubusercontent.com/kubevirt/demo/master/manifests/vm.yaml
 virtctl start testvm
 
+# Optional: log into vm using ssh
+# virtctl expose vmi testvm --port=22 --name=myvm-ssh --type=NodePort
+# ssh cirros@api.crc.testing -p 30207
+
 # Deploy k8s+kubevirt noVNC demo deployment:
 make deploy
 k get ingress -n oc-gate
