@@ -66,7 +66,7 @@ google-chrome https://oc-gate.apps-crc.testing
 
 ```bash
 # Deploy the openshift web application example
-make deploy-openshift 
+make deploy-openshift
 
 # Set helper enviorment variables
 vm=testvm
