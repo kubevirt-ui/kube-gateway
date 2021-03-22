@@ -1,16 +1,13 @@
-# Adds namespace to all resources.
-namespace: oc-gate
+resources:
+- proxy.yaml
 
-# Value of this field is prepended to the
-# names of all resources, e.g. a deployment named
-# "wordpress" becomes "alices-wordpress".
-# Note that it should also match with the prefix (text before '-') of the namespace
-# field above.
-namePrefix: oc-gate-
+generatorOptions:
+  disableNameSuffixHash: true
 
-# Labels to add to all resources and selectors.
-commonLabels:
-  app: oc-gate
-
-bases:
-- ../oauth2
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+images:
+- name: proxy
+  newName: quay.io/yaacov/oc-gate
+- name: web-app
+  newName: quay.io/yaacov/oc-gate-web-app-novnc
