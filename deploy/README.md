@@ -41,6 +41,10 @@ google-chrome  "${proxyurl}/auth/token?token=${jwt}&then=/noVNC/vnc_lite.html?pa
 ## Deploy on code ready containers
 
 ``` bash
+# Optional: set crc disk and mem sizes
+# crc config set disk-size 100
+# crc config set memory 12000
+
 # Using crc
 crc status
 oc whoami
