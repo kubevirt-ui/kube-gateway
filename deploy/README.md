@@ -41,6 +41,8 @@ google-chrome  "${proxyurl}/auth/token?token=${jwt}&then=/noVNC/vnc_lite.html?pa
 
 ## Deploy on code ready containers
 
+### Oauth2 (Interactive login)
+
 ``` bash
 # Optional: set crc disk and mem sizes
 # crc config set disk-size 100
@@ -63,6 +65,8 @@ oc get routes -n oc-gate
 # Start the web application, oc-gate proxy automatically start oauth2 login
 google-chrome https://oc-gate.apps-crc.testing
 ```
+
+### noVNC
 
 ```bash
 # Deploy the openshift web application example
