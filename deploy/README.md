@@ -16,7 +16,6 @@ virtctl start testvm
 # Log into vm using ssh
 virtctl expose vmi testvm --port=22 --name=myvm-ssh --type=NodePort
 
-# Ceck the service noed port and replace <node port> with actual port
 nodePort=$(kubectl get svc myvm-ssh -o json | jq .spec.ports[0].nodePort)
 ssh cirros@api.crc.testing -p ${nodePort}
 
