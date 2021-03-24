@@ -7,7 +7,7 @@
 # Using minikube with ingress and kubevirt addons
 # minikube start --driver=podman --addons=kubevirt,ingress
 minikube status
-k get pods --all-namespaces
+kubectl get pods --all-namespaces
 
 # Create a virtual machine
 kubectl apply -f https://raw.githubusercontent.com/kubevirt/demo/master/manifests/vm.yaml
@@ -21,10 +21,10 @@ ssh cirros@api.crc.testing -p <node port>
 
 # Deploy k8s+kubevirt noVNC demo deployment:
 make deploy
-k get ingress -n oc-gate
+kubectl get ingress -n oc-gate
 
 # Wait for oc gate noVNC web application to deploy
-k get pods -n oc-gate
+kubectl get pods -n oc-gate
 
 # Get administarator token
 bt=$(make admin-token -s)
@@ -77,7 +77,7 @@ oc create -f https://github.com/kubevirt/kubevirt/releases/download/$KUBEVIRT_VE
 oc create -f https://github.com/kubevirt/kubevirt/releases/download/$KUBEVIRT_VERSION/kubevirt-cr.yaml
 
 # Create a virtual machine
-k apply -f https://raw.githubusercontent.com/kubevirt/demo/master/manifests/vm.yaml
+oc apply -f https://raw.githubusercontent.com/kubevirt/demo/master/manifests/vm.yaml
 virtctl start testvm
 
 # Deploy the openshift web application example
