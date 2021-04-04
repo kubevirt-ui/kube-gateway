@@ -21,10 +21,10 @@ ssh cirros@api.crc.testing -p ${nodePort}
 
 # Deploy k8s+kubevirt noVNC demo deployment:
 make deploy
-kubectl get ingress -n oc-gate
+kubectl get ingress -n kube-gateway
 
 # Wait for oc gate noVNC web application to deploy
-kubectl get pods -n oc-gate
+kubectl get pods -n kube-gateway
 
 # Get administarator token
 bt=$(make admin-token -s)
@@ -35,10 +35,10 @@ vm=testvm
 ns=default
 apigroup=subresources.kubevirt.io
 resource=virtualmachineinstances
-proxyurl=https://oc-gate.apps.example.com
+proxyurl=https://kube-gateway.apps.example.com
 
 # Use admin token to request a temporary JWT access key
-data='{"metadata":{"namespace":"oc-gate"},"spec":{"namespace":"'${ns}'","apiGroups":["'${apigroup}'"],resources":["'${resource}'"],"resourceNames":"'${vm}'"}}'
+data='{"metadata":{"namespace":"kube-gateway"},"spec":{"namespace":"'${ns}'","apiGroups":["'${apigroup}'"],resources":["'${resource}'"],"resourceNames":"'${vm}'"}}'
 
 # Use the admin token to create a temporary JWT access key for the testvm
 jwt=$(curl -k -H 'Accept: application/json' -H "Authorization: Bearer ${bt}" -H "Content-Type: application/json" --request POST --data "${data}" "${proxyurl}/auth/gettoken" | jq .status.token)
@@ -65,10 +65,10 @@ oc get pods --all-namespaces
 
 # Deploy the OAuth2 demo web application
 make deploy-ouath2 
-oc get routes -n oc-gate
+oc get routes -n kube-gateway
 
-# Start the web application, oc-gate proxy automatically start oauth2 login
-google-chrome https://oc-gate.apps-crc.testing
+# Start the web application, kube-gateway proxy automatically start oauth2 login
+google-chrome https://kube-gateway.apps-crc.testing
 ```
 
 ### noVNC
@@ -94,10 +94,10 @@ vm=testvm
 ns=default
 apigroup=subresources.kubevirt.io
 resource=virtualmachineinstances
-proxyurl=https://oc-gate.apps-crc.testing
+proxyurl=https://kube-gateway.apps-crc.testing
 
 # Use admin token to request a temporary JWT access key
-data='{"metadata":{"namespace":"oc-gate"},"spec":{"namespace":"'${ns}'","apiGroups":["'${apigroup}'"],resources":["'${resource}'"],"resourceNames":"'${vm}'"}}'
+data='{"metadata":{"namespace":"kube-gateway"},"spec":{"namespace":"'${ns}'","apiGroups":["'${apigroup}'"],resources":["'${resource}'"],"resourceNames":"'${vm}'"}}'
 jwt=$(curl -k -H 'Accept: application/json' -H "Authorization: Bearer ${bt}" -H "Content-Type: application/json" --request POST --data "${data}" "${proxyurl}/auth/gettoken" | jq .status.token)
 
 # Open the noVNC web application using google-chrome

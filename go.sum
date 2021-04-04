@@ -360,10 +360,12 @@ github.com/tmc/grpc-websocket-proxy v0.0.0-20170815181823-89b8d40f7ca8/go.mod h1
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=
 github.com/urfave/cli v1.20.0/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijbERA=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
-github.com/yaacov/kube-gateway-operator v0.0.2 h1:0rmEdApXWIAcVKRDdBCxDxbwnxbCFHZezsgxiZ0evtM=
-github.com/yaacov/kube-gateway-operator v0.0.2/go.mod h1:648foZfa/tlaqvoxTJbbAG8BnVJ3jZB9zlrBI48KaPE=
-github.com/yaacov/kube-gateway-operator v0.0.3 h1:oOCj8VWWQhlGp2Bp3UgdzUD/K1t24Ndt1id3P/QAJBo=
-github.com/yaacov/kube-gateway-operator v0.0.3/go.mod h1:Mk9ok9qkUm7GojzrmG6nR6iTNX6GSZoBckutuBICi6Q=
+github.com/yaacov/kube-gateway v0.1.8 h1:NGLBxpr2f8f2JGl9o/gonGGBfw5gbYfGDALgCDXNdow=
+github.com/yaacov/kube-gateway v0.1.8/go.mod h1:hIZWblX2neIWkEO6QoW9M799FS3sQw07hSNqIW4+AKM=
+github.com/yaacov/oc-gate-operator v0.0.2 h1:0rmEdApXWIAcVKRDdBCxDxbwnxbCFHZezsgxiZ0evtM=
+github.com/yaacov/oc-gate-operator v0.0.2/go.mod h1:648foZfa/tlaqvoxTJbbAG8BnVJ3jZB9zlrBI48KaPE=
+github.com/yaacov/oc-gate-operator v0.0.3 h1:oOCj8VWWQhlGp2Bp3UgdzUD/K1t24Ndt1id3P/QAJBo=
+github.com/yaacov/oc-gate-operator v0.0.3/go.mod h1:Mk9ok9qkUm7GojzrmG6nR6iTNX6GSZoBckutuBICi6Q=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.32/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
@@ -470,6 +472,7 @@ golang.org/x/oauth2 v0.0.0-20190226205417-e64efc72b421/go.mod h1:gOpvHmFTYa4Iltr
 golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45/go.mod h1:gOpvHmFTYa4IltrdGE7lF6nIHvwfUNPOp7c8zoXwtLw=
 golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6/go.mod h1:gOpvHmFTYa4IltrdGE7lF6nIHvwfUNPOp7c8zoXwtLw=
 golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d/go.mod h1:gOpvHmFTYa4IltrdGE7lF6nIHvwfUNPOp7c8zoXwtLw=
+golang.org/x/oauth2 v0.0.0-20210220000619-9bb904979d93/go.mod h1:KelEdhl1UZF7XfJ4dDtk6s++YSgaE7mD/BuKKDLBl4A=
 golang.org/x/oauth2 v0.0.0-20210402161424-2e8d93401602 h1:0Ja1LBD+yisY6RWM/BH7TJVXWsSjs2VwBSmvSX4HdBc=
 golang.org/x/oauth2 v0.0.0-20210402161424-2e8d93401602/go.mod h1:KelEdhl1UZF7XfJ4dDtk6s++YSgaE7mD/BuKKDLBl4A=
 golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=

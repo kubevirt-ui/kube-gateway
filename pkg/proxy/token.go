@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
-	ocgatev1beta1 "github.com/yaacov/kube-gateway-operator/api/v1beta1"
+	ocgatev1beta1 "github.com/yaacov/oc-gate-operator/api/v1beta1"
 )
 
 func authenticateToken(token string, secret []byte, publicKey *rsa.PublicKey) (*jwt.Token, error) {
