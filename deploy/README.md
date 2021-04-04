@@ -95,6 +95,7 @@ vm=testvm
 ns=default
 apigroup=subresources.kubevirt.io
 resource=virtualmachineinstances
+path=k8s/apis/subresources.kubevirt.io/v1alpha3/namespaces/default/virtualmachineinstances/testvm/vnc
 proxyurl=https://kube-gateway.apps-crc.testing
 
 # Use admin token to request a temporary JWT access key

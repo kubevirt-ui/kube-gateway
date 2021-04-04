@@ -30,6 +30,8 @@ func getTokenData(claims jwt.MapClaims) ocgatev1beta1.GateToken {
 	var t ocgatev1beta1.GateToken
 	var ok bool
 
+	log.Printf("t.Status.Data [%+v]", t.Status.Data)
+
 	if t.Status.Data.Namespace, ok = claims["namespace"].(string); !ok {
 		t.Status.Data.Namespace = "*"
 	}
@@ -71,7 +73,7 @@ func getRequstResource(request string) (namespace string, apiGroup string, resou
 		apiGroup = ""
 		requestList = requestList[2:]
 	} else {
-		apiGroup = requestList[1]
+		apiGroup = requestList[2]
 		requestList = requestList[3:]
 	}
 
