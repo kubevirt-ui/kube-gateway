@@ -30,14 +30,17 @@ kubectl get pods -n oc-gate
 bt=$(make admin-token -s)
 echo $bt
 
-# Set some helper variables
+# Set helper enviorment variables
 vm=testvm
 ns=default
-path=k8s/apis/subresources.kubevirt.io/v1alpha3/namespaces/${ns}/virtualmachineinstances/${vm}/vnc
-data='{"metadata":{"namespace":"oc-gate"},"spec":{"match-path":"^/'${path}'"}}'
+apigroup=subresources.kubevirt.io
+resource=virtualmachineinstances
+proxyurl=https://oc-gate.apps.example.com
+
+# Use admin token to request a temporary JWT access key
+data='{"metadata":{"namespace":"oc-gate"},"spec":{"namespace":"'${ns}'","apiGroups":["'${apigroup}'"],resources":["'${resource}'"],"resourceNames":"'${vm}'"}}'
 
 # Use the admin token to create a temporary JWT access key for the testvm
-proxyurl=https://oc-gate.apps.example.com
 jwt=$(curl -k -H 'Accept: application/json' -H "Authorization: Bearer ${bt}" -H "Content-Type: application/json" --request POST --data "${data}" "${proxyurl}/auth/gettoken" | jq .status.token)
 echo $jwt
 
@@ -83,17 +86,18 @@ virtctl start testvm
 # Deploy the openshift web application example
 make deploy-openshift
 
-# Set helper enviorment variables
-vm=testvm
-ns=default
-path=k8s/apis/subresources.kubevirt.io/v1alpha3/namespaces/${ns}/virtualmachineinstances/${vm}/vnc
-proxyurl=https://oc-gate.apps-crc.testing
-
 # Get k8s admin token
 bt=$(make admin-token -s)
 
+# Set helper enviorment variables
+vm=testvm
+ns=default
+apigroup=subresources.kubevirt.io
+resource=virtualmachineinstances
+proxyurl=https://oc-gate.apps-crc.testing
+
 # Use admin token to request a temporary JWT access key
-data='{"metadata":{"namespace":"oc-gate"},"spec":{"match-path":"^/'${path}'"}}'
+data='{"metadata":{"namespace":"oc-gate"},"spec":{"namespace":"'${ns}'","apiGroups":["'${apigroup}'"],resources":["'${resource}'"],"resourceNames":"'${vm}'"}}'
 jwt=$(curl -k -H 'Accept: application/json' -H "Authorization: Bearer ${bt}" -H "Content-Type: application/json" --request POST --data "${data}" "${proxyurl}/auth/gettoken" | jq .status.token)
 
 # Open the noVNC web application using google-chrome
