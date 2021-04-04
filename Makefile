@@ -1,24 +1,24 @@
-SOURCE := cmd/oc-gate/*.go pkg/proxy/*.go
-IMG ?= quay.io/yaacov/oc-gate
-IMG_WEB_APP_NOVNC ?= quay.io/yaacov/oc-gate-web-app-novnc
-IMG_WEB_APP ?= quay.io/yaacov/oc-gate-web-app
+SOURCE := cmd/kube-gateway/*.go pkg/proxy/*.go
+IMG ?= quay.io/yaacov/kube-gateway
+IMG_WEB_APP_NOVNC ?= quay.io/yaacov/kube-gateway-web-app-novnc
+IMG_WEB_APP ?= quay.io/yaacov/kube-gateway-web-app
 
-all: oc-gate
+all: kube-gateway
 
-oc-gate: $(SOURCE)
+kube-gateway: $(SOURCE)
 	go build -v ./cmd/...
 
 .PHONY: clean
 clean:
-	$(RM) oc-gate
+	$(RM) kube-gateway
 
 .PHONY: cleanall
 cleanall:
-	$(RM) oc-gate
+	$(RM) kube-gateway
 	$(RM) test/*
-	$(RM) deploy/oc-gate.yaml
-	$(RM) deploy/oc-gate.oauth2.yaml
-	$(RM) deploy/oc-gate.openshift.yaml
+	$(RM) deploy/kube-gateway.yaml
+	$(RM) deploy/kube-gateway.oauth2.yaml
+	$(RM) deploy/kube-gateway.openshift.yaml
 
 .PHONY: certs
 certs:
@@ -29,7 +29,7 @@ certs:
 
 .PHONY: admin-token
 admin-token:
-	kubectl get secrets -n oc-gate -o json | jq '[.items[] | select(.metadata.name | contains("oc-gate-sa")) | select(.type | contains("service-account-token")) | .data.token][0]' | python -m base64 -d | tee test/token
+	kubectl get secrets -n kube-gateway -o json | jq '[.items[] | select(.metadata.name | contains("kube-gateway-sa")) | select(.type | contains("service-account-token")) | .data.token][0]' | python -m base64 -d | tee test/token
 
 .PHONY: novnc
 novnc:
@@ -37,60 +37,60 @@ novnc:
 
 .PHONY: image
 image:
-	podman build -t quay.io/yaacov/oc-gate .
-	podman push quay.io/yaacov/oc-gate
+	podman build -t quay.io/yaacov/kube-gateway .
+	podman push quay.io/yaacov/kube-gateway
 
 .PHONY: image-web-app
 image-web-app:
-	podman build -t quay.io/yaacov/oc-gate-web-app -f web-app.Dockerfile .
-	podman push quay.io/yaacov/oc-gate-web-app
+	podman build -t quay.io/yaacov/kube-gateway-web-app -f web-app.Dockerfile .
+	podman push quay.io/yaacov/kube-gateway-web-app
 
 .PHONY: image-web-app-novnc
 image-web-app-novnc:
-	podman build -t quay.io/yaacov/oc-gate-web-app-novnc -f web-app-noVNC.Dockerfile .
-	podman push quay.io/yaacov/oc-gate-web-app-novnc
+	podman build -t quay.io/yaacov/kube-gateway-web-app-novnc -f web-app-noVNC.Dockerfile .
+	podman push quay.io/yaacov/kube-gateway-web-app-novnc
 
 .PHONY: deploy-dir
 deploy-dir:
 	cd config/proxy && kustomize edit set image proxy=${IMG}
 	cd config/proxy && kustomize edit set image web-app=${IMG_WEB_APP_NOVNC}
-	kustomize build config/default > ./deploy/oc-gate.yaml
+	kustomize build config/default > ./deploy/kube-gateway.yaml
 	cd config/oauth2 && kustomize edit set image proxy=${IMG}
 	cd config/oauth2 && kustomize edit set image web-app=${IMG_WEB_APP}
-	kustomize build config/default.oauth2 > ./deploy/oc-gate.oauth2.yaml
+	kustomize build config/default.oauth2 > ./deploy/kube-gateway.oauth2.yaml
 	cd config/openshift && kustomize edit set image proxy=${IMG}
 	cd config/openshift && kustomize edit set image web-app=${IMG_WEB_APP_NOVNC}
-	kustomize build config/default.openshift > ./deploy/oc-gate.openshift.yaml
+	kustomize build config/default.openshift > ./deploy/kube-gateway.openshift.yaml
 
 .PHONY: deploy
 deploy: deploy-dir certs
-	-kubectl create namespace oc-gate
-	-kubectl create secret generic oc-gate-jwt-secret --from-file=test/cert.pem --from-file=test/key.pem -n oc-gate
-	-kubectl apply -f ./deploy/oc-gate.yaml
+	-kubectl create namespace kube-gateway
+	-kubectl create secret generic kube-gateway-jwt-secret --from-file=test/cert.pem --from-file=test/key.pem -n kube-gateway
+	-kubectl apply -f ./deploy/kube-gateway.yaml
 
 .PHONY: deploy-ouath2
 deploy-ouath2: deploy-dir certs
-	-kubectl create namespace oc-gate
-	-kubectl create secret generic oc-gate-jwt-secret --from-file=test/cert.pem --from-file=test/key.pem -n oc-gate
-	-kubectl apply -f ./deploy/oc-gate.oauth2.yaml
+	-kubectl create namespace kube-gateway
+	-kubectl create secret generic kube-gateway-jwt-secret --from-file=test/cert.pem --from-file=test/key.pem -n kube-gateway
+	-kubectl apply -f ./deploy/kube-gateway.oauth2.yaml
 
 .PHONY: deploy-openshift
 deploy-openshift: deploy-dir certs
-	-kubectl create namespace oc-gate
-	-kubectl create secret generic oc-gate-jwt-secret --from-file=test/cert.pem --from-file=test/key.pem -n oc-gate
-	-kubectl apply -f ./deploy/oc-gate.openshift.yaml
+	-kubectl create namespace kube-gateway
+	-kubectl create secret generic kube-gateway-jwt-secret --from-file=test/cert.pem --from-file=test/key.pem -n kube-gateway
+	-kubectl apply -f ./deploy/kube-gateway.openshift.yaml
 
 .PHONY: undeploy
 undeploy:
-	-kubectl delete -f ./deploy/oc-gate.yaml
-	-kubectl delete namespace oc-gate
+	-kubectl delete -f ./deploy/kube-gateway.yaml
+	-kubectl delete namespace kube-gateway
 
 .PHONY: undeploy-ouath2
 undeploy-ouath2:
-	-kubectl delete -f ./deploy/oc-gate.oauth2.yaml
-	-kubectl delete namespace oc-gate
+	-kubectl delete -f ./deploy/kube-gateway.oauth2.yaml
+	-kubectl delete namespace kube-gateway
 
 .PHONY: undeploy-openshift
 undeploy-openshift:
-	-kubectl delete -f ./deploy/oc-gate.openshift.yaml
-	-kubectl delete namespace oc-gate
+	-kubectl delete -f ./deploy/kube-gateway.openshift.yaml
+	-kubectl delete namespace kube-gateway

@@ -19,4 +19,4 @@ web/public/noVNC
 *.crt
 *.pem
 test/token
-oc-gate
+kube-gateway

@@ -7,14 +7,14 @@ import (
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
-	ocgatev1beta1 "github.com/yaacov/oc-gate-operator/api/v1beta1"
+	ocgatev1beta1 "github.com/yaacov/kube-gateway-operator/api/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 )
 
 // JWTSecretName is the name of the secret holding the private and public SSH keys
 // for authenticating the JWT access codes.
 const (
-	JWTSecretName         = "oc-gate-jwt-secret"
+	JWTSecretName         = "kube-gateway-jwt-secret"
 	JWTPrivateKeyFileName = "key.pem"
 )
 

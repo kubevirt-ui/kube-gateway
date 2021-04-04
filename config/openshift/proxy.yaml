@@ -3,7 +3,7 @@ kind: ServiceAccount
 metadata:
   name: sa
 secrets:
-- name: oc-gate-secrets
+- name: kube-gateway-secrets
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -31,7 +31,7 @@ kind: Service
 metadata:
   name: svc
   annotations:
-      "service.alpha.openshift.io/serving-cert-secret-name": oc-gate-secrets
+      "service.alpha.openshift.io/serving-cert-secret-name": kube-gateway-secrets
 spec:
   type: LoadBalancer
   ports:
@@ -44,10 +44,10 @@ kind: Route
 metadata:
   name: route
 spec:
-  host: oc-gate.apps-crc.testing
+  host: kube-gateway.apps-crc.testing
   to:
     kind: Service
-    name: oc-gate-svc
+    name: kube-gateway-svc
     weight: 100
   tls:
     termination: reencrypt
@@ -62,7 +62,7 @@ metadata:
 grantMethod: auto
 secret: my-secret
 redirectURIs:
-- https://oc-gate.apps-crc.testing/auth/callback
+- https://kube-gateway.apps-crc.testing/auth/callback
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -74,7 +74,7 @@ spec:
     spec:
       initContainers:
       - image: web-app
-        name: oc-gate-web-app
+        name: kube-gateway-web-app
         volumeMounts:
         - name: web-app
           mountPath: "/app/web"
@@ -85,9 +85,9 @@ spec:
         - "/app/web/"
       containers:
       - image: proxy
-        name: oc-gate
+        name: kube-gateway
         ports:
-        - name: oc-gate-https
+        - name: kube-gateway-https
           containerPort: 8080
         volumeMounts:
         - name: secrets
@@ -100,13 +100,13 @@ spec:
         - name: API_URL
           value: "https://kubernetes.default.svc"
         - name: ROUTE_URL
-          value: "oc-gate.apps-crc.testing"
+          value: "kube-gateway.apps-crc.testing"
         - name: TOKEN_PASSTHROUGH
           value: "false"
         - name: LISTEN
           value: "https://0.0.0.0:8080"
         command:
-        - "./oc-gate"
+        - "./kube-gateway"
         - "-api-server=$(API_URL)"
         - "-ca-file=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
         - "-cert-file=/secrets/tls.crt"
@@ -120,10 +120,10 @@ spec:
       volumes:
       - name: jwt-secret
         secret:
-          secretName: oc-gate-jwt-secret
+          secretName: kube-gateway-jwt-secret
       - name: secrets
         secret:
-          secretName: oc-gate-secrets
+          secretName: kube-gateway-secrets
       - name: web-app
         emptyDir: {}
       serviceAccountName: sa

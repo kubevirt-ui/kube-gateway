@@ -2,18 +2,18 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    app: oc-gate
-  name: oc-gate-sa
-  namespace: oc-gate
+    app: kube-gateway
+  name: kube-gateway-sa
+  namespace: kube-gateway
 secrets:
-- name: oc-gate-secrets
+- name: kube-gateway-secrets
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    app: oc-gate
-  name: oc-gate-cluster-reader
+    app: kube-gateway
+  name: kube-gateway-cluster-reader
 rules:
 - apiGroups:
   - '*'
@@ -28,53 +28,53 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    app: oc-gate
-  name: oc-gate-cluster-reader
+    app: kube-gateway
+  name: kube-gateway-cluster-reader
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: oc-gate-cluster-reader
+  name: kube-gateway-cluster-reader
 subjects:
 - kind: ServiceAccount
-  name: oc-gate-sa
-  namespace: oc-gate
+  name: kube-gateway-sa
+  namespace: kube-gateway
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: oc-gate
-  name: oc-gate-svc
-  namespace: oc-gate
+    app: kube-gateway
+  name: kube-gateway-svc
+  namespace: kube-gateway
 spec:
   ports:
   - port: 8080
     protocol: TCP
     targetPort: 8080
   selector:
-    app: oc-gate
+    app: kube-gateway
   type: LoadBalancer
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: oc-gate
-  name: oc-gate-proxy
-  namespace: oc-gate
+    app: kube-gateway
+  name: kube-gateway-proxy
+  namespace: kube-gateway
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: oc-gate
+      app: kube-gateway
   template:
     metadata:
       labels:
-        app: oc-gate
+        app: kube-gateway
     spec:
       containers:
       - command:
-        - ./oc-gate
+        - ./kube-gateway
         - -api-server=$(API_URL)
         - -ca-file=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
         - -oauth-server-disable
@@ -87,16 +87,16 @@ spec:
         - name: API_URL
           value: https://kubernetes.default.svc
         - name: ROUTE_URL
-          value: http://oc-gate.apps.example.com
+          value: http://kube-gateway.apps.example.com
         - name: TOKEN_PASSTHROUGH
           value: "false"
         - name: LISTEN
           value: http://0.0.0.0:8080
-        image: quay.io/yaacov/oc-gate
-        name: oc-gate
+        image: quay.io/yaacov/kube-gateway
+        name: kube-gateway
         ports:
         - containerPort: 8080
-          name: oc-gate-https
+          name: kube-gateway-https
         volumeMounts:
         - mountPath: /secrets
           name: secrets
@@ -108,16 +108,16 @@ spec:
         - -r
         - /data/web/public
         - /app/web/
-        image: quay.io/yaacov/oc-gate-web-app-novnc
-        name: oc-gate-web-app
+        image: quay.io/yaacov/kube-gateway-web-app-novnc
+        name: kube-gateway-web-app
         volumeMounts:
         - mountPath: /app/web
           name: web-app
-      serviceAccountName: oc-gate-sa
+      serviceAccountName: kube-gateway-sa
       volumes:
       - name: secrets
         secret:
-          secretName: oc-gate-jwt-secret
+          secretName: kube-gateway-jwt-secret
       - emptyDir: {}
         name: web-app
 ---
@@ -125,22 +125,22 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   labels:
-    app: oc-gate
-  name: oc-gate-ingress
-  namespace: oc-gate
+    app: kube-gateway
+  name: kube-gateway-ingress
+  namespace: kube-gateway
 spec:
   rules:
-  - host: oc-gate.apps.example.com
+  - host: kube-gateway.apps.example.com
     http:
       paths:
       - backend:
           service:
-            name: oc-gate-svc
+            name: kube-gateway-svc
             port:
               number: 8080
         path: /
         pathType: Prefix
   tls:
   - hosts:
-    - oc-gate.apps.example.com
-    secretName: oc-gate-jwt-secret
+    - kube-gateway.apps.example.com
+    secretName: kube-gateway-jwt-secret
