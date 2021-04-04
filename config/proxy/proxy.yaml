@@ -81,7 +81,7 @@ spec:
       - image: proxy
         name: kube-gateway
         ports:
-        - name: kube-gateway-https
+        - name: https
           containerPort: 8080
         volumeMounts:
         - name: secrets

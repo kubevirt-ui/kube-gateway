@@ -100,7 +100,7 @@ spec:
         name: kube-gateway
         ports:
         - containerPort: 8080
-          name: kube-gateway-https
+          name: https
         volumeMounts:
         - mountPath: /secrets
           name: secrets
