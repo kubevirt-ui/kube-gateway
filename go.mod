@@ -7,7 +7,6 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
-	github.com/yaacov/kube-gateway v0.1.8
 	github.com/yaacov/oc-gate-operator v0.0.3
 	golang.org/x/net v0.0.0-20210331212208-0fccb6fa2b5c // indirect
 	golang.org/x/oauth2 v0.0.0-20210402161424-2e8d93401602
