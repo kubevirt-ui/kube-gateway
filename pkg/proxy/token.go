@@ -3,6 +3,7 @@ package proxy
 import (
 	"crypto/rsa"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
@@ -156,6 +157,9 @@ func authorizeTokenClamis(claims jwt.MapClaims, requestMethod string, requestAPI
 	t := getTokenData(claims)
 	verb, _ := getRequestVerb(requestMethod)
 	namespace, apiGroup, resource, resourceName := getRequstResource(requestAPIPath)
+
+	log.Printf("claims: [%+v]", t.Status.Data)
+	log.Printf("request: %s [%s, %s, %s, %s]", verb, namespace, apiGroup, resource, resourceName)
 
 	// Verifiy verb
 	if t.Status.Data.Verbs == nil || !contains(t.Status.Data.Verbs, verb) {

@@ -94,7 +94,7 @@ func (s Server) Token(w http.ResponseWriter, r *http.Request) {
 	var then string
 
 	// Log request
-	log.Printf("%s %v: %+v", r.RemoteAddr, r.Method, r.URL)
+	log.Printf("%s %v: %+v", r.RemoteAddr, r.Method, r.URL.Path)
 
 	// Get token and redirect from get request
 	if r.Method == http.MethodGet {
