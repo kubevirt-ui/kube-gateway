@@ -43,52 +43,64 @@ func (s Server) getPrivateKey(namespace string, bearer string) ([]byte, error) {
 }
 
 // Cache user data
-func cacheData(token *ocgatev1beta1.GateToken) error {
-	var nbf int64
+func cacheData(t *ocgatev1beta1.GateToken) error {
+	var notBeforeTime int64
 
 	// Default from is "now"
-	if token.Spec.From == "" {
-		nbf = int64(time.Now().Unix())
+	if t.Spec.From == "" {
+		notBeforeTime = int64(time.Now().Unix())
 	} else {
-		t, err := time.Parse(time.RFC3339, token.Spec.From)
+		fromTime, err := time.Parse(time.RFC3339, t.Spec.From)
 		if err != nil {
 			return err
 		}
-		nbf = int64(t.Unix())
+		notBeforeTime = int64(fromTime.Unix())
 	}
 
-	// Default MatchMethod is "GET,OPTIONS"
-	if token.Spec.MatchMethod == "" {
-		token.Spec.MatchMethod = "GET,OPTIONS"
+	// Default Namespace is "*"
+	if t.Spec.Namespace == "" {
+		t.Spec.Namespace = "*"
+	}
+
+	// Default Verbs is ["get"]
+	if t.Spec.Verbs == nil {
+		t.Spec.Verbs = []string{"get"}
 	}
 
 	// Default DurationSec is 3600s (1h)
-	if token.Spec.DurationSec == 0 {
-		token.Spec.DurationSec = 3600
+	if t.Spec.DurationSec == 0 {
+		t.Spec.DurationSec = 3600
 	}
 
 	// Set gate token cache data
-	token.Status.Data = ocgatev1beta1.GateTokenCache{
-		NBf:         nbf,
-		Exp:         nbf + int64(token.Spec.DurationSec),
-		From:        time.Unix(nbf, 0).UTC().Format(time.RFC3339),
-		Until:       time.Unix(nbf+int64(token.Spec.DurationSec), 0).UTC().Format(time.RFC3339),
-		DurationSec: token.Spec.DurationSec,
-		MatchMethod: token.Spec.MatchMethod,
-		MatchPath:   token.Spec.MatchPath,
-		Alg:         jwt.SigningMethodRS256.Name,
+	t.Status.Data = ocgatev1beta1.GateTokenCache{
+		NBf:             notBeforeTime,
+		Exp:             notBeforeTime + int64(t.Spec.DurationSec),
+		From:            time.Unix(notBeforeTime, 0).UTC().Format(time.RFC3339),
+		Until:           time.Unix(notBeforeTime+int64(t.Spec.DurationSec), 0).UTC().Format(time.RFC3339),
+		DurationSec:     t.Spec.DurationSec,
+		Namespace:       t.Spec.Namespace,
+		Verbs:           t.Spec.Verbs,
+		APIGroups:       t.Spec.APIGroups,
+		Resources:       t.Spec.Resources,
+		ResourceNames:   t.Spec.ResourceNames,
+		NonResourceURLs: t.Spec.NonResourceURLs,
+		Alg:             jwt.SigningMethodRS256.Name,
 	}
 
 	return nil
 }
 
 func singToken(token *ocgatev1beta1.GateToken, key []byte) error {
-	// Create token
 	claims := &jwt.MapClaims{
-		"exp":         token.Status.Data.Exp,
-		"nbf":         token.Status.Data.NBf,
-		"matchPath":   token.Status.Data.MatchPath,
-		"matchMethod": token.Status.Data.MatchMethod,
+		"exp":             token.Status.Data.Exp,
+		"nbf":             token.Status.Data.NBf,
+		"namespace":       token.Status.Data.Namespace,
+		"verbs":           token.Status.Data.Verbs,
+		"apiGroups":       token.Status.Data.APIGroups,
+		"resources":       token.Status.Data.Resources,
+		"resourceNames":   token.Status.Data.ResourceNames,
+		"nonResourceURLs": token.Status.Data.NonResourceURLs,
 	}
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 	jwtKey, err := jwt.ParseRSAPrivateKeyFromPEM(key)

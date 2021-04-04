@@ -8,8 +8,10 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"strings"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/oauth2"
 )
 
@@ -128,49 +130,73 @@ func (s Server) AuthMiddleware(next http.Handler) http.Handler {
 		// Log request
 		log.Printf("%s %v: %+v", r.RemoteAddr, r.Method, r.URL)
 
-		// login.html is a special static file, access is always allowed
-		if r.URL.Path == "/login.html" {
-			next.ServeHTTP(w, r)
-			return
-		}
-
 		// Get request token from Authorization header and session cookie
 		token, _ := GetRequestToken(r)
 
-		// If using interactive login and no token, redirect user to login endpoint
+		// Handle interactive authentication
+		// If no token, redirect to login endpoint
 		if s.InteractiveAuth && token == "" {
 			http.Redirect(w, r, s.LoginEndpoint, http.StatusTemporaryRedirect)
 			return
 		}
 
-		// If using non interactive login and noe token, send an error.
+		// Handle non-interactive authentication
+		// If no token, call an error handler
 		if token == "" {
 			handleError(w, fmt.Errorf("no token received"))
 			return
 		}
 
-		// If using token pass through, continue with user token
+		// Handle token pass through
+		// If token exsit, pass to k8s API directly
 		if s.BearerTokenPassthrough {
 			r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 			next.ServeHTTP(w, r)
 			return
 		}
 
-		// If static path, skip token validation
-		if len(r.URL.Path) <= len(s.APIPath) || r.URL.Path[:len(s.APIPath)] != s.APIPath {
+		// Get requested static and api paths
+		apiPath := strings.Trim(s.APIPath, "/")
+		requestPath := strings.Trim(r.URL.Path, "/")
+		requestAPIPath := ""
+		if len(requestPath) >= len(apiPath) && requestPath[:len(apiPath)] == apiPath {
+			requestAPIPath = requestPath[len(apiPath):]
+		}
+
+		// Handle white listed paths
+		// If a static address or API white listed address, redirect to next without validation
+		if requestAPIPath == "" || requestAPIPath == ".well-known/oauth-authorization-server" {
 			next.ServeHTTP(w, r)
 			return
 		}
 
-		// If not using token passthrogh validate JWT token
-		// and replace the token with the k8s access token
-		_, err := validateToken(token, s.JWTTokenKey, s.JWTTokenRSAKey, s.APIPath, r.Method, r.URL.Path)
-		if err != nil {
+		// Handle JWT token
+		// Validate API path and token
+		jwtToken, err := authenticateToken(token, s.JWTTokenKey, s.JWTTokenRSAKey)
+		if err != nil || !jwtToken.Valid {
+			handleError(w, err)
+			return
+		}
+		if !jwtToken.Valid {
+			handleError(w, fmt.Errorf("JWT token is not valid"))
+			return
+		}
+
+		// Get token claims
+		tokenClaims, ok := jwtToken.Claims.(jwt.MapClaims)
+		if !ok {
+			handleError(w, fmt.Errorf("JWT token claims are not valid"))
+			return
+		}
+
+		// Authorize API path
+		if err := authorizeTokenClamis(tokenClaims, r.Method, requestAPIPath); err != nil {
 			handleError(w, err)
 			return
 		}
 
-		// If user token is validated, send request using the operator token
+		// Handle Valid JWT token
+		// send request using the operator token
 		r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", s.BearerToken))
 		next.ServeHTTP(w, r)
 	})
