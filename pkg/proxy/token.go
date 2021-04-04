@@ -3,7 +3,6 @@ package proxy
 import (
 	"crypto/rsa"
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
@@ -26,34 +25,53 @@ func authenticateToken(token string, secret []byte, publicKey *rsa.PublicKey) (*
 	return tok, err
 }
 
-func getTokenData(claims jwt.MapClaims) ocgatev1beta1.GateToken {
-	var t ocgatev1beta1.GateToken
-	var ok bool
-
-	log.Printf("t.Status.Data [%+v]", t.Status.Data)
-
-	if t.Status.Data.Namespace, ok = claims["namespace"].(string); !ok {
-		t.Status.Data.Namespace = "*"
+func getTokenData(claims jwt.MapClaims) *ocgatev1beta1.GateToken {
+	t := &ocgatev1beta1.GateToken{
+		Status: ocgatev1beta1.GateTokenStatus{
+			Data: ocgatev1beta1.GateTokenCache{
+				Namespace: "*",
+				Verbs:     []string{"get"},
+			},
+		},
 	}
 
-	if t.Status.Data.Verbs, ok = claims["verbs"].([]string); !ok {
-		t.Status.Data.Verbs = []string{"get"}
+	if namespace, ok := claims["namespace"].(string); ok {
+		t.Status.Data.Namespace = namespace
 	}
 
-	if t.Status.Data.APIGroups, ok = claims["apiGroups"].([]string); !ok {
-		t.Status.Data.APIGroups = nil
+	if verbs, ok := claims["verbs"].([]interface{}); ok {
+		t.Status.Data.Verbs = make([]string, len(verbs))
+		for i, v := range verbs {
+			t.Status.Data.Verbs[i] = v.(string)
+		}
 	}
 
-	if t.Status.Data.Resources, ok = claims["resources"].([]string); !ok {
-		t.Status.Data.Resources = nil
+	if apiGroups, ok := claims["apiGroups"].([]interface{}); ok {
+		t.Status.Data.APIGroups = make([]string, len(apiGroups))
+		for i, v := range apiGroups {
+			t.Status.Data.APIGroups[i] = v.(string)
+		}
 	}
 
-	if t.Status.Data.ResourceNames, ok = claims["resourceNames"].([]string); !ok {
-		t.Status.Data.ResourceNames = nil
+	if resources, ok := claims["resources"].([]interface{}); ok {
+		t.Status.Data.Resources = make([]string, len(resources))
+		for i, v := range resources {
+			t.Status.Data.Resources[i] = v.(string)
+		}
 	}
 
-	if t.Status.Data.NonResourceURLs, ok = claims["nonResourceURLs"].([]string); !ok {
-		t.Status.Data.NonResourceURLs = nil
+	if resourceNames, ok := claims["resourceNames"].([]interface{}); ok {
+		t.Status.Data.ResourceNames = make([]string, len(resourceNames))
+		for i, v := range resourceNames {
+			t.Status.Data.ResourceNames[i] = v.(string)
+		}
+	}
+
+	if nonResourceURLs, ok := claims["nonResourceURLs"].([]interface{}); ok {
+		t.Status.Data.NonResourceURLs = make([]string, len(nonResourceURLs))
+		for i, v := range nonResourceURLs {
+			t.Status.Data.NonResourceURLs[i] = v.(string)
+		}
 	}
 
 	return t
@@ -73,11 +91,11 @@ func getRequstResource(request string) (namespace string, apiGroup string, resou
 		apiGroup = ""
 		requestList = requestList[2:]
 	} else {
-		apiGroup = requestList[2]
+		apiGroup = requestList[1]
 		requestList = requestList[3:]
 	}
 
-	if len(requestList) >= 2 && requestList[0] == "namespace" {
+	if len(requestList) >= 2 && len(requestList[0]) >= 9 && requestList[0][:9] == "namespace" {
 		namespace = requestList[1]
 		requestList = requestList[2:]
 	}
@@ -159,9 +177,6 @@ func authorizeTokenClamis(claims jwt.MapClaims, requestMethod string, requestAPI
 	t := getTokenData(claims)
 	verb, _ := getRequestVerb(requestMethod)
 	namespace, apiGroup, resource, resourceName := getRequstResource(requestAPIPath)
-
-	log.Printf("claims: [%+v]", t.Status.Data)
-	log.Printf("request: %s [%s, %s, %s, %s]", verb, namespace, apiGroup, resource, resourceName)
 
 	// Verifiy verb
 	if t.Status.Data.Verbs == nil || !contains(t.Status.Data.Verbs, verb) {

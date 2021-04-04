@@ -160,7 +160,7 @@ func (s Server) AuthMiddleware(next http.Handler) http.Handler {
 		requestPath := strings.Trim(r.URL.Path, "/")
 		requestAPIPath := ""
 		if len(requestPath) >= len(apiPath) && requestPath[:len(apiPath)] == apiPath {
-			requestAPIPath = requestPath[len(apiPath):]
+			requestAPIPath = requestPath[len(apiPath)+1:]
 		}
 
 		// Handle white listed paths
