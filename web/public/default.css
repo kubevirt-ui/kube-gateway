@@ -36,3 +36,7 @@ input {
   margin-top: 5px;
   margin-bottom: 10px;
 }
+
+.help {
+  color: rgb(131, 131, 131);
+}
