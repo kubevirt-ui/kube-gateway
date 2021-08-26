@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/golang-jwt/jwt"
+	"github.com/golang/glog"
 )
 
 func handleError(w http.ResponseWriter, err error) {
@@ -23,30 +24,39 @@ func handleError(w http.ResponseWriter, err error) {
 	json.NewEncoder(w).Encode(msg)
 }
 
-func validateRequest(httpMethod string, httpPath string, apiPAth string, verbs map[string]bool, URL string) error {
-	urlCheck := URL
+func validateRequest(httpMethod string, httpPath string, apiPAth string, verbs map[string]bool, patterns []string) error {
+	var urlCheck string
 	httpPathCheck := httpPath
 
-	// Validate method
-	if len(verbs) != 0 {
-		if _, ok := verbs[strings.ToLower(httpMethod)]; !ok {
-			return fmt.Errorf("%s method not allowedd", httpMethod)
+	// validate method
+	if len(verbs) == 0 || len(patterns) == 0 {
+		return fmt.Errorf("missing validation verbs or patterns")
+	}
+
+	// check for matching verb
+	if _, ok := verbs[strings.ToLower(httpMethod)]; !ok {
+		return fmt.Errorf("%s method not allowedd", httpMethod)
+	}
+
+	// check for matching pattern
+	matchURL := false
+	for _, pattern := range patterns {
+		if pattern[(len(pattern)-1):] == "*" {
+			// check for pattern matching prefix of path
+			if strings.HasPrefix(httpPath, pattern[:(len(pattern)-1)]) {
+				matchURL = true
+				break
+			}
+		} else {
+			// check for pattern matching the path
+			if httpPathCheck == urlCheck {
+				matchURL = true
+				break
+			}
 		}
 	}
 
-	// CHeck for '*' postfix of token URL
-	if URL[(len(URL)-1):] == "*" {
-		urlCheck = URL[:(len(URL) - 1)]
-
-		if len(urlCheck) > len(httpPath) {
-			return fmt.Errorf("%s path not allowed (length)", httpPath)
-		}
-		httpPathCheck = httpPath[:len(urlCheck)]
-	}
-
-	// If path is API path and is not the ".well-known" endpoint
-	// validate the requested regexp
-	if httpPathCheck != urlCheck {
+	if !matchURL {
 		return fmt.Errorf("%s path not allowed", httpPath)
 	}
 
@@ -66,15 +76,24 @@ func validateToken(token string, publicKey *rsa.PublicKey, apiPath string, httpM
 	}
 
 	if claims, ok := tok.Claims.(jwt.MapClaims); ok && tok.Valid {
-		verbs, _ := claims["Verbs"].([]string)
-		url, _ := claims["URL"].(string)
+		verbs, _ := claims["verbs"].([]interface{})
+		urls, _ := claims["URLs"].([]interface{})
+
+		glog.V(2).Infof("JWT claims: %+v", claims)
+		glog.V(2).Infof("JWT verbs: %+v", verbs)
+		glog.V(2).Infof("JWT patterns: %+v", urls)
 
 		verbsMap := make(map[string]bool)
-		for i := 0; i < len(verbs); i += 2 {
-			verbsMap[strings.ToLower(verbs[i])] = true
+		for _, verb := range verbs {
+			verbsMap[strings.ToLower(verb.(string))] = true
 		}
 
-		err := validateRequest(httpMethod, httpPath, apiPath, verbsMap, url)
+		patterns := make([]string, len(urls))
+		for i, pattern := range urls {
+			patterns[i] = pattern.(string)
+		}
+
+		err := validateRequest(httpMethod, httpPath, apiPath, verbsMap, patterns)
 		if err != nil {
 			return nil, err
 		}

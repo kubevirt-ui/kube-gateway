@@ -53,10 +53,12 @@ func main() {
 	oauthServerClientSecret := flag.String("oauth-server-client-secret", "my-secret", "OAuth2 client secret defined in a OAuthClient k8s object.")
 
 	JWTRequestEnable := flag.Bool("jwt-request-enable", false, "enable optional request for signed JWT endpoint (requires k8s bearer token with access to JWT secret).")
-	JWTSecretName := flag.String("jwt-secret-name", "kube-gateway-jwt-secret", "JWT secret is used to sign and verify the gateway JWT, name of the k8s secret.")
-	JWTSecretNamespace := flag.String("jwt-secret-namespace", "kube-gateway", "JWT secret is used to sign and verify the gateway JWT, namespace of the k8s secret.")
-	JWTPrivateKeyFileName := flag.String("jwt-private-key-filename", "key.pem", "JWT secret is used to sign and verify the gateway JWT, private key item in secret.")
+	JWTPublicKeyName := flag.String("jwt-public-key-name", "kube-gateway-jwt-secret", "JWT secret is used to sign and verify the gateway JWT, name of the public key secret.")
+	JWTPublicKeyNamespace := flag.String("jwt-public-key-namespace", "kube-gateway", "JWT secret is used to sign and verify the gateway JWT, namespace of the public key secret.")
 	JWTPuplicKeyFileName := flag.String("jwt-public-key-filename", "cert.pem", "JWT secret is used to sign and verify the gateway JWT, public key item in secret")
+	JWTPrivateKeyName := flag.String("jwt-private-key-name", "kube-gateway-jwt-secret", "JWT secret is used to sign and verify the gateway JWT, name of the private key secret.")
+	JWTPrivateKeyNamespace := flag.String("jwt-private-key-namespace", "kube-gateway", "JWT secret is used to sign and verify the gateway JWT, namespace of the private key secret.")
+	JWTPrivateKeyFileName := flag.String("jwt-private-key-filename", "key.pem", "JWT secret is used to sign and verify the gateway JWT, private key item in secret.")
 
 	flag.Set("logtostderr", "true")
 	flag.Parse()
@@ -90,9 +92,9 @@ func main() {
 	// Requires access to cluster secrets
 	glog.Info("-------------------------------------")
 	if *apiServerBearerTokenfile != "" {
-		glog.Infof("get JWT public key from secret [%s/%s:%s]", *JWTSecretNamespace, *JWTSecretName, *JWTPuplicKeyFileName)
+		glog.Infof("get JWT public key from secret [%s/%s:%s]", *JWTPublicKeyNamespace, *JWTPublicKeyName, *JWTPuplicKeyFileName)
 
-		jwtTokenRSAKey, err = GetJWTPuplicKey(k8sBearerToken, transport, *apiServer, *JWTSecretNamespace, *JWTSecretName, *JWTPuplicKeyFileName)
+		jwtTokenRSAKey, err = GetJWTPuplicKey(k8sBearerToken, transport, *apiServer, *JWTPublicKeyNamespace, *JWTPublicKeyName, *JWTPuplicKeyFileName)
 		if err != nil {
 			glog.Infof("[ERROR] fail to get JWT public key from secret, will not be able to access k8s resources using JWT, %+v", err)
 		}
@@ -106,15 +108,15 @@ func main() {
 	if *JWTRequestEnable {
 		glog.Info("-------------------------------------")
 		glog.Info("JWT request support enabled")
-		glog.Infof("private key from secret [%s/%s:%s]", *JWTSecretNamespace, *JWTSecretName, *JWTPrivateKeyFileName)
+		glog.Infof("private key from secret [%s/%s:%s]", *JWTPrivateKeyNamespace, *JWTPrivateKeyName, *JWTPrivateKeyFileName)
 
 		// Add set token cookie endpoint
 		t := token.Token{
 			APIServerURL: *apiServer,
 			APITransport: transport,
 
-			JWTSecretName:         *JWTSecretName,
-			JWTSecretNamespace:    *JWTSecretNamespace,
+			JWTSecretName:         *JWTPrivateKeyName,
+			JWTSecretNamespace:    *JWTPrivateKeyNamespace,
 			JWTPrivateKeyFileName: *JWTPrivateKeyFileName,
 		}
 

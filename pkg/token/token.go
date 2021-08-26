@@ -31,7 +31,7 @@ type GateToken struct {
 	From      string
 	Verbs     []string
 	Duration  string
-	URL       string
+	URLs      []string
 	NBf       int64
 	Exp       int64
 	Until     string
@@ -221,7 +221,7 @@ func singToken(t *GateToken, key []byte) error {
 		"nbf":       t.NBf,
 		"namespace": t.Namespace,
 		"verbs":     t.Verbs,
-		"URL":       t.URL,
+		"URLs":      t.URLs,
 	}
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 	jwtKey, err := jwt.ParseRSAPrivateKeyFromPEM(key)

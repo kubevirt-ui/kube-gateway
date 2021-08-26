@@ -22,7 +22,7 @@
 <body id="body">
     <p>Login</p>
     <div>
-        <form id="login" name="login" action="/token/set" method="POST">
+        <form id="login" name="login" action="/auth/jwt/set" method="POST">
             <label for="token">Token</label><br/>
             <textarea name="token" id="token" rows="10" cols="40"></textarea><br/>
             <label for="then">Then</label><br/>
