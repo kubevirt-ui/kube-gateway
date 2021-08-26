@@ -27,15 +27,15 @@ type Token struct {
 
 // Server holds information required for serving files.
 type GateToken struct {
-	Namespace string
-	From      string
-	Verbs     []string
-	Duration  string
-	URLs      []string
-	NBf       int64
-	Exp       int64
-	Until     string
-	Token     string
+	ID       string
+	From     string
+	Verbs    []string
+	Duration string
+	URLs     []string
+	NBf      int64
+	Exp      int64
+	Until    string
+	Token    string
 }
 
 type GateTokenError struct {
@@ -112,7 +112,7 @@ func (s Token) GetToken(w http.ResponseWriter, r *http.Request) {
 	cacheData(gateToken)
 
 	// Get private key secret for signing JWT
-	privateKeyBytes, err := s.getPrivateKey(gateToken.Namespace, bearer)
+	privateKeyBytes, err := s.getPrivateKey(bearer)
 	if err != nil {
 		handleError(w, fmt.Errorf("secret error: %+v", err))
 		return
@@ -151,7 +151,7 @@ func GetRequestBearerToken(r *http.Request) (string, error) {
 }
 
 // getPrivateKey gets the private key secret from k8s API server.
-func (s Token) getPrivateKey(namespace string, bearer string) ([]byte, error) {
+func (s Token) getPrivateKey(bearer string) ([]byte, error) {
 	var secret *corev1.Secret
 	client := &http.Client{Transport: s.APITransport, Timeout: 30 * time.Second}
 
@@ -190,11 +190,6 @@ func cacheData(t *GateToken) error {
 		notBeforeTime = int64(fromTime.Unix())
 	}
 
-	// Default Namespace is "*"
-	if t.Namespace == "" {
-		t.Namespace = "*"
-	}
-
 	// Default Verbs is ["get"]
 	if t.Verbs == nil {
 		t.Verbs = []string{"get"}
@@ -217,11 +212,11 @@ func cacheData(t *GateToken) error {
 
 func singToken(t *GateToken, key []byte) error {
 	claims := &jwt.MapClaims{
-		"exp":       t.Exp,
-		"nbf":       t.NBf,
-		"namespace": t.Namespace,
-		"verbs":     t.Verbs,
-		"URLs":      t.URLs,
+		"exp":   t.Exp,
+		"nbf":   t.NBf,
+		"id":    t.ID,
+		"verbs": t.Verbs,
+		"URLs":  t.URLs,
 	}
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
 	jwtKey, err := jwt.ParseRSAPrivateKeyFromPEM(key)

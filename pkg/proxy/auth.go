@@ -25,9 +25,6 @@ func handleError(w http.ResponseWriter, err error) {
 }
 
 func validateRequest(httpMethod string, httpPath string, apiPAth string, verbs map[string]bool, patterns []string) error {
-	var urlCheck string
-	httpPathCheck := httpPath
-
 	// validate method
 	if len(verbs) == 0 || len(patterns) == 0 {
 		return fmt.Errorf("missing validation verbs or patterns")
@@ -41,6 +38,8 @@ func validateRequest(httpMethod string, httpPath string, apiPAth string, verbs m
 	// check for matching pattern
 	matchURL := false
 	for _, pattern := range patterns {
+		glog.V(2).Infof("matching: %s ? %s", httpPath, pattern)
+
 		if pattern[(len(pattern)-1):] == "*" {
 			// check for pattern matching prefix of path
 			if strings.HasPrefix(httpPath, pattern[:(len(pattern)-1)]) {
@@ -49,7 +48,7 @@ func validateRequest(httpMethod string, httpPath string, apiPAth string, verbs m
 			}
 		} else {
 			// check for pattern matching the path
-			if httpPathCheck == urlCheck {
+			if pattern == httpPath {
 				matchURL = true
 				break
 			}
@@ -78,6 +77,8 @@ func validateToken(token string, publicKey *rsa.PublicKey, apiPath string, httpM
 	if claims, ok := tok.Claims.(jwt.MapClaims); ok && tok.Valid {
 		verbs, _ := claims["verbs"].([]interface{})
 		urls, _ := claims["URLs"].([]interface{})
+
+		glog.Infof("JWT ID: %+v", claims["id"])
 
 		glog.V(2).Infof("JWT claims: %+v", claims)
 		glog.V(2).Infof("JWT verbs: %+v", verbs)
