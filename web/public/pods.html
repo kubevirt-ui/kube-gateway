@@ -16,7 +16,7 @@
 
                     if (resp.status === "Forbidden") {
                         let li = document.createElement('li');
-                        li.innerHTML = resp.message;
+                        li.innerHTML = "ERROR: " + resp.message;
                         document.getElementById("pods").appendChild(li);
                     };
 

@@ -106,13 +106,13 @@ func (s Server) AddJWTAuthentication(next http.Handler, w http.ResponseWriter, r
 	httpPath := r.URL.Path
 
 	// Get request token from Authorization header and session cookie
-	token, _ := s.GetRequestToken(w, r)
+	tokenStr, _ := s.GetRequestToken(w, r)
 
 	// If using non interactive login and noe token, send an error.
-	if token != "" {
+	if tokenStr != "" {
 		// If not using token passthrogh validate JWT token
 		// and replace the token with the k8s access token
-		_, err := validateToken(token, s.JWTTokenRSAKey, s.APIPath, r.Method, httpPath[len(s.APIPath)-1:])
+		_, err := token.ValidateToken(tokenStr, s.JWTTokenRSAKey, s.APIPath, r.Method, httpPath[len(s.APIPath)-1:])
 		if err != nil {
 			handleError(w, err)
 

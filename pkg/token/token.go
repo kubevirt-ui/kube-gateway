@@ -38,13 +38,6 @@ type GateToken struct {
 	Token    string
 }
 
-type GateTokenError struct {
-	Kind   string
-	API    string
-	Status string
-	Code   int64
-}
-
 // SetToken handle callbacs from users manually setting the JWT cookie.
 func SetToken(w http.ResponseWriter, r *http.Request) {
 	// Log request
@@ -126,19 +119,6 @@ func (s Token) GetToken(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(gateToken)
-}
-
-func handleError(w http.ResponseWriter, err error) {
-	errMsg := GateTokenError{
-		Kind:   "Status",
-		API:    "ocgate",
-		Status: err.Error(),
-		Code:   http.StatusForbidden,
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusForbidden)
-	json.NewEncoder(w).Encode(errMsg)
 }
 
 // GetRequestBearerToken parses a request and get the token to pass to k8s API

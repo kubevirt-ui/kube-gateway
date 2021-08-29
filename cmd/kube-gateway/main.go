@@ -45,20 +45,21 @@ func main() {
 	gatewayCertFile := flag.String("gateway-cert-file", "tls.crt", "PEM File containing certificates (when listen adress use TLS, e.g. https://).")
 	gatewayKeyFile := flag.String("gateway-key-file", "tls.key", "PEM File containing certificate key (when listen adress use TLS, e.g. https://).")
 
+	JWTPublicKeyName := flag.String("jwt-public-key-name", "kube-gateway-jwt", "JWT secret is used to sign and verify the gateway JWT, name of the public key secret.")
+	JWTPublicKeyNamespace := flag.String("jwt-public-key-namespace", "kube-gateway", "JWT secret is used to sign and verify the gateway JWT, namespace of the public key secret.")
+	JWTPuplicKeyFileName := flag.String("jwt-public-key-filename", "tls.crt", "JWT secret is used to sign and verify the gateway JWT, public key item in secret")
+
+	JWTRequestEnable := flag.Bool("jwt-request-enable", false, "enable optional request for signed JWT endpoint (requires k8s bearer token with access to JWT secret).")
+	JWTPrivateKeyName := flag.String("jwt-private-key-name", "kube-gateway-jwt-private", "JWT secret is used to sign and verify the gateway JWT, name of the private key secret.")
+	JWTPrivateKeyNamespace := flag.String("jwt-private-key-namespace", "kube-gateway", "JWT secret is used to sign and verify the gateway JWT, namespace of the private key secret.")
+	JWTPrivateKeyFileName := flag.String("jwt-private-key-filename", "tls.key", "JWT secret is used to sign and verify the gateway JWT, private key item in secret.")
+
 	oauthServerEnable := flag.Bool("oauth-server-enable", false, "enable interactive OAuth2 issuer.")
 	oauthServerCallbackAddress := flag.String("oauth-server-callback-address", "https://localhost:8080", "OAuth2 client callback host.")
 	oauthServerTokenURL := flag.String("oauth-server-token-url", "", "OAuth2 issuer token endpoint URL.")
 	oauthServerAuthURL := flag.String("oauth-server-auth-url", "", "OAuth2 issuer authentication endpoint URL.")
-	oauthServerClientID := flag.String("oauth-server-client-id", "", "OAuth2 client ID defined in a OAuthClient k8s object.")
-	oauthServerClientSecret := flag.String("oauth-server-client-secret", "", "OAuth2 client secret defined in a OAuthClient k8s object.")
-
-	JWTRequestEnable := flag.Bool("jwt-request-enable", false, "enable optional request for signed JWT endpoint (requires k8s bearer token with access to JWT secret).")
-	JWTPublicKeyName := flag.String("jwt-public-key-name", "kube-gateway-jwt", "JWT secret is used to sign and verify the gateway JWT, name of the public key secret.")
-	JWTPublicKeyNamespace := flag.String("jwt-public-key-namespace", "kube-gateway", "JWT secret is used to sign and verify the gateway JWT, namespace of the public key secret.")
-	JWTPuplicKeyFileName := flag.String("jwt-public-key-filename", "tls.crt", "JWT secret is used to sign and verify the gateway JWT, public key item in secret")
-	JWTPrivateKeyName := flag.String("jwt-private-key-name", "kube-gateway-jwt-private", "JWT secret is used to sign and verify the gateway JWT, name of the private key secret.")
-	JWTPrivateKeyNamespace := flag.String("jwt-private-key-namespace", "kube-gateway", "JWT secret is used to sign and verify the gateway JWT, namespace of the private key secret.")
-	JWTPrivateKeyFileName := flag.String("jwt-private-key-filename", "tls.key", "JWT secret is used to sign and verify the gateway JWT, private key item in secret.")
+	oauthServerClientID := flag.String("oauth-server-client-id", "kube-gateway", "OAuth2 client ID defined in a OAuthClient k8s object.")
+	oauthServerClientSecret := flag.String("oauth-server-client-secret", "top-secret", "OAuth2 client secret defined in a OAuthClient k8s object.")
 
 	flag.Set("logtostderr", "true")
 	flag.Parse()
