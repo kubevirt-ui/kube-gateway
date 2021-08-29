@@ -1,10 +1,10 @@
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/yaacov/kube-gateway)](https://goreportcard.com/report/github.com/yaacov/kube-gateway)
-[![Go Reference](https://pkg.go.dev/badge/github.com/yaacov/kube-gateway.svg)](https://pkg.go.dev/github.com/yaacov/kube-gateway)
+[![Go Report Card](https://goreportcard.com/badge/github.com/kubevirt-ui/kube-gateway)](https://goreportcard.com/report/github.com/kubevirt-ui/kube-gateway)
+[![Go Reference](https://pkg.go.dev/badge/github.com/kubevirt-ui/kube-gateway.svg)](https://pkg.go.dev/github.com/kubevirt-ui/kube-gateway)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 # kube-gateway
 
-![alt gopher network](https://raw.githubusercontent.com/yaacov/kube-gateway/main/docs/network-side.png)
+![alt gopher network](https://raw.githubusercontent.com/kubevirt-ui/kube-gateway/main/docs/network-side.png)
 
 Use k8s API for your web application. kube-gateway allow web application to connect to k8s API using signed tokens, without giving 
 the web application users k8s accounts in the cluster, the signed tokens are specific to a k8s resource or resources and limited by time. 

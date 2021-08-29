@@ -56,7 +56,7 @@ spec:
           value: "false"
         - name: LISTEN
           value: http://0.0.0.0:8080
-        image: quay.io/yaacov/kube-gateway
+        image: quay.io/kubevirt-ui/kube-gateway
         name: kube-gateway
         ports:
         - containerPort: 8080
