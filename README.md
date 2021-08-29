@@ -1,6 +1,6 @@
 # kube-gateway
 
-![alt gopher network](https://raw.githubusercontent.com/yaacov/kube-gateway/main/web/public/network-side.png)
+![alt gopher network](https://raw.githubusercontent.com/yaacov/kube-gateway/main/docs/network-side.png)
 
 Kube gateway allow web applications running inside (or outside) a k8s cluster to use autheticated calls to k8s API.
 
