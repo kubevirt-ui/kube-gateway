@@ -13,12 +13,19 @@
                 .then(resp => resp.json())
                 .then((resp) => {
                     let pods = [];
+
+                    if (resp.status === "Forbidden") {
+                        let li = document.createElement('li');
+                        li.innerHTML = resp.message;
+                        document.getElementById("pods").appendChild(li);
+                    };
+
                     (resp.items || []).forEach(item => {
                         let li = document.createElement('li');
                         li.innerHTML = "" + item.metadata.name + " " + String(item.status.phase);
                         document.getElementById("pods").appendChild(li);
                     });
-                })
+                });
         }
 
         window.addEventListener("load", load, false);

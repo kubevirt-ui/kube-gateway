@@ -137,6 +137,7 @@ func handleError(w http.ResponseWriter, err error) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusForbidden)
 	json.NewEncoder(w).Encode(errMsg)
 }
 

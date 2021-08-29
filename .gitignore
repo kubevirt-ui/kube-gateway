@@ -16,5 +16,5 @@
 
 .vscode
 *.crt
-*.pem
-test/token
+*.key
+token

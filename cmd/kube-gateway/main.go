@@ -38,27 +38,27 @@ func main() {
 
 	apiServer := flag.String("api-server", "https://kubernetes.default.svc", "backend API server URL.")
 	apiServerSkipVerifyTLS := flag.Bool("api-server-skip-verify-tls", false, "When true, skip verification of certs presented by k8s API server.")
-	apiServerCAFile := flag.String("api-server-ca-file", "", "PEM File containing trusted certificates for k8s API server. If not present, the system's Root CAs will be used.")
-	apiServerBearerTokenfile := flag.String("api-server-bearer-token-file", "", "service account bearer token filename, the proxy will use this service account to execute requests validated by JWT.")
+	apiServerCAFile := flag.String("api-server-ca-file", "ca.crt", "PEM File containing trusted certificates for k8s API server. If not present, the system's Root CAs will be used.")
+	apiServerBearerTokenfile := flag.String("api-server-bearer-token-file", "token", "service account bearer token filename, the proxy will use this service account to execute requests validated by JWT.")
 
 	gatewayListen := flag.String("gateway-listen", "https://0.0.0.0:8080", "This server will listen on.")
-	gatewayBaseAddress := flag.String("gateway-base-address", "https://localhost:8080", "This server base address.")
-	gatewayCertFile := flag.String("gateway-cert-file", "cert.pem", "PEM File containing certificates (when listen adress use TLS, e.g. https://).")
-	gatewayKeyFile := flag.String("gateway-key-file", "key.pem", "PEM File containing certificate key (when listen adress use TLS, e.g. https://).")
+	gatewayCertFile := flag.String("gateway-cert-file", "tls.crt", "PEM File containing certificates (when listen adress use TLS, e.g. https://).")
+	gatewayKeyFile := flag.String("gateway-key-file", "tls.key", "PEM File containing certificate key (when listen adress use TLS, e.g. https://).")
 
 	oauthServerEnable := flag.Bool("oauth-server-enable", false, "enable interactive OAuth2 issuer.")
+	oauthServerCallbackAddress := flag.String("oauth-server-callback-address", "https://localhost:8080", "OAuth2 client callback host.")
 	oauthServerTokenURL := flag.String("oauth-server-token-url", "", "OAuth2 issuer token endpoint URL.")
 	oauthServerAuthURL := flag.String("oauth-server-auth-url", "", "OAuth2 issuer authentication endpoint URL.")
-	oauthServerClientID := flag.String("oauth-server-client-id", "kube-gateway-client", "OAuth2 client ID defined in a OAuthClient k8s object.")
-	oauthServerClientSecret := flag.String("oauth-server-client-secret", "my-secret", "OAuth2 client secret defined in a OAuthClient k8s object.")
+	oauthServerClientID := flag.String("oauth-server-client-id", "", "OAuth2 client ID defined in a OAuthClient k8s object.")
+	oauthServerClientSecret := flag.String("oauth-server-client-secret", "", "OAuth2 client secret defined in a OAuthClient k8s object.")
 
 	JWTRequestEnable := flag.Bool("jwt-request-enable", false, "enable optional request for signed JWT endpoint (requires k8s bearer token with access to JWT secret).")
-	JWTPublicKeyName := flag.String("jwt-public-key-name", "kube-gateway-jwt-secret", "JWT secret is used to sign and verify the gateway JWT, name of the public key secret.")
+	JWTPublicKeyName := flag.String("jwt-public-key-name", "kube-gateway-jwt", "JWT secret is used to sign and verify the gateway JWT, name of the public key secret.")
 	JWTPublicKeyNamespace := flag.String("jwt-public-key-namespace", "kube-gateway", "JWT secret is used to sign and verify the gateway JWT, namespace of the public key secret.")
-	JWTPuplicKeyFileName := flag.String("jwt-public-key-filename", "cert.pem", "JWT secret is used to sign and verify the gateway JWT, public key item in secret")
-	JWTPrivateKeyName := flag.String("jwt-private-key-name", "kube-gateway-jwt-secret", "JWT secret is used to sign and verify the gateway JWT, name of the private key secret.")
+	JWTPuplicKeyFileName := flag.String("jwt-public-key-filename", "tls.crt", "JWT secret is used to sign and verify the gateway JWT, public key item in secret")
+	JWTPrivateKeyName := flag.String("jwt-private-key-name", "kube-gateway-jwt", "JWT secret is used to sign and verify the gateway JWT, name of the private key secret.")
 	JWTPrivateKeyNamespace := flag.String("jwt-private-key-namespace", "kube-gateway", "JWT secret is used to sign and verify the gateway JWT, namespace of the private key secret.")
-	JWTPrivateKeyFileName := flag.String("jwt-private-key-filename", "key.pem", "JWT secret is used to sign and verify the gateway JWT, private key item in secret.")
+	JWTPrivateKeyFileName := flag.String("jwt-private-key-filename", "tls.key", "JWT secret is used to sign and verify the gateway JWT, private key item in secret.")
 
 	flag.Set("logtostderr", "true")
 	flag.Parse()
@@ -137,7 +137,8 @@ func main() {
 		glog.Info("OAuth2 support enabled")
 
 		// Init server
-		oauthConf := GetOAuthConf(oauthServerAuthURL, oauthServerTokenURL, apiServer, gatewayBaseAddress, oauthServerClientID, oauthServerClientSecret, transport)
+		oauthConf := GetOAuthConf(oauthServerAuthURL, oauthServerTokenURL, apiServer,
+			oauthServerCallbackAddress, oauthServerClientID, oauthServerClientSecret, transport)
 		oauthServer = &oauth.OAuth{
 			APITransport: transport,
 			Auth2Config:  oauthConf,
@@ -175,7 +176,7 @@ func main() {
 	http.Handle(*basePath, s.AuthMiddleware(fs))
 
 	// Start proxy server
-	u, err := url.Parse(*gatewayBaseAddress)
+	u, err := url.Parse(*gatewayListen)
 	if err != nil {
 		LogErrorAndExit(err)
 	}
@@ -185,7 +186,6 @@ func main() {
 		glog.Infof("public key file : [%s]", *gatewayCertFile)
 		glog.Infof("private key file: [%s]", *gatewayKeyFile)
 	}
-	glog.Infof("starting server : [%s]", *gatewayBaseAddress)
 	glog.Infof("listening on    : [%s]", *gatewayListen)
 
 	glog.Flush()

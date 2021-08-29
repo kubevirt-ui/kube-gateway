@@ -17,10 +17,11 @@ func handleError(w http.ResponseWriter, err error) {
 		"api":     "ocgate",
 		"status":  "Forbidden",
 		"message": err.Error(),
-		"code":    http.StatusBadRequest,
+		"code":    http.StatusForbidden,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusForbidden)
 	json.NewEncoder(w).Encode(msg)
 }
 
