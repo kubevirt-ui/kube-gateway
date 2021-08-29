@@ -30,9 +30,9 @@ Using go install:
 |---|----|---|
 | / | | web application static files |
 | /auth/jwt/set | | endpoint for setting session cookie |
-| /login | Optional: static file ([/web/public/login](/web/public/login)) | helper page that set the JWT token as a web borwser cookie |
-| /auth/login | Optional: require flag -oauth-server-enable | login path to start OAuth2 authentication process |
-| /auth/callback | Optional: require flag -oauth-server-enable | OAuth2 authentication callback endpoint |
-| /auth/jwt/request | Optional: require flag -jwt-request-enable | endpoint for generating JWT access keys|
+| /login | static file ([/web/public/login](/web/public/login)) | helper page that set the JWT token as a web borwser cookie |
+| /auth/login | require flag -oauth-server-enable | login path to start OAuth2 authentication process |
+| /auth/callback | require flag -oauth-server-enable | OAuth2 authentication callback endpoint |
+| /auth/jwt/request | require flag -jwt-request-enable | endpoint for generating JWT access keys|
 
 (gopher network image - [egonelbre/gophers](https://github.com/egonelbre/gophers))
