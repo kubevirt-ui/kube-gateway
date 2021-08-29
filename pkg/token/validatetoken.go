@@ -9,6 +9,7 @@ import (
 	"github.com/golang/glog"
 )
 
+// ValidateToken checks the token string signature and claims.
 func ValidateToken(tokenStr string, publicKey *rsa.PublicKey, apiPath string, httpMethod string, httpPath string) (*jwt.Token, error) {
 	tok, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodRSA); ok {
