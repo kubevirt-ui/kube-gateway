@@ -12,10 +12,12 @@ import (
 )
 
 const (
+	// CookieName is used in web browser to store the signed JWT token
+	// sidned using the JWT private key.
 	CookieName = "kg-jwt-session-code"
 )
 
-// Server holds information required for serving files.
+// Token holds information required for serving files.
 type Token struct {
 	APIServerURL string
 	APITransport *http.Transport
@@ -25,7 +27,7 @@ type Token struct {
 	JWTPrivateKeyFileName string
 }
 
-// Server holds information required for serving files.
+// GateToken holds information required for serving files.
 type GateToken struct {
 	ID       string
 	From     string

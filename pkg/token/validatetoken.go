@@ -52,6 +52,7 @@ func ValidateToken(tokenStr string, publicKey *rsa.PublicKey, apiPath string, ht
 	return tok, nil
 }
 
+// validateRequest checks the http request for valid JWT token cookie.
 func validateRequest(httpMethod string, httpPath string, apiPAth string, verbs map[string]bool, patterns []string) error {
 	// validate method
 	if len(verbs) == 0 || len(patterns) == 0 {

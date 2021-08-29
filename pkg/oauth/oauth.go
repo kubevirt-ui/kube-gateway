@@ -13,10 +13,12 @@ import (
 )
 
 const (
+	// CookieName is used in web browser to store the berear token recived from
+	// the OAuth2 server.
 	CookieName = "kg-bearer-session-code"
 )
 
-// Server holds information required for serving files.
+// OAuth holds information required for serving files.
 type OAuth struct {
 	APITransport *http.Transport
 	Auth2Config  *oauth2.Config
