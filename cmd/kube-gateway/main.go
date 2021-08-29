@@ -56,7 +56,7 @@ func main() {
 	JWTPublicKeyName := flag.String("jwt-public-key-name", "kube-gateway-jwt", "JWT secret is used to sign and verify the gateway JWT, name of the public key secret.")
 	JWTPublicKeyNamespace := flag.String("jwt-public-key-namespace", "kube-gateway", "JWT secret is used to sign and verify the gateway JWT, namespace of the public key secret.")
 	JWTPuplicKeyFileName := flag.String("jwt-public-key-filename", "tls.crt", "JWT secret is used to sign and verify the gateway JWT, public key item in secret")
-	JWTPrivateKeyName := flag.String("jwt-private-key-name", "kube-gateway-jwt", "JWT secret is used to sign and verify the gateway JWT, name of the private key secret.")
+	JWTPrivateKeyName := flag.String("jwt-private-key-name", "kube-gateway-jwt-private", "JWT secret is used to sign and verify the gateway JWT, name of the private key secret.")
 	JWTPrivateKeyNamespace := flag.String("jwt-private-key-namespace", "kube-gateway", "JWT secret is used to sign and verify the gateway JWT, namespace of the private key secret.")
 	JWTPrivateKeyFileName := flag.String("jwt-private-key-filename", "tls.key", "JWT secret is used to sign and verify the gateway JWT, private key item in secret.")
 

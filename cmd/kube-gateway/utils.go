@@ -2,6 +2,8 @@ package main
 
 import (
 	"crypto/rsa"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -13,7 +15,10 @@ import (
 
 	"github.com/golang-jwt/jwt"
 	"github.com/golang/glog"
+	"golang.org/x/oauth2"
 	corev1 "k8s.io/api/core/v1"
+
+	"github.com/kubevirt-ui/kube-gateway/pkg/oauth"
 )
 
 // PrintHelpMsg prints a help message and exit with success status
@@ -71,4 +76,78 @@ func GetJWTPuplicKey(bearer string, APITransport http.RoundTripper, APIServerURL
 	jwtTokenRSAKey, err = jwt.ParseRSAPublicKeyFromPEM(publicKey)
 
 	return jwtTokenRSAKey, err
+}
+
+// GetOAuthConf gets the oauth2 config object
+func GetOAuthConf(oauthServerAuthURL *string, oauthServerTokenURL *string, apiServer *string, gatewayBaseAddress *string, oauthServerClientID *string, oauthServerClientSecret *string, transport *http.Transport) *oauth2.Config {
+	var endpoint oauth.Endpoint
+	var oauthConf *oauth2.Config
+	var err error
+
+	// Try to autodetect auth sever endpoints
+	if *oauthServerAuthURL != "" && *oauthServerTokenURL != "" {
+		endpoint.Token = *oauthServerTokenURL
+		endpoint.Auth = *oauthServerAuthURL
+	} else {
+		endpoint, err = oauth.GetServerEndpoint(*apiServer, transport)
+		if err != nil {
+			LogErrorAndExit(err)
+		}
+		glog.Infof("auto detect oauth server endpoints from [%s]", *apiServer)
+	}
+
+	// Set oauth config
+	redirectURL := fmt.Sprintf("%s%s", *gatewayBaseAddress, authLoginCallbackEndpoint)
+	oauthConf = &oauth2.Config{
+		ClientID:     *oauthServerClientID,
+		ClientSecret: *oauthServerClientSecret,
+		Scopes:       []string{"user:full"},
+		Endpoint: oauth2.Endpoint{
+			TokenURL: endpoint.Token,
+			AuthURL:  endpoint.Auth,
+		},
+		RedirectURL: redirectURL,
+	}
+
+	glog.Infof("OAuth Token : [%s]", endpoint.Token)
+	glog.Infof("OAuth Auth  : [%s]", endpoint.Auth)
+
+	return oauthConf
+}
+
+// GetTLSTranport creats a http transport for comunication with k8s cluster
+func GetTLSTranport(skipVerifyTLS *bool, apiServerCAFile *string) *http.Transport {
+	var transport *http.Transport
+
+	if *skipVerifyTLS {
+		glog.Info("skip TSL verify when connecting to k8s server")
+
+		transport = &http.Transport{
+			TLSClientConfig:     &tls.Config{InsecureSkipVerify: true},
+			TLSHandshakeTimeout: 30 * time.Second,
+		}
+	} else if *apiServerCAFile != "" {
+		glog.Infof("use CA File [%s] file when connecting to k8s server", *apiServerCAFile)
+
+		k8sCertPEM, err := ioutil.ReadFile(*apiServerCAFile)
+		if err != nil {
+			LogErrorAndExit(err)
+		}
+		rootCAs := x509.NewCertPool()
+		if !rootCAs.AppendCertsFromPEM(k8sCertPEM) {
+			LogErrorAndExit(fmt.Errorf("no CA found for the API server in file %s", *apiServerCAFile))
+		}
+		transport = &http.Transport{
+			TLSClientConfig:     &tls.Config{RootCAs: rootCAs},
+			TLSHandshakeTimeout: 30 * time.Second,
+		}
+	} else {
+		glog.Info("use system's Root CAs when connecting to k8s server (use -ca-file to specify a specifc certification file or -skip-verify-tls for insecure connection)")
+
+		transport = &http.Transport{
+			TLSHandshakeTimeout: 30 * time.Second,
+		}
+	}
+
+	return transport
 }

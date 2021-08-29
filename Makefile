@@ -18,7 +18,8 @@ certs:
 .PHONY: sa
 sa: certs
 	kubectl create -f deploy/sa.yaml
-	kubectl create secret generic kube-gateway-jwt --from-file=tls.crt --from-file=tls.key -n kube-gateway
+	kubectl create secret generic kube-gateway-jwt --from-file=tls.crt -n kube-gateway
+	kubectl create secret generic kube-gateway-jwt-private --from-file=tls.key -n kube-gateway
 
 .PHONY: ca
 ca:
