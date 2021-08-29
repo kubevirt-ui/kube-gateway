@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	// CookieName is used in web browser to store the berear token recived from
+	// CookieName is used in web browser to store the berear token received from
 	// the OAuth2 server.
 	CookieName = "kg-bearer-session-code"
 )

@@ -42,8 +42,8 @@ func main() {
 	apiServerBearerTokenfile := flag.String("api-server-bearer-token-file", "token", "service account bearer token filename, the proxy will use this service account to execute requests validated by JWT.")
 
 	gatewayListen := flag.String("gateway-listen", "https://0.0.0.0:8080", "This server will listen on.")
-	gatewayCertFile := flag.String("gateway-cert-file", "tls.crt", "PEM File containing certificates (when listen adress use TLS, e.g. https://).")
-	gatewayKeyFile := flag.String("gateway-key-file", "tls.key", "PEM File containing certificate key (when listen adress use TLS, e.g. https://).")
+	gatewayCertFile := flag.String("gateway-cert-file", "tls.crt", "PEM File containing certificates (when listen address use TLS, e.g. https://).")
+	gatewayKeyFile := flag.String("gateway-key-file", "tls.key", "PEM File containing certificate key (when listen address use TLS, e.g. https://).")
 
 	JWTPublicKeyName := flag.String("jwt-public-key-name", "kube-gateway-jwt", "JWT secret is used to sign and verify the gateway JWT, name of the public key secret.")
 	JWTPublicKeyNamespace := flag.String("jwt-public-key-namespace", "kube-gateway", "JWT secret is used to sign and verify the gateway JWT, namespace of the public key secret.")
