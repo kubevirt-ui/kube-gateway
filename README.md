@@ -81,6 +81,12 @@ kubectl create -f deploy/kube-gateway.yaml
 ```
 
 ``` bash
+# NOTE: on openshift, you can deploy the example route
+#       make sure to edit the route to match your cluster DNS
+oc create -f deploy/route.yaml
+```
+
+``` bash
 # Check deploymet and secrets
 kubectl get secrets -n kube-gateway
 kubectl get pods -n kube-gateway
