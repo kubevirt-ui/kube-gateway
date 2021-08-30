@@ -20,12 +20,14 @@ k8s API.
 
 ``` bash
 # Build the gateway locally:
-make
+go build -v ./cmd/...
 
 # Create and push the image into a container repository:
 # For example
 #IMG=quay.io/kubevirt-ui/kube-gateway:v0.1.0 make image
-IMG=<your image repo> make image
+IMG=<your image repo>
+podman build -t ${IMG} .
+podman push ${IMG}
 ```
 
 ## Build a custom web application using the gateway
