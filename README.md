@@ -72,7 +72,9 @@ kubectl create secret generic kube-gateway-jwt --from-file=tls.crt -n kube-gatew
 kubectl create secret generic kube-gateway-jwt-private --from-file=tls.key -n kube-gateway
 
 # Create a serving sertificats for the gateway TLS server
-kubectl create secret generic kube-gateway-serving-cert --from-file=tls.key --from-file=tls.crt -n kube-gateway
+# NOTE: on openshift this secret is created automatically, when using openshift
+#       no need to create this secret manually
+kubectl create secret generic kube-gateway-secrets --from-file=tls.key --from-file=tls.crt -n kube-gateway
 
 # Deploy the gateway in the example namespace using the example service account
 kubectl create -f deploy/kube-gateway.yaml

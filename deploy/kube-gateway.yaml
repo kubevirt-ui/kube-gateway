@@ -63,4 +63,4 @@ spec:
       volumes:
       - name: serving-cert
         secret:
-          secretName: kube-gateway-serving-cert
+          secretName: kube-gateway-secrets
