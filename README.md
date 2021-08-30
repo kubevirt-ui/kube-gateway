@@ -6,17 +6,16 @@
 
 ![alt gopher network](https://raw.githubusercontent.com/kubevirt-ui/kube-gateway/main/docs/network-side.png)
 
-Use k8s API for your web application, the k8s API is served in the same host as the web application,
-the web application can manage the access control by manipolating a session cookie containing a singed token,
-once the session cookie is set the web application can access the authorized k8s resources using k8s API.
-A signed token gives access to predefined k8s resources during a predefined time window.
+Access k8s API using time limited access tokens, kube-gateway allow usage of one time access tokens to k8s resources, users
+can use the default kube-gateway web application, or create custom web applications that use the time limited tokens to access the 
+k8s API.
 
 ## What can I do with it ?
 
-- Create links to access a k8s resource with a time limited signed token (*).
+- Create one time links to access a k8s resource with a time limited signed token (*).
 - Create custom web applications that can access k8s API using time limited singed tokens.
 
-(*) a signed token that is authenticated using a public key gives access to predefined k8s resources during a predefined time window.
+(*) a signed token gives access to predefined k8s resources during a predefined time window.
 ## Build the gateway server with noVNC web application
 
 ``` bash
