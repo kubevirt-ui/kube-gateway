@@ -145,7 +145,7 @@ kubectl get secrets -n kube-gateway -o json | jq '[.items[] | select(.metadata.n
 path=/apis/subresources.kubevirt.io/v1/namespaces/kube-gateway/virtualmachineinstances/testvm/vnc
 
 # Create a token payload for accessing the API path for 1 hour, starting now
-data='{"URLs":["${path}"],"duration":"1h"}'
+data="{\"URLs\":[\"${path}\"],\"duration\":\"1h\"}"
 token=$(cat token) # Use a k8s token that can access the private key for signing the JWT
 proxyurl=https://192.168.39.134:30345 # Use the url of the gateway proxy
 

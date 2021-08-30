@@ -57,11 +57,15 @@ func ValidateToken(tokenStr string, publicKey *rsa.PublicKey, apiPath string, ht
 func validateRequest(httpMethod string, httpPath string, apiPAth string, verbs map[string]bool, patterns []string) error {
 	// validate method
 	if len(verbs) == 0 || len(patterns) == 0 {
+		glog.Info("missing validation verbs or patterns")
+
 		return fmt.Errorf("missing validation verbs or patterns")
 	}
 
 	// check for matching verb
 	if _, ok := verbs[strings.ToLower(httpMethod)]; !ok {
+		glog.Infof("%s method not allowedd", httpMethod)
+
 		return fmt.Errorf("%s method not allowedd", httpMethod)
 	}
 
@@ -86,6 +90,8 @@ func validateRequest(httpMethod string, httpPath string, apiPAth string, verbs m
 	}
 
 	if !matchURL {
+		glog.Infof("%s path not allowed", httpPath)
+
 		return fmt.Errorf("%s path not allowed", httpPath)
 	}
 
