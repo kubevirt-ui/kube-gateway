@@ -13,8 +13,8 @@ A signed token gives access to predefined k8s resources during a predefined time
 
 ## What can I do with it ?
 
-- Create links to access a k8s resource with a signed token (*).
-- Create custom web applications that can access k8s API using singed tokens.
+- Create links to access a k8s resource with a time limited signed token (*).
+- Create custom web applications that can access k8s API using time limited singed tokens.
 
 (*) a signed token that is authenticated using a public key gives access to predefined k8s resources during a predefined time window.
 ## Build the gateway server with noVNC web application
