@@ -1,0 +1,19 @@
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  labels:
+    app: kube-gateway
+  name: kube-gateway-route
+  namespace: kube-gateway
+spec:
+  host: kube-gateway.apps.ironmaiden1.eng.lab.tlv.redhat.com
+  port:
+    targetPort: 8080
+  tls:
+    termination: reencrypt
+  to:
+    kind: Service
+    name: kube-gateway-svc
+    weight: 100
+  wildcardPolicy: None

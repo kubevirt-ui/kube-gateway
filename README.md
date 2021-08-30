@@ -60,9 +60,7 @@ verify the tokens.
 # when creating service account for the gateway proxy.
 kubectl create -f deploy/namespace.yaml
 kubectl create -f deploy/sa.yaml
-```
 
-``` bash
 # Generate public and private keys (the gateway supports RSA Signature with SHA-256)
 openssl genrsa -out tls.key
 openssl req -new -x509 -sha256 -key tls.key -out tls.crt -days 3650 -subj "/C=/ST=/L=/O=/OU=/CN=/emailAddress="
@@ -125,7 +123,7 @@ In this example we will use the default noVNC web application
 # The example noVNC application requirs kubevirt to be installed,
 # on minikube install kubevirt using minikube addons, on other platforms install
 # as recomended for that platform.
-minikube addons enable kubevirt
+#minikube addons enable kubevirt
 
 # Wait for kubevirt to finish install and then
 # start the example virtual machine
