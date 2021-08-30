@@ -141,14 +141,17 @@ Now that the virtual machine is running, we can create a signed link to kubevirt
 # Copy the service account bearer token into a local file
 kubectl get secrets -n kube-gateway -o json | jq '[.items[] | select(.metadata.name | contains("kube-gateway-sa")) | select(.type | contains("service-account-token")) | .data.token][0]' | python -m base64 -d > token
 
-# Sign a token and put it in a variable
-data='{"URLs":["/apis/subresources.kubevirt.io/v1/namespaces/kube-gateway/virtualmachineinstances/testvm/vnc"],"duration":"1h"}'
-token=$(cat token) # Use a k8s token that can access the private key for signing the JWT
-proxyurl=https://192.168.39.134:30345 # Use the url of the gateway proxy
-jwt=$(curl -sk -H 'Accept: application/json' -H "Authorization: Bearer ${token}" -H "Content-Type: application/json" --request POST --data "${data}" "${proxyurl}/auth/jwt/request" | jq .Token)
-
 # Create a path to the k8s resource
 path=/apis/subresources.kubevirt.io/v1/namespaces/kube-gateway/virtualmachineinstances/testvm/vnc
+
+# Create a token payload for accessing the API path for 1 hour, starting now
+data='{"URLs":["${path}"],"duration":"1h"}'
+token=$(cat token) # Use a k8s token that can access the private key for signing the JWT
+proxyurl=https://192.168.39.134:30345 # Use the url of the gateway proxy
+
+# Use the /auth/jwt/request endpoint to sign the token payload using the private key secret
+# The service account bearer token used in this command must be able to access the secret holding the private key
+jwt=$(curl -sk -H 'Accept: application/json' -H "Authorization: Bearer ${token}" -H "Content-Type: application/json" --request POST --data "${data}" "${proxyurl}/auth/jwt/request" | jq .Token)
 
 # Open the link in a browser
 # The link is sined using ${jwt} and will access the k8s API at ${path}
@@ -167,7 +170,6 @@ google-chrome "${signed_link}"
 | /auth/login | flag -oauth-server-enable | login path to start OAuth2 authentication process |
 | /auth/callback | flag -oauth-server-enable | OAuth2 authentication callback endpoint |
 | /auth/jwt/request | flag -jwt-request-enable | endpoint for generating JWT access keys |
-
 
 ## Supported JWT Claims
 
