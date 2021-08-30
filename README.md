@@ -36,7 +36,7 @@ Add you application to the [/web/public](./web/public) directory and create an i
 ``` bash
 # For example
 
-# cCopy your static web application to the ./web/public/ dirctory
+# Copy your static web application to the ./web/public/ dirctory
 cp /dev/my-static-web-app/* ./web/public/
 
 # Create a container image and push it into your container repository
