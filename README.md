@@ -138,6 +138,9 @@ kubectl get vms -n kube-gateway
 Now that the virtual machine is running, we can create a signed link to kubevirt noVNC server.
 
 ``` bash
+# Copy the service account bearer token into a local file
+kubectl get secrets -n kube-gateway -o json | jq '[.items[] | select(.metadata.name | contains("kube-gateway-sa")) | select(.type | contains("service-account-token")) | .data.token][0]' | python -m base64 -d > token
+
 # Sign a token and put it in a variable
 data='{"URLs":["/apis/subresources.kubevirt.io/v1/namespaces/kube-gateway/virtualmachineinstances/testvm/vnc"],"duration":"1h"}'
 token=$(cat token) # Use a k8s token that can access the private key for signing the JWT
