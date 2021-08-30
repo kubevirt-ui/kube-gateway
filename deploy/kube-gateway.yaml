@@ -36,40 +36,29 @@ spec:
       - command:
         - ./kube-gateway
         - -api-server=$(API_URL)
-       
-        - -ca-file=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-        - -k8s-bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token
-
-        - /var/run/secrets/serving-cert/tls.key
-        - /var/run/secrets/serving-cert/tls.crt
-
-        - -base-address=https://$(ROUTE_URL)
-        - -listen=$(LISTEN)
-
-        - -jwt-token-key-file=/secrets/cert.pem
+        - -gateway-listen=$(LISTEN)
+        - -api-server-ca-file=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        - -api-server-bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token
+        - -gateway-key-file=/var/run/secrets/serving-cert/tls.key
+        - -gateway-cert-file=/var/run/secrets/serving-cert/tls.crt
+        - -jwt-public-key-name=kube-gateway-jwt
+        - -jwt-request-enable=true
+        - -jwt-private-key-name=kube-gateway-jwt-private
         env:
         - name: API_URL
           value: https://kubernetes.default.svc
-        - name: ROUTE_URL
-          value: http://kube-gateway.apps.example.com
-        - name: TOKEN_PASSTHROUGH
-          value: "false"
         - name: LISTEN
-          value: http://0.0.0.0:8080
+          value: https://0.0.0.0:8080
         image: quay.io/kubevirt-ui/kube-gateway
         name: kube-gateway
         ports:
         - containerPort: 8080
           name: https
         volumeMounts:
-        - mountPath: /secrets
-          name: secrets
-        - mountPath: /app/web
-          name: web-app
+        - mountPath: /var/run/secrets/serving-cert
+          name: serving-cert
       serviceAccountName: kube-gateway-sa
       volumes:
-      - name: secrets
+      - name: serving-cert
         secret:
-          secretName: kube-gateway-jwt-secret
-      - emptyDir: {}
-        name: web-app
+          secretName: kube-gateway-serving-cert

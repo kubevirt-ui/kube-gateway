@@ -10,10 +10,10 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /app/ /app/...
 FROM registry.access.redhat.com/ubi8/ubi-minimal:latest
 
 WORKDIR /app
-RUN mkdir -p /app/web/
+RUN mkdir -p /app/web/public
 
 # copy proxy server
 COPY --from=build /app/kube-gateway /app/
 
 # copy static web app
-COPY ./web/public /app/web/
+COPY ./web/public /app/web/public/
