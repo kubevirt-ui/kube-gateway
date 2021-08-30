@@ -167,9 +167,9 @@ google-chrome "${signed_link}"
 | / | | web application static files |
 | /auth/jwt/set | | endpoint for setting session JWT cookie |
 | /login | ([/web/public/login](/web/public/login)) | helper page that set the JWT token as a web borwser cookie |
-| /auth/login | flag -oauth-server-enable | login path to start OAuth2 authentication process |
-| /auth/callback | flag -oauth-server-enable | OAuth2 authentication callback endpoint |
-| /auth/jwt/request | flag -jwt-request-enable | endpoint for generating JWT access keys |
+| /auth/login | flag `-oauth-server-enable` | login path to start OAuth2 authentication process |
+| /auth/callback | flag `-oauth-server-enable` | OAuth2 authentication callback endpoint |
+| /auth/jwt/request | flag `-jwt-request-enable` | endpoint for generating JWT access keys |
 
 ## Supported JWT Claims
 
