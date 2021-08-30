@@ -163,4 +163,14 @@ google-chrome "${signed_link}"
 | /auth/callback | flag -oauth-server-enable | OAuth2 authentication callback endpoint |
 | /auth/jwt/request | flag -jwt-request-enable | endpoint for generating JWT access keys |
 
+
+## Supported JWT Claims
+
+| Claim | example | description  | default |
+|---|---|---|---|
+|URLs | ["/api/v1/pods/*"] | list of allowed API, a `*` postfix indicate any suffix is allowed |
+|duration | "25m" | the duration to token will be valid | "1h"
+|from | "2016-11-01T20:44:39Z" | RFC3339 time the token will start to be valid |  now
+|verbs | ["get","post"] | list of allowed verbs  | ["get"]
+
 (gopher network image - [egonelbre/gophers](https://github.com/egonelbre/gophers))
