@@ -28,7 +28,7 @@ go build -v ./cmd/...
 # IMG=quay.io/kubevirt-ui/kube-gateway:v0.1.0 make image
 IMG=<your image repo> make image
 
-# make image builds and push the image, it's equivalent to runnin:
+# `make image` builds and push the image, it is equivalent to running:
 # podman build -t ${IMG} .
 # podman push ${IMG}
 ```
