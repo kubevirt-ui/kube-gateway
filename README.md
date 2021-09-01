@@ -125,7 +125,7 @@ curl -sk -H 'Accept: application/json' -H "Authorization: Bearer ${token}" -H "C
 
 Once a token is signed it can be used to access the k8s API as long as it remains valid. Users can only access URLs specified in the token payload and only if the gateway service account can access them.
 
-![alt vnc demo](https://raw.githubusercontent.com/kubevirt-ui/kube-gateway/main/docs/vnc-demo.gif)
+![alt vnc demo](https://github.com/kubevirt-ui/kube-gateway/blob/main/docs/vnc-demo.gif)
 
 In this example we will use the default noVNC web application.
 
