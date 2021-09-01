@@ -156,6 +156,7 @@ token=$(cat token) # Use a k8s token that can access the private key for signing
 
 # On minikube get the url:
 # minikube service kube-gateway-svc -n kube-gateway
+# Important: the gateway is running with tls, make sure to use https:// 
 proxyurl=https://192.168.39.134:30345 # Use the URL of the gateway proxy
 
 # Use the /auth/jwt/request endpoint to sign the token payload using the private key secret.
