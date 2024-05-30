@@ -5,12 +5,14 @@
         function load() {
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
-            const then = urlParams.get('then');
+            const name = urlParams.get('name');
+            const namespace = urlParams.get('namespace');
 
             document.getElementById("token").value = token
-            document.getElementById("then").value = then
+            document.getElementById("name").value = name
+            document.getElementById("namespace").value = namespace
 
-            if (token && then) {
+            if (token && name && namespace) {
                 document.getElementById("login").submit(); 
             }
         }
@@ -25,9 +27,10 @@
         <form id="login" name="login" action="/auth/jwt/set" method="POST">
             <label for="token">Token</label><br/>
             <textarea name="token" id="token" rows="10" cols="40"></textarea><br/>
-            <label for="then">Then</label><br/>
-            <input id="then" name="then" size="35"/><br/>
-            <p class="help">For example: /noVNC/vnc_lite.html?path=k8s/apis/subresources.kubevirt.io/v1/namespaces/default/virtualmachineinstances/testvm/vnc<p>
+            <label for="name">Virtual machine name</label><br/>
+            <input id="name" name="name" size="35"/><br/>
+            <label for="namespace">Virtual machine namespace</label><br/>
+            <input id="namespace" name="namespace" size="35"/><br/>
             <input type="submit" value="Submit">
         </form>
     </div>

@@ -149,7 +149,9 @@ Now that the virtual machine is running, we can create a signed link to the Kube
 kubectl get secrets -n kube-gateway -o json | jq '[.items[] | select(.metadata.name | contains("kube-gateway-sa")) | select(.type | contains("service-account-token")) | .data.token][0]' | python -m base64 -d > token
 
 # Create a path to the k8s resource.
-path=/apis/subresources.kubevirt.io/v1/namespaces/kube-gateway/virtualmachineinstances/testvm/vnc
+name=testvm
+namespace=kube-gateway
+path=/apis/subresources.kubevirt.io/v1/namespaces/$namespace/virtualmachineinstances/$name/vnc
 
 # Create a token payload for accessing the API path for 1 hour, starting now.
 data="{\"URLs\":[\"${path}\"],\"duration\":\"1h\"}"
@@ -158,7 +160,7 @@ token=$(cat token) # Use a k8s token that can access the private key for signing
 # On minikube get the url:
 # minikube service kube-gateway-svc -n kube-gateway
 # Important: the gateway is running with tls, make sure to use https:// 
-proxyurl=https://192.168.39.134:30345 # Use the URL of the gateway proxy
+proxyurl=https://kube-gateway.apps-crc.testing # Use the URL of the gateway proxy
 
 # Use the /auth/jwt/request endpoint to sign the token payload using the private key secret.
 # The service account bearer token used in this command must be able to access the secret holding the private key.
@@ -166,7 +168,7 @@ jwt=$(curl -sk -H 'Accept: application/json' -H "Authorization: Bearer ${token}"
 
 # Open the link in a browser.
 # The link is signed using ${jwt} and will access the k8s API at ${path}.
-signed_link="${proxyurl}/auth/jwt/set?token=${jwt}&then=/noVNC/vnc_lite.html?path=k8s${path}"
+signed_link="${proxyurl}/auth/jwt/set?token=${jwt}&name=${name}&namespace=${namespace}"
 
 google-chrome "${signed_link}"
 ```
