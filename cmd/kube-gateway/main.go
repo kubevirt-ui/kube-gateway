@@ -35,6 +35,7 @@ func main() {
 	publicDir := flag.String("public-dir", "./web/public", "localhost directory containing static web assets.")
 	basePath := flag.String("base-path", "/", "url endpoint for static web assets.")
 	apiPath := flag.String("api-path", "/k8s/", "url endpoint for API calls.")
+	clientPath := flag.String("client-path", "/noVNC/vnc_lite.html", "url endpoint for user client calls.")
 
 	apiServer := flag.String("api-server", "https://kubernetes.default.svc", "backend API server URL.")
 	apiServerSkipVerifyTLS := flag.Bool("api-server-skip-verify-tls", false, "When true, skip verification of certs presented by k8s API server.")
@@ -170,7 +171,7 @@ func main() {
 	http.Handle(s.APIPath, s.AuthMiddleware(s.APIProxy()))
 
 	// Register set token cookie endpoint
-	http.HandleFunc(setTokenEndpoint, token.SetToken)
+	http.HandleFunc(setTokenEndpoint, token.SetTokenFactory(*clientPath, *apiPath))
 
 	// Register static file server
 	fs := http.FileServer(http.Dir(*publicDir))

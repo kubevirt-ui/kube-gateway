@@ -40,40 +40,47 @@ type GateToken struct {
 	Token    string
 }
 
-// SetToken handle callbacs from users manually setting the JWT cookie.
-func SetToken(w http.ResponseWriter, r *http.Request) {
-	// Log request
-	glog.Infof("%s %v: %+v", r.RemoteAddr, r.Method, r.URL)
+// HandlerFunc is a type alias for a function that handles HTTP requests.
+type HandlerFunc func(w http.ResponseWriter, r *http.Request)
 
-	var token string
-	var then string
+// Factory function that returns a SetTokenHandler
+func SetTokenFactory(clientPath string, apiPath string) HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Log request
+		glog.Infof("%s %v: %+v", r.RemoteAddr, r.Method, r.URL)
 
-	// Get token and redirect from get request
-	if r.Method == http.MethodGet {
-		query := r.URL.Query()
-		token = query.Get("token")
-		then = query.Get("then")
+		var token string
+		var name string
+		var namespace string
+
+		// Get token and redirect from get request
+		if r.Method == http.MethodGet {
+			query := r.URL.Query()
+			token = query.Get("token")
+			name = query.Get("name")
+			namespace = query.Get("namespace")
+		}
+
+		// Get token and redirect from post request
+		if r.Method == http.MethodPost {
+			token = r.FormValue("token")
+			name = r.FormValue("name")
+			namespace = r.FormValue("namespace")
+		}
+
+		// Build the redirect URL
+		cleanApiPath := apiPath[1:] // Remove prefix `/` from the begining of apiPath
+		then := fmt.Sprintf("%s?path=%sapis/subresources.kubevirt.io/v1/namespaces/%s/virtualmachineinstances/%s/vnc", clientPath, cleanApiPath, namespace, name)
+
+		// Set session cookie.
+		http.SetCookie(w, &http.Cookie{
+			Name:     CookieName,
+			Value:    token,
+			Path:     "/",
+			SameSite: http.SameSiteLaxMode,
+			HttpOnly: true})
+		http.Redirect(w, r, then, http.StatusFound)
 	}
-
-	// Get token and redirect from post request
-	if r.Method == http.MethodPost {
-		token = r.FormValue("token")
-		then = r.FormValue("then")
-	}
-
-	// Empty redirect, means go home
-	if then == "" {
-		then = "/"
-	}
-
-	// Set session cookie.
-	http.SetCookie(w, &http.Cookie{
-		Name:     CookieName,
-		Value:    token,
-		Path:     "/",
-		SameSite: http.SameSiteLaxMode,
-		HttpOnly: true})
-	http.Redirect(w, r, then, http.StatusFound)
 }
 
 // GetToken handle callbacs from OAuth2 authtorization server.

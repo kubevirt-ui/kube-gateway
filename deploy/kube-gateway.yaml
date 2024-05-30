@@ -38,6 +38,7 @@ spec:
       - command:
         - ./kube-gateway
         - -api-server=$(API_URL)
+        - -client-path=$(CLIENT_URL)
         - -gateway-listen=$(LISTEN)
         - -api-server-ca-file=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
         - -api-server-bearer-token-file=/var/run/secrets/kubernetes.io/serviceaccount/token
@@ -49,6 +50,8 @@ spec:
         env:
         - name: API_URL
           value: https://kubernetes.default.svc
+        - name: CLIENT_URL
+          value: /noVNC/vnc_lite.html
         - name: LISTEN
           value: https://0.0.0.0:8080
         image: quay.io/kubevirt-ui/kube-gateway
